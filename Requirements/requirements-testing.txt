@@ -4,6 +4,7 @@ pycodestyle
 pydocstyle
 pylint
 mypy
+pylint-django
 
 # Testing tools
 pytest

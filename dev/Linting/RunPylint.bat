@@ -8,7 +8,7 @@ set MODULE_PATH=%PROJ_MAIN_DIR%\legocollector
 
 set PYTHONPATH=%PYTHONPATH%;%MODULE_PATH%
 
-pylint "%MODULE_PATH%"
+pylint --load-plugins pylint_django "%MODULE_PATH%"
 set return_code=%errorlevel%
 if %return_code% equ 0 (
     echo *** No Issues Found
