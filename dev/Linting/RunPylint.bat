@@ -5,11 +5,10 @@ setlocal
 set BATCH_DIR=%~dp0
 set PROJ_MAIN_DIR=%BATCH_DIR%..\..
 set MODULE_PATH=%PROJ_MAIN_DIR%\legocollector
-echo ^!^!^! ERROR REPLACE 'legocollector' & goto exit_error
 
 set PYTHONPATH=%PYTHONPATH%;%MODULE_PATH%
 
-pylint "%MODULE_PATH%"
+pylint --load-plugins pylint_django "%MODULE_PATH%"
 set return_code=%errorlevel%
 if %return_code% equ 0 (
     echo *** No Issues Found

@@ -1,0 +1,1 @@
+"""The Log Collector Package."""

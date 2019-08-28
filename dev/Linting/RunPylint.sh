@@ -11,7 +11,7 @@ echo MODULE_PATH: $MODULE_PATH
 
 export PYTHONPATH=$PYTHONPATH:$MODULE_PATH
 
-pylint "$MODULE_PATH"
+pylint --load-plugins pylint_django "$MODULE_PATH"
 return_code=$?
 
 if [[ $return_code -eq  0 ]];

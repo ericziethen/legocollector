@@ -5,7 +5,6 @@ setlocal
 set BATCH_DIR=%~dp0
 set PROJ_MAIN_DIR=%BATCH_DIR%..\..
 set MODULE_PATH=%PROJ_MAIN_DIR%\legocollector
-echo ^!^!^! ERROR REPLACE 'legocollector' & goto exit_error
 
 set MYPYPATH=%MYPYPATH%;%MODULE_PATH%
 

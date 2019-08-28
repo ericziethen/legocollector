@@ -1,48 +1,62 @@
+
 @echo off
 
 setlocal
 
-set PROJ_MAIN_DIR=%~dp0..
-set PACKAGE_ROOT=legocollector
+set SCRIPT_DIR=%~dp0
+set TEST_DIR=%SCRIPT_DIR%Testing
+set ERROR_FOUND=
+set ERROR_LIST=
 
-set PYTHONPATH=%PYTHONPATH%;%PACKAGE_ROOT%
+echo ### Start Testing ###
+call:run_tester "Pytest"        "%TEST_DIR%\RunPytest.bat"
+call:run_tester "DjangoTests"   "%TEST_DIR%\RunDjangoTests.bat"
+echo ### Testing finished ###
 
-rem To see how to loop through multiple Command Line Arguments: https://www.robvanderwoude.com/parameters.php
-
-rem Disable Unwanted tests when run from Travis
-if "%1"=="travis-ci" (
-    rem add testing exclusions for travis
-    rem set PYTEST_ADDOPTS=-m "(not ???)"
-    echo Argument "travis-ci" passed, set "PYTEST_ADDOPTS" env variable
-    goto run_tests
-)
-
-:local_setup
-
-:run_tests
-pytest --rootdir="%PROJ_MAIN_DIR%" --cov="%PACKAGE_ROOT%"
-set return_code=%errorlevel%
-if %return_code% equ 0 (
-    echo *** No Issues Found
-    goto exit_ok
+if defined ERROR_FOUND (
+    goto error
 ) else (
-    echo *** Some Issues Found
-    goto exit_error
+    goto end
 )
 
-rem Some pytest resources
-rem https://hackingthelibrary.org/posts/2018-02-09-code-coverage/
-rem https://code.activestate.com/pypm/pytest-cov/
-rem https://docs.pytest.org/en/latest/usage.html
-rem http://blog.thedigitalcatonline.com/blog/2018/07/05/useful-pytest-command-line-options/
-rem https://www.patricksoftwareblog.com/python-unit-testing-structuring-your-project/
+: #########################################
+: ##### START OF FUNCTION DEFINITIONS #####
+: #########################################
+:run_tester
+set TESTER_NAME=%~1
+set TESTER_SCRIPT=%~2
 
-:exit_error
+echo ### TESTS START - '%TESTER_SCRIPT%' ###
+call "%TESTER_SCRIPT%"
+
+set return_code=%errorlevel%
+echo return_code: %return_code%
+if %return_code% gtr 0 (
+    set ERROR_FOUND=TRUE
+    set ERROR_LIST=%ERROR_LIST% %TESTER_NAME%
+    echo   Issues Found
+) else (
+    echo   No Issues
+)
+echo ### TESTS END - '%TESTER_SCRIPT%' ###
+echo[
+goto:eof
+: #######################################
+: ##### END OF FUNCTION DEFINITIONS #####
+: #######################################
+
+:error
+echo !!! CHECK OUTPUT, SOME TESTING ISSUE FOUND WITH
+for %%a in (%ERROR_LIST%) do (
+   echo   - %%a
+)
+
 endlocal
 echo exit /B 1
 exit /B 1
 
-:exit_ok
+:end
+echo !!! NO TESTING ISSUE FOUND
 endlocal
 echo exit /B 0
 exit /B 0
