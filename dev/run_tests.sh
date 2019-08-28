@@ -1,35 +1,56 @@
 #!/bin/bash
 
-PACKAGE_ROOT=legocollector
-SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-PROJ_MAIN_DIR=$SCRIPT_PATH/..
+#########################################
+##### START OF FUNCTION DEFINITIONS #####
+#########################################
+run_tester () {
+    local tester_name=$1
+    local tester_script=$2
 
-if [ "$1" == "travis-ci" ]; then
-    export PYTEST_ADDOPTS='-m "(not selenium) and (not proxytest)"'
-    echo "Argument 'travis-ci' passed, set 'PYTEST_ADDOPTS' env variable"
-fi
+    echo "### TESTING START - '$tester_script' ###"
+    $tester_script
+    local return_code=$?
+
+    if [[ $return_code -eq  0 ]];
+    then
+        echo "   No Issues"
+    else
+        echo "   Issues Found"
+        ERROR_FOUND="true"
+        ERROR_LIST+=" $tester_name"
+    fi
+    echo "### TESTING END - '$tester_name' ###"
+}
+#######################################
+##### END OF FUNCTION DEFINITIONS #####
+#######################################
+
+SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+TEST_DIR=$SCRIPT_PATH/Testing
 
 echo SCRIPT_PATH: $SCRIPT_PATH
-echo PROJ_MAIN_DIR: $PROJ_MAIN_DIR
-echo PACKAGE_ROOT: $PACKAGE_ROOT
+echo TEST_DIR: $TEST_DIR
 
-export PYTHONPATH=$PYTHONPATH:$PACKAGE_ROOT
+ERROR_FOUND="false"
+ERROR_LIST=''
 
-# Can use to overwrite pytest.ini
-# set PYTEST_ADDOPTS=""
+echo "### Start Testing ###"
+run_tester "Pytest"         "$TEST_DIR/RunBandit.sh"
+run_tester "DjangoTests"    "$TEST_DIR/RunMyPy.sh"
+echo "### Testing finished ###"
 
-echo PYTHONPATH: "$PYTHONPATH"
-
-# Test directories are specified in Pytest.ini
-pytest --rootdir="$PROJ_MAIN_DIR" --cov="$PACKAGE_ROOT"
-return_code=$?
-
-if [[ $return_code -eq  0 ]];
+echo "ERROR_FOUND: '$ERROR_FOUND'"
+if [ $ERROR_FOUND == "false" ];
 then
-    echo "*** No Issues Found"
+    echo "!!! NO TESTING ISSUE FOUND"
+    echo "exit 0"
+    exit 0
 else
-    echo "*** Some Issues Found"
+    echo "!!! CHECK OUTPUT, SOME TESTING ISSUE FOUND WITH"
+    for value in $ERROR_LIST
+    do
+        echo "  - $value"
+    done
+    echo "exit 1"
+    exit 1
 fi
-
-echo "exit $return_code"
-exit $return_code
