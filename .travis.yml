@@ -84,8 +84,8 @@ script:
 - if [ "$TRAVIS_OS_NAME" = "windows" ]; then dev/kill_test_server.bat; fi
 
 # Kill Python processes - Travis doesn't set the title on Windows
-- if [ "$TRAVIS_OS_NAME" = "windows" ]; then tasklist //fi "imagename eq python.exe"; fi
-- if [ "$TRAVIS_OS_NAME" = "windows" ]; then taskkill //im python.exe //f; fi
+#- if [ "$TRAVIS_OS_NAME" = "windows" ]; then tasklist //fi "imagename eq python.exe"; fi
+#- if [ "$TRAVIS_OS_NAME" = "windows" ]; then taskkill //im python.exe //f; fi
 
 
 after_success:
