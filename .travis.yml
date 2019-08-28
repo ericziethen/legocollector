@@ -1,0 +1,144 @@
+language: python
+
+cache: pip
+
+# TODO
+# Create athe Same Travis with Build Stages, so only deploy if build ok on all jobs
+# https://docs.travis-ci.com/user/build-stages/
+
+# Limit under which Conditions we run Travis
+branches:
+  only:
+  - master      # Build if the branch is the master branch
+  - /^v.*$/     # Support building Tags commits on any branch (starting with 'v' in this case).
+
+matrix:
+  include:
+  - name: "Linux, Python 3.6"
+    os: linux
+    dist: xenial
+    python: "3.6"
+  - name: "Linux, Python 3.7.3"
+    os: linux
+    dist: xenial
+    python: "3.7.3"
+    env: DEPLOY_ENABLED=True
+#  - name: "Windows, Python 3.6.8 (x32)"
+#    os: windows
+#    language: sh
+#    python: "3.6.8"
+#    before_install: choco install python --version=3.6.8 --x86
+#    env: PATH=/c/Python36:/c/Python36/Scripts:$PATH
+#  - name: "Windows, Python 3.6.8 (x64)"
+#    os: windows
+#    language: sh
+#    python: "3.6.8"
+#    before_install: choco install python --version=3.6.8
+#    env: PATH=/c/Python36:/c/Python36/Scripts:$PATH
+#  - name: "Windows, Python 3.7.3 (x32)"
+#    os: windows
+#    language: sh
+#    python: "3.7.3"
+#    before_install: choco install python --version=3.7.3 --x86
+#    env: PATH=/c/Python37:/c/Python37/Scripts:$PATH
+  - name: "Windows, Python 3.7.3 (x64)"
+    os: windows
+    language: sh
+    python: "3.7.3"
+    before_install: choco install python --version=3.7.3
+    env: PATH=/c/Python37:/c/Python37/Scripts:$PATH
+
+install:
+- python --version --version
+- python -m pip install --upgrade pip setuptools wheel
+# don't use the '--upgrade' to not upgrade pinned requirements with generic ones
+- pip install -r requirements.txt
+
+# Capture some information
+- pip list
+
+before_script:
+# Startup Test Server - !!! This might take a bit time, so in script we run linting first to give the startup enough time
+- if [ "$TRAVIS_OS_NAME" = "windows" ]; then dev/run_test_server.bat detached; fi
+- if [ "$TRAVIS_OS_NAME" = "linux" ]; then ./dev/run_test_server.sh detached; fi
+
+- sleep 15 # Git the server some time to startup before tests are starting, we could also run the tests after Linting for a natural delay but this is ok for now
+
+- if [ "$TRAVIS_OS_NAME" = "linux" ]; then ping -c 4 127.0.0.1; fi
+- if [ "$TRAVIS_OS_NAME" = "windows" ]; then ping -n 4 127.0.0.1; fi
+
+script:
+# Run Tests
+- if [ "$TRAVIS_OS_NAME" = "windows" ]; then dev/run_tests.bat travis-ci; fi
+- if [ "$TRAVIS_OS_NAME" = "linux" ]; then ./dev/run_tests.sh travis-ci; fi
+
+# Run Linting
+- if [ "$TRAVIS_OS_NAME" = "windows" ]; then dev/run_linters.bat; fi
+- if [ "$TRAVIS_OS_NAME" = "linux" ]; then ./dev/run_linters.sh; fi
+
+# Run Package Safety Checks
+- if [ "$TRAVIS_OS_NAME" = "windows" ]; then dev/check_package_safety_bare.bat; fi
+- if [ "$TRAVIS_OS_NAME" = "linux" ]; then ./dev/check_package_safety.sh; fi
+
+# Kill the Test Server
+- if [ "$TRAVIS_OS_NAME" = "windows" ]; then dev/kill_test_server.bat; fi
+
+# Kill Python processes - Travis doesn't set the title on Windows
+- if [ "$TRAVIS_OS_NAME" = "windows" ]; then tasklist //fi "imagename eq python.exe"; fi
+- if [ "$TRAVIS_OS_NAME" = "windows" ]; then taskkill //im python.exe //f; fi
+
+
+after_success:
+- codecov
+
+# Check the Deployment Conditions
+- echo TRAVIS_BRANCH $TRAVIS_BRANCH
+- echo DEPLOY_ENABLED $DEPLOY_ENABLED
+- echo TRAVIS_TAG $TRAVIS_TAG
+
+###
+### !!! DEPLOY MIGHT NOT BE WORKING ON WINDOWS YET
+### https://github.com/avast/yaramod/issues/19
+      # Travis should now support Windows CI environment but it's still in early access. There are multiple issues currently, some small, some bigger:
+      #   The biggest issue right now is that secrets cannot be used because they just randomly bring down VM. This is discussed here.
+      #   PyPI provider is not working on Windows. I have reported this issue however this is not blocker because it can be easily done using script provider and custom script which just sets up .pypirc, installs twine, runs sdist/bdist_wheel and twine upload.
+###
+### Either Deploy from Linux or Use manual Process in Script (but without secret still not safe)
+###
+### Create Releases Token: https://docs.travis-ci.com/user/deployment/releases/
+#deploy:
+#  - provider: pypi
+#    skip_cleanup: true
+#    distributions: sdist bdist_wheel
+#    #server: https://test.pypi.org/legacy/ # Remove for deployment to official PyPi repo
+#    user: ericziethen
+#    password:  # run "travis encrypt ***the_password*** --add" from inside the repository
+#      secure: "#PYPI-SECURE-KEY"
+#    on:
+#      condition: $DEPLOY_ENABLED = "True" && "$TRAVIS_TAG =~ ^v.*$"
+#      tags: true
+#      branch: master
+#      repo: legocollector/legocollector
+  # Trying to push the wheel to github releases after deploying to pypi is currently not working because
+  # the pypi script deletes the packages at the end.
+  # https://github.com/travis-ci/dpl/blob/master/lib/dpl/provider/pypi.rb
+  #    def push_app
+  #     ...
+  #     context.shell "rm -rf dist/*"
+#     PR Request for Fix, not completed yet
+#       https://github.com/travis-ci/dpl/pull/827
+#  - provider: releases
+#    skip_cleanup: true
+#    api_key: # To be created with "travis setup releases" from anywhere -> Will overwrite .travis.yml, so have a copy
+#      secure: Ud1AgcWunf3F9fFGLI5loLQrJMxdh28u56ghAd2Xs00qASjBIoqn6GTl9QDwsAAB42l+TZMSorGitsCgF9R54jeHzuH360JYzPnDfagsVUHJ1TS5N9TP33tXx7aIdeV/1THCkkcj7FQyYNH2Kx8+r5I4trj2wcv8NZIQIfRuBw8SWbkGE6eqdwz7Bcp8sSVn8HtzQ5qlJKEGeWB7F1y/E+wcxxIsTcJ/dhfg2gG11FeOyq0g37OPRdh0QC2q1YMx4CTG2BA0Dkxbx393eI4we1jT5evLSIRg7g4M4+tpYEK+CbKmIwfM6kgWZRPnYVoORKDFnBDQNDN3xN9CV/0TJH0sXnFja4zA70VyG0WTv0sIJ6TTgAlp6bxfxcr8lMAH0SMZOablKIPbbKCKL5E2oLo2LeDqcM6x4sxJSd4cHjN9MDgSGJEwfWxwEwqBjBTKDA/iwrufocWOeemYJBEUEPq4QHBPGfUwXHqN5G5OTIxOQASrn7bd4uGPT+nX+4dbMMU/iLNa6Uw9ANkJN62fhCRxiaq+PMYucMjd2dKZjxnR7uQZ3Uq9RXfH8DAIh7bGMB2XI32nIcVWmTtlQdsemT2nLgiMTorjojuKiG9h+6y8BIjFiERguW2sbYOCCgOFTnwEagZPN1Fzbj/en1cyvow3ZgO8Dy/U1O6IEl4hjmY=
+#    file_glob: true
+#    file: "dist/*.whl"
+#    on:
+#      condition: $DEPLOY_ENABLED = "True" && "$TRAVIS_TAG =~ ^v.*$"
+#      tags: true
+#      branch: master
+#      repo: legocollector/legocollector
+
+after_deploy:
+  - ls
+  - ls -lR
