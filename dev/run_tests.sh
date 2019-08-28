@@ -35,8 +35,8 @@ ERROR_FOUND="false"
 ERROR_LIST=''
 
 echo "### Start Testing ###"
-run_tester "Pytest"         "$TEST_DIR/RunBandit.sh"
-run_tester "DjangoTests"    "$TEST_DIR/RunMyPy.sh"
+run_tester "Pytest"         "$TEST_DIR/RunPytest.sh"
+run_tester "DjangoTests"    "$TEST_DIR/RunDjangoTests.sh"
 echo "### Testing finished ###"
 
 echo "ERROR_FOUND: '$ERROR_FOUND'"
