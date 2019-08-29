@@ -40,7 +40,8 @@ const-naming-style=UPPER_CASE
 function-naming-style=snake_case
 
 # Good variable names which should always be accepted, separated by a comma.
-good-names=i,
+good-names=id,
+           i,
            j,
            k,
            ex,
