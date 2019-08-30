@@ -3,9 +3,10 @@
 setlocal
 
 set PROJ_MAIN_DIR=%~dp0../..
+set PACKAGE_ROOT=legocollector
 
 :run_django_test
-python manage.py test
+python "%PROJ_MAIN_DIR%\%PACKAGE_ROOT%\manage.py" test
 set return_code=%errorlevel%
 if %return_code% equ 0 (
     echo *** No Test Issues Found

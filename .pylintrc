@@ -1,4 +1,3 @@
-
 [MESSAGES CONTROL]
 
 # Disable the message, report, category or checker with the given id(s). You
@@ -10,7 +9,7 @@
 # --enable=similarities". If you want to run only the classes checker, but have
 # no Warning level messages displayed, use "--disable=all --enable=classes
 # --disable=W".
-disable=logging-fstring-interpolation
+disable=logging-fstring-interpolation,missing-docstring
 
 
 # Enable the message, report, category or checker with the given id(s). You can
@@ -34,13 +33,15 @@ class-attribute-naming-style=snake_case
 class-naming-style=PascalCase
 
 # Naming style matching correct constant names.
-const-naming-style=UPPER_CASE
+#const-naming-style=UPPER_CASE
+#const-rgx='(?:(?P<snake>[a-z_]+)|(?P<camel>_?[A-Z][A-Z0-9]+))$'
 
 # Naming style matching correct function names.
 function-naming-style=snake_case
 
 # Good variable names which should always be accepted, separated by a comma.
-good-names=i,
+good-names=id,
+           i,
            j,
            k,
            ex,
