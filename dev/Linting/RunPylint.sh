@@ -11,7 +11,9 @@ echo MODULE_PATH: $MODULE_PATH
 
 export PYTHONPATH=$PYTHONPATH:$MODULE_PATH
 
-pylint --load-plugins pylint_django "$MODULE_PATH"
+# Pylint has an issue finding the modules since there is not __init__.py in the django root, if it were it causes issues with django test discovery
+#pylint --load-plugins pylint_django "$MODULE_PATH"
+find . -type f -name "*.py" | xargs python -m pylint
 return_code=$?
 
 if [[ $return_code -eq  0 ]];
