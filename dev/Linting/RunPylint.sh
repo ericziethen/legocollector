@@ -38,8 +38,8 @@ ERROR_LIST=''
 
 export PYTHONPATH=$PYTHONPATH:$MODULE_PATH
 
-run_pylint "$MODULE_PATH\legocollector"
-run_pylint "$MODULE_PATH\inventory"
+run_pylint "$MODULE_PATH/legocollector"
+run_pylint "$MODULE_PATH/inventory"
 
 echo "ERROR_FOUND: '$ERROR_FOUND'"
 if [ $ERROR_FOUND == "false" ];
