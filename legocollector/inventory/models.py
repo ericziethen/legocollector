@@ -23,22 +23,22 @@ class Color(models.Model):
 
 
 class Part(models.Model):
-    part_num = models.CharField(max_length=20, unique=True)
+    part_num = models.CharField(primary_key=True, max_length=20)
     name = models.CharField(max_length=250)
-    width = models.PositiveIntegerField()
-    height = models.PositiveIntegerField()
-    length = models.PositiveIntegerField()
-    stud_count = models.PositiveIntegerField()
-    multi_height = models.BooleanField()
-    uneven_dimensions = models.BooleanField()
+    width = models.PositiveIntegerField(blank=True, null=True)
+    height = models.PositiveIntegerField(blank=True, null=True)
+    length = models.PositiveIntegerField(blank=True, null=True)
+    stud_count = models.PositiveIntegerField(blank=True, null=True)
+    multi_height = models.BooleanField(blank=True, null=True)
+    uneven_dimensions = models.BooleanField(blank=True, null=True)
 
-    category_id = models.ForeignKey(PartCategory, on_delete=models.CASCADE)
+    category_id = models.ForeignKey(PartCategory, on_delete=models.CASCADE, related_name='parts')
 
 
 class UserPart(models.Model):
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
-    part_id = models.ForeignKey(Part, on_delete=models.CASCADE)
-    color = models.ForeignKey(Color, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_parts')
+    part_num = models.ForeignKey(Part, on_delete=models.CASCADE, db_column='part_num_id', related_name='user_parts')
+    color = models.ForeignKey(Color, on_delete=models.CASCADE, related_name='user_parts')
 
     class Meta:
-        unique_together = (('user_id', 'part_id', 'color'),)
+        unique_together = (('user_id', 'part_num', 'color'),)
