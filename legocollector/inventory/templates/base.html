@@ -11,6 +11,16 @@
   </head>
   <body>
     <div id="page">
+        <div id="sidebar">
+            {% block sidebar %}
+        <ul>
+          <li><a href="/admin">Admin</a></li>
+          <li><a href="/accounts/login">Login</a></li>
+          <li><a href="/accounts/logout">Logout</a></li>
+          <li><a href="/inventory">Inventory</a></li>
+        </ul>
+             {% endblock %}
+        </div>
         <div id='content'>
             {% block content %} main content area{% endblock %}
             {% block body %}{% endblock %}
