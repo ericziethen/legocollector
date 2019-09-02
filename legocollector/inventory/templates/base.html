@@ -1,0 +1,20 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <title> {%block title %} Legocollector {% endblock %} </title>
+    {% block head %}{% endblock %}
+    <link rel="stylesheet" type="text/css" href="{% static "assets/css/default.css" %}">
+    <script type="text/javascript" src="{% static "assets/js/jquery-2.1.3.min.js"%}"></script>
+    <script src="{% static "assets/js/ajax.js"%}"></script>
+  </head>
+  <body>
+    <div id="page">
+        <div id='content'>
+            {% block content %} main content area{% endblock %}
+            {% block body %}{% endblock %}
+        </div>
+    </div>
+  </body>
+</html>
