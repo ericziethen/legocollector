@@ -37,6 +37,7 @@ class Part(models.Model):
     def __str__(self):
         return self.name
 
+
 class UserPart(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_parts')
     part_num = models.ForeignKey(Part, on_delete=models.CASCADE, db_column='part_num_id', related_name='user_parts')
