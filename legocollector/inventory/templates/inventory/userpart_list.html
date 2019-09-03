@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>User Parts</h2>
+    <ul>
+        {% for userpart in object_list %}
+            <li>{{ userpart.color }} - {{ userpart.user_id }} - {{ userpart.part_num }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

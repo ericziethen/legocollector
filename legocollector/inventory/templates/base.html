@@ -1,5 +1,5 @@
 {# HTML5 declaration #}
-{# Based on: https://ultimatedjango.com/learn-django/lessons/create-the-project-base-template/ #}
+<!--Based on: https://ultimatedjango.com/learn-django/lessons/create-the-project-base-template/-->
 <!DOCTYPE html>
 <html>
     {# Make modifiable head elements #}
@@ -44,12 +44,9 @@
                   <div class="collapse navbar-collapse">
                       <ul class="nav navbar-nav navbar-right">
                           {% if user.is_authenticated %}
-                              <li><a href="">Logout</a></li>
-                              <li><a href=""
-                                     class="p-r-none">Accounts</a></li>
+                              <li><a href="/accounts/logout">Logout</a></li>
                           {% else %}
-                              <li><a href="">Login</a></li>
-                              <li><a href="" class="p-r-none">Sign Up</a></li>
+                              <li><a href="/accounts/login">Login</a></li>
                           {% endif %}
                       </ul>
                   </div>
