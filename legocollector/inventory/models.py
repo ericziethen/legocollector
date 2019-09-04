@@ -45,3 +45,6 @@ class UserPart(models.Model):
 
     class Meta:
         unique_together = (('user_id', 'part_num', 'color'),)
+
+    def __str__(self):
+        return F'{self.user_id.username} - {self.part_num.name} - {self.color}'
