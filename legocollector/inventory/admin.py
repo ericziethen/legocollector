@@ -9,6 +9,7 @@ from .models import UserPart
 class ColorAdmin(admin.ModelAdmin):
     fields = ['name', 'transparent', 'rgb']
     list_display = ('name', 'rgb', 'transparent')
+    search_fields = ['name']
 
 
 class PartAdmin(admin.ModelAdmin):
@@ -19,6 +20,8 @@ class PartAdmin(admin.ModelAdmin):
     ]
     list_display = ('part_num', 'name', 'category_id', 'width', 'height', 'length',
                     'stud_count', 'multi_height', 'uneven_dimensions')
+    list_filter = ['width', 'height', 'length', 'stud_count', 'multi_height', 'uneven_dimensions']
+    search_fields = ['part_num', 'name', 'category_id__name']
 
 
 class UserPartAdmin(admin.ModelAdmin):
