@@ -9,7 +9,11 @@ from .models import UserPart
 class UserPartCreateView(LoginRequiredMixin, CreateView):  # pylint: disable=too-many-ancestors
     model = UserPart
     template_name = 'inventory/userpart_create.html'
-    fields = ['user_id', 'part_num', 'color']
+    fields = ['part_num', 'color']
+
+    def form_valid(self, form):
+        form.instance.user_id = self.request.user
+        return super().form_valid(form)
 
 
 class UserPartUpdateView(LoginRequiredMixin, UpdateView):  # pylint: disable=too-many-ancestors
@@ -21,7 +25,7 @@ class UserPartUpdateView(LoginRequiredMixin, UpdateView):  # pylint: disable=too
 class UserPartDeleteView(LoginRequiredMixin, DeleteView):  # pylint: disable=too-many-ancestors
     model = UserPart
     template_name = 'inventory/userpart_delete.html'
-    success_url = reverse_lazy('userpart_list')
+    success_url = reverse_lazy('home')
 
 
 class UserPartDetailView(LoginRequiredMixin, DetailView):  # pylint: disable=too-many-ancestors
