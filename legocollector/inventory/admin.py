@@ -25,7 +25,7 @@ class PartAdmin(admin.ModelAdmin):
 
 
 class UserPartAdmin(admin.ModelAdmin):
-    list_display = ('user_id', 'part_num', 'color')
+    list_display = ('user_id', 'part_num', 'color', 'qty')
 
 
 # Register your models here.

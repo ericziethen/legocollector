@@ -2,8 +2,7 @@
 
 {% block content %}
   <div class="userpart-entry">
-    <p>{{ userpart.part_num }}</p>
-    <p>{{ userpart.color }}</p>
+    <p>{{ userpart }}</p>
   </div>
 
   <a href="{% url 'userpart_edit' userpart.pk %}">+ Edit User Part</a>

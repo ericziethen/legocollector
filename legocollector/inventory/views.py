@@ -9,7 +9,7 @@ from .models import UserPart
 class UserPartCreateView(LoginRequiredMixin, CreateView):  # pylint: disable=too-many-ancestors
     model = UserPart
     template_name = 'inventory/userpart_create.html'
-    fields = ['part_num', 'color']
+    fields = ['part_num', 'color', 'qty']
 
     def form_valid(self, form):
         form.instance.user_id = self.request.user
@@ -19,7 +19,7 @@ class UserPartCreateView(LoginRequiredMixin, CreateView):  # pylint: disable=too
 class UserPartUpdateView(LoginRequiredMixin, UpdateView):  # pylint: disable=too-many-ancestors
     model = UserPart
     template_name = 'inventory/userpart_update.html'
-    fields = ['part_num', 'color']
+    fields = ['part_num', 'color', 'qty']
 
 
 class UserPartDeleteView(LoginRequiredMixin, DeleteView):  # pylint: disable=too-many-ancestors
