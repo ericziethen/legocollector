@@ -1,7 +1,7 @@
 
 from django.db import models
 from django.contrib.auth.models import User
-# Create your models here.
+from django.urls import reverse
 
 
 class PartCategory(models.Model):
@@ -47,4 +47,7 @@ class UserPart(models.Model):
         unique_together = (('user_id', 'part_num', 'color'),)
 
     def __str__(self):
-        return F'{self.user_id.username} - {self.part_num.name} - {self.color}'
+        return F'{self.part_num.name} - {self.color}'
+
+    def get_absolute_url(self):
+        return reverse("userpart_detail", kwargs={"pk": self.pk})

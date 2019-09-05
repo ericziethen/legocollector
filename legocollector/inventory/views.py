@@ -1,20 +1,35 @@
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponse
-from django.views.generic import ListView, TemplateView
+from django.urls import reverse_lazy
+from django.views.generic import DeleteView, DetailView, ListView, UpdateView
+from django.views.generic.edit import CreateView
 
 from .models import UserPart
 
-# Create your views here.
+
+class UserPartCreateView(LoginRequiredMixin, CreateView):  # pylint: disable=too-many-ancestors
+    model = UserPart
+    template_name = 'inventory/userpart_create.html'
+    fields = ['user_id', 'part_num', 'color']
 
 
-@login_required
-def index(request):  # pylint: disable=unused-argument
-    # user = request.user
-    return HttpResponse('Inventory Main Page - Placeholder')
+class UserPartUpdateView(LoginRequiredMixin, UpdateView):  # pylint: disable=too-many-ancestors
+    model = UserPart
+    template_name = 'inventory/userpart_update.html'
+    fields = ['part_num', 'color']
 
 
-class UserPartList(LoginRequiredMixin, ListView):  # pylint: disable=too-many-ancestors
+class UserPartDeleteView(LoginRequiredMixin, DeleteView):  # pylint: disable=too-many-ancestors
+    model = UserPart
+    template_name = 'inventory/userpart_delete.html'
+    success_url = reverse_lazy('userpart_list')
+
+
+class UserPartDetailView(LoginRequiredMixin, DetailView):  # pylint: disable=too-many-ancestors
+    model = UserPart
+    template_name = 'inventory/userpart_detail.html'
+
+
+class UserPartListView(LoginRequiredMixin, ListView):  # pylint: disable=too-many-ancestors
     model = UserPart
 
     def get_queryset(self):

@@ -4,7 +4,12 @@
     <h2>User Parts</h2>
     <ul>
         {% for userpart in object_list %}
-            <li>{{ userpart.color }} - {{ userpart.user_id }} - {{ userpart.part_num }}</li>
+            <h2><a href="{% url 'userpart_detail' userpart.pk %}">{{ userpart }}</a></h2>
         {% endfor %}
     </ul>
+    <footer>
+        <div class="nav-left">
+            <h1><a href="{% url 'userpart_create' %}">+ New Userpart</h1>
+        </div>
+    </footer>
 {% endblock %}
