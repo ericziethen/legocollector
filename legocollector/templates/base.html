@@ -34,42 +34,43 @@
         {% endblock head_css %}
     </head>
     <body>
-      {# Navigation Menu #}
-      <header>
-          <div class="navbar navbar-default navbar-static-top 
-          {% block nav-style %}{% endblock %}">
-              <div class="container p-none">
-                  <div class="navbar-header">
-                  </div>
-                  <div class="collapse navbar-collapse">
-                      <ul class="nav navbar-nav navbar-right">
-                          {% if user.is_authenticated %}
+        {# Navigation Menu #}
+        <header>
+            <div class="navbar navbar-default navbar-static-top 
+            {% block nav-style %}{% endblock %}">
+                <div class="container p-none">
+                    <div class="navbar-header">
+                    </div>
+                    <div class="collapse navbar-collapse">
+                        <ul class="nav navbar-nav navbar-right">
+                            {% if user.is_authenticated %}
                             <div class="nav-left">
+                                <p>Welcome, {{ user.get_username }}.</p>
                                 <h1><a href="{% url 'home' %}">Home</a></h1>
                             </div>
                             <div class="nav-right">
                                 <h1><a href="{% url 'logout' %}">Logout</a></h1>
                             </div>
-                          {% else %}
-                          <div class="nav-left">
-                            <li><a href="/accounts/login">Login</a></li>
-                          </div>
-                          {% endif %}
-                      </ul>
-                  </div>
-              </div>
-          </div>
-      </header>
-      {# The Document Body #}
-      <div id="site-wrapper">
-          {% block content %}
-              if you see this, something is wrong!
-          {% endblock content %}
-      </div>
-      {# The Footer #}
-      <div class="footer">
-      </div>
-  </body>
+                            {% else %}
+                            <div class="nav-left">
+                                <li><a href="/accounts/login">Login</a></li>
+                            </div>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </header>
+        {# The Document Body #}
+        <div id="site-wrapper">
+            {% block content %}
+                if you see this, something is wrong!
+            {% endblock content %}
+        </div>
+        {# The Footer #}
+        <div class="footer">
+        </div>
+    </body>
     {# Set of blocks that can be used to display JavaScript files #}
     {% block footer_javascript %}
         {% block footer_javascript_site %}
