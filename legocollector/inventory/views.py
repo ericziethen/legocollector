@@ -36,7 +36,7 @@ class UserPartUpdateForm(ModelForm):
         fields = ('color', 'qty')
 
     def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user')        
+        self.user = kwargs.pop('user')
         self.part_num = kwargs.pop('part_num')
         super().__init__(*args, **kwargs)
 
