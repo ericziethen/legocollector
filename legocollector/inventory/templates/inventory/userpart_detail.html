@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="userpart-entry">
+    <p>{{ userpart }}</p>
+  </div>
+
+  <a href="{% url 'userpart_edit' userpart.pk %}">+ Edit User Part</a>
+  <p><a href="{% url 'userpart_delete' userpart.pk %}">+ Delete User Part</a></p>
+
+{% endblock content %}
