@@ -40,7 +40,7 @@ class UserPartCreateView(LoginRequiredMixin, CreateView):  # pylint: disable=too
         try:
             return super().form_valid(form)
         except ValidationError:
-            form.add_error(None, 'You already have a Part for this color in your list')
+            form.add_error(None, 'You already have a Part with this color in your list')
             return super().form_invalid(form)
 
     def get_form_kwargs(self):
@@ -49,11 +49,24 @@ class UserPartCreateView(LoginRequiredMixin, CreateView):  # pylint: disable=too
         return kwargs
 
 
+# TODO - Maybe Combine the 2 forms
 class UserPartUpdateView(LoginRequiredMixin, UpdateView):  # pylint: disable=too-many-ancestors
     model = UserPart
     template_name = 'inventory/userpart_update.html'
-    fields = ['color', 'qty']
-    # TODO - If we allow changing color we need to check that the new piece doesn't already exist
+    form_class = UserPartCreateForm
+
+    def form_valid(self, form):
+        form.instance.user_id = self.request.user
+        try:
+            return super().form_valid(form)
+        except ValidationError:
+            form.add_error(None, 'You already have a Part with this color in your list')
+            return super().form_invalid(form)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update({'user': self.request.user})
+        return kwargs
 
 
 class UserPartDeleteView(LoginRequiredMixin, DeleteView):  # pylint: disable=too-many-ancestors
