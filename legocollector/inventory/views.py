@@ -53,6 +53,7 @@ class UserPartUpdateForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user')
+        self.color = kwargs.pop('color')
         self.part = kwargs.pop('part')
         super().__init__(*args, **kwargs)
 
@@ -60,11 +61,13 @@ class UserPartUpdateForm(ModelForm):
         # Get the cleaned data
         cleaned_data = super().clean()
 
+        # TODO - THIS IS NOT WORKING YET, WE WANT TO UPDATE THE QTY ONLY, THEN THE COLOR WILL BE THE SAME
         # Find the unique_together fields
-        color = cleaned_data.get('color')
+        form_color = cleaned_data.get('color')        
 
-        if UserPart.objects.filter(user=self.user, part=self.part, color=color).exists():
-            raise ValidationError('You already have this Userpart in your list.')
+        if form_color != self.color:
+            if UserPart.objects.filter(user=self.user, part=self.part, color=form_color).exists():
+                raise ValidationError('You already have this Userpart in your list.')
 
         return cleaned_data
 
@@ -103,7 +106,7 @@ class UserPartUpdateView(LoginRequiredMixin, UpdateView):  # pylint: disable=too
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs.update({'user': self.request.user, 'part': self.object.part})
+        kwargs.update({'user': self.request.user, 'part': self.object.part, 'color': self.object.color})
         return kwargs
 
 
