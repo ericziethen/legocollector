@@ -15,18 +15,18 @@ def export_userparts(request):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="userpartlist.csv"'
 
-    userparts = UserPart.objects.filter(user_id=request.user)
+    userparts = UserPart.objects.filter(user=request.user)
     writer = csv.writer(response)
     writer.writerow(['Part', 'Color', 'Quantity'])
     for userpart in userparts:
-        writer.writerow([userpart.part_num.part_num, userpart.color.id, userpart.qty])
+        writer.writerow([userpart.part.part, userpart.color.id, userpart.qty])
     return response
 
 
 class UserPartCreateForm(ModelForm):
     class Meta:
         model = UserPart
-        fields = ('part_num', 'color', 'qty')
+        fields = ('part', 'color', 'qty')
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user')
@@ -37,10 +37,10 @@ class UserPartCreateForm(ModelForm):
         cleaned_data = super().clean()
 
         # Find the unique_together fields
-        part_num = cleaned_data.get('part_num')
+        part = cleaned_data.get('part')
         color = cleaned_data.get('color')
 
-        if UserPart.objects.filter(user_id=self.user, part_num=part_num, color=color).exists():
+        if UserPart.objects.filter(user=self.user, part=part, color=color).exists():
             raise ValidationError('You already have this Userpart in your list.')
 
         return cleaned_data
@@ -53,7 +53,7 @@ class UserPartUpdateForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user')
-        self.part_num = kwargs.pop('part_num')
+        self.part = kwargs.pop('part')
         super().__init__(*args, **kwargs)
 
     def clean(self):
@@ -63,7 +63,7 @@ class UserPartUpdateForm(ModelForm):
         # Find the unique_together fields
         color = cleaned_data.get('color')
 
-        if UserPart.objects.filter(user_id=self.user, part_num=self.part_num, color=color).exists():
+        if UserPart.objects.filter(user=self.user, part=self.part, color=color).exists():
             raise ValidationError('You already have this Userpart in your list.')
 
         return cleaned_data
@@ -75,7 +75,7 @@ class UserPartCreateView(LoginRequiredMixin, CreateView):  # pylint: disable=too
     form_class = UserPartCreateForm
 
     def form_valid(self, form):
-        form.instance.user_id = self.request.user
+        form.instance.user = self.request.user
         try:
             return super().form_valid(form)
         except ValidationError:
@@ -94,7 +94,7 @@ class UserPartUpdateView(LoginRequiredMixin, UpdateView):  # pylint: disable=too
     form_class = UserPartUpdateForm
 
     def form_valid(self, form):
-        form.instance.user_id = self.request.user
+        form.instance.user = self.request.user
         try:
             return super().form_valid(form)
         except ValidationError:
@@ -103,7 +103,7 @@ class UserPartUpdateView(LoginRequiredMixin, UpdateView):  # pylint: disable=too
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs.update({'user': self.request.user, 'part_num': self.object.part_num})
+        kwargs.update({'user': self.request.user, 'part': self.object.part})
         return kwargs
 
 
@@ -123,4 +123,4 @@ class UserPartListView(LoginRequiredMixin, ListView):  # pylint: disable=too-man
 
     def get_queryset(self):
         """Only for current user."""
-        return UserPart.objects.filter(user_id=self.request.user)
+        return UserPart.objects.filter(user=self.request.user)
