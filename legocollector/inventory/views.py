@@ -61,9 +61,8 @@ class UserPartUpdateForm(ModelForm):
         # Get the cleaned data
         cleaned_data = super().clean()
 
-        # TODO - THIS IS NOT WORKING YET, WE WANT TO UPDATE THE QTY ONLY, THEN THE COLOR WILL BE THE SAME
         # Find the unique_together fields
-        form_color = cleaned_data.get('color')        
+        form_color = cleaned_data.get('color')
 
         if form_color != self.color:
             if UserPart.objects.filter(user=self.user, part=self.part, color=form_color).exists():
