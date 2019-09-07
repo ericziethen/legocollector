@@ -1,10 +1,26 @@
+import csv
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms import ModelForm, ValidationError
+from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.views.generic import DeleteView, DetailView, ListView, UpdateView
 from django.views.generic.edit import CreateView
 
 from .models import UserPart
+
+
+def export_userparts(request):
+    # Create the HttpResponse object with the appropriate CSV header.
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="userpartlist.csv"'
+
+    userparts = UserPart.objects.filter(user_id=request.user)
+    writer = csv.writer(response)
+    writer.writerow(['Part', 'Color', 'Quantity'])
+    for userpart in userparts:
+        writer.writerow([userpart.part_num.part_num, userpart.color.id, userpart.qty])
+    return response
 
 
 class UserPartCreateForm(ModelForm):

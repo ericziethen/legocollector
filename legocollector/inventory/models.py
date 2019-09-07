@@ -39,6 +39,7 @@ class Part(models.Model):
 
 
 class UserPart(models.Model):
+    # TODO - RENANE FIELDS TO - user, part
     user_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_parts')
     part_num = models.ForeignKey(Part, on_delete=models.CASCADE, db_column='part_num_id', related_name='user_parts')
     color = models.ForeignKey(Color, on_delete=models.CASCADE, related_name='user_parts')
