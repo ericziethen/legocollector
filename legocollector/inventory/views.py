@@ -19,7 +19,7 @@ def export_userparts(request):
     writer = csv.writer(response)
     writer.writerow(['Part', 'Color', 'Quantity'])
     for userpart in userparts:
-        writer.writerow([userpart.part.part, userpart.color.id, userpart.qty])
+        writer.writerow([userpart.part.part_num, userpart.color.id, userpart.qty])
     return response
 
 
