@@ -29,11 +29,6 @@ def import_userparts(request):
         messages.error(request, 'Uploaded file is too big (%.2f MB).' % (csv_file.size / (1000 * 1000),))
         return HttpResponseRedirect(reverse('home'))
 
-    # TODO - We should probably have some module to implement the logic???
-    # TODO - WE Must have some import checks if the csv is invalid
-    # TODO - WE must have have a way to maybe updat
-    # TODO - WE must improve the performance of importing many parts
-
     csv_file.seek(0)
     reader = csv.DictReader(io.StringIO(csv_file.read().decode('utf-8')))
     with transaction.atomic():
