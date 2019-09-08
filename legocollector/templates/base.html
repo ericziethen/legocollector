@@ -1,7 +1,7 @@
 {# HTML5 declaration #}
 <!--Based on: https://ultimatedjango.com/learn-django/lessons/create-the-project-base-template/-->
 <!DOCTYPE html>
-<html lang="en">>
+<html lang="en">
     {# Make modifiable head elements #}
     <head>
         <title>{% block title %}Home {% endblock title %} | Legocollector</title>
@@ -36,6 +36,13 @@
     <body>
         {# Navigation Menu #}
         <header>
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <h1 style="color:Tomato;" {% if message.tags %} class="{{ message.tags }}"{% endif %}><b>{{ message }}</b></h1>
+                {% endfor %}
+            </ul>
+            {% endif %}
             <div class="navbar navbar-default navbar-static-top 
             {% block nav-style %}{% endblock %}">
                 <div class="container p-none">

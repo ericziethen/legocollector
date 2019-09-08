@@ -9,6 +9,7 @@ from django.core.management.base import BaseCommand, CommandError
 from inventory.models import Color, PartCategory, Part
 
 
+# TODO - We need to combine functionality with import/export userparts
 class Command(BaseCommand):
 
     def add_arguments(self, parser):

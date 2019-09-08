@@ -6,6 +6,7 @@ from .import views
 urlpatterns = [
     path('userparts/', views.UserPartListView.as_view(), name='home'),
     path('userparts/new', views.UserPartCreateView.as_view(), name='userpart_create'),
+    path('userparts/import', views.import_userparts, name='userpart_import'),
     path('userparts/export', views.export_userparts, name='userpart_export'),
     path('userparts/<int:pk>/delete', views.UserPartDeleteView.as_view(), name='userpart_delete'),
     path('userparts/<int:pk>/edit', views.UserPartUpdateView.as_view(), name='userpart_edit'),
