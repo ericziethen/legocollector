@@ -124,6 +124,8 @@ STATIC_URL = '/static/'
 
 LOGIN_REDIRECT_URL = '/inventory/userparts'
 
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

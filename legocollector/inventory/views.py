@@ -1,15 +1,52 @@
 import csv
+import io
 
+from django.db import transaction
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms import ModelForm, ValidationError
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import reverse
 from django.urls import reverse_lazy
 from django.views.generic import DeleteView, DetailView, ListView, UpdateView
 from django.views.generic.edit import CreateView
 
-from .models import UserPart
+from .models import Color, Part, UserPart
 
 
+@login_required
+def import_userparts(request):
+    # Implementation example at https://www.pythoncircle.com/post/30/how-to-upload-and-process-the-csv-file-in-django/
+
+    csv_file = request.FILES['csv_file']
+    if not csv_file.name.lower().endswith('.csv'):
+        messages.error(request, 'File does not have a csv extension')
+        return HttpResponseRedirect(reverse('home'))
+
+    # if file is too large, return
+    if csv_file.multiple_chunks():
+        messages.error(request, 'Uploaded file is too big (%.2f MB).' % (csv_file.size / (1000 * 1000),))
+        return HttpResponseRedirect(reverse('home'))
+
+    csv_file.seek(0)
+    reader = csv.DictReader(io.StringIO(csv_file.read().decode('utf-8')))
+    with transaction.atomic():
+        for row in reader:
+            userpart, _ = UserPart.objects.get_or_create(
+                user=request.user,
+                part=Part.objects.get(part_num=row['Part']),
+                color=Color.objects.get(id=row['Color']),
+            )
+
+            userpart.qty = row['Quantity']
+            userpart.save()
+
+    messages.info(request, F'"{csv_file}" processed ok')
+    return HttpResponseRedirect(reverse('home'))
+
+
+@login_required
 def export_userparts(request):
     # Create the HttpResponse object with the appropriate CSV header.
     response = HttpResponse(content_type='text/csv')
@@ -19,7 +56,7 @@ def export_userparts(request):
     writer = csv.writer(response)
     writer.writerow(['Part', 'Color', 'Quantity'])
     for userpart in userparts:
-        writer.writerow([userpart.part.part, userpart.color.id, userpart.qty])
+        writer.writerow([userpart.part.part_num, userpart.color.id, userpart.qty])
     return response
 
 

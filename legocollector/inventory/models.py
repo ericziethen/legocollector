@@ -48,7 +48,7 @@ class UserPart(models.Model):
         unique_together = (('user', 'part', 'color'),)
 
     def __str__(self):
-        return F'{self.qty} x {self.part.name} - {self.color}'
+        return F'{self.qty} x {self.part.name} - {self.color} ({self.part.part_num})'
 
     def get_absolute_url(self):
         return reverse("userpart_detail", kwargs={"pk": self.pk})
