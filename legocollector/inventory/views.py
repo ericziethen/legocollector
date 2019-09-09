@@ -36,10 +36,14 @@ def import_userparts(request):
             userpart, _ = UserPart.objects.get_or_create(
                 user=request.user,
                 part=Part.objects.get(part_num=row['Part']),
+            )
+            inventory, _ = Inventory.objects.get_or_create(
+                userpart=userpart,
                 color=Color.objects.get(id=row['Color']),
+                qty=row['Quantity'],
             )
 
-            userpart.qty = row['Quantity']
+            inventory.save()
             userpart.save()
 
     messages.info(request, F'"{csv_file}" processed ok')

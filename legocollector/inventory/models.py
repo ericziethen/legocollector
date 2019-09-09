@@ -65,15 +65,3 @@ class Inventory(models.Model):
 
     def get_absolute_url(self):
         return reverse('inventory_detail', kwargs={'pk1': self.userpart_id, 'pk2': self.pk})
-
-
-class UserPartInventory(models.Model):
-    userpart = models.ForeignKey(UserPart, on_delete=models.CASCADE, related_name='inventory_list222')
-    color = models.ForeignKey(Color, on_delete=models.CASCADE, related_name='user_parts222')
-    qty = models.PositiveIntegerField(default=0)
-
-    class Meta:
-        unique_together = (('userpart', 'color'),)
-
-    def __str__(self):
-        return F'{self.qty} x {self.userpart} - {self.color}'
