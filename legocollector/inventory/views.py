@@ -87,15 +87,14 @@ class UserPartCreateForm(ModelForm):
 
         return cleaned_data
 
-'''
+
 class UserPartUpdateForm(ModelForm):
     class Meta:
         model = UserPart
-        fields = ('part')
+        fields = ('part',)
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user')
-        self.color = kwargs.pop('color')
         self.part = kwargs.pop('part')
         super().__init__(*args, **kwargs)
 
@@ -104,14 +103,14 @@ class UserPartUpdateForm(ModelForm):
         cleaned_data = super().clean()
 
         # Find the unique_together fields
-        form_color = cleaned_data.get('color')
+        form_part = cleaned_data.get('part')
 
-        if form_color != self.color:
-            if UserPart.objects.filter(user=self.user, part=self.part, color=form_color).exists():
+        if form_part != self.part:
+            if UserPart.objects.filter(user=self.user, part=form_part).exists():
                 raise ValidationError('You already have this Userpart in your list.')
 
         return cleaned_data
-'''
+
 
 class UserPartCreateView(LoginRequiredMixin, CreateView):  # pylint: disable=too-many-ancestors
     model = UserPart
@@ -136,7 +135,7 @@ class UserPartUpdateView(LoginRequiredMixin, UpdateView):  # pylint: disable=too
     model = UserPart
     pk_url_kwarg = 'pk1'
     template_name = 'inventory/userpart_update.html'
-    form_class = UserPartCreateForm
+    form_class = UserPartUpdateForm
 
     def form_valid(self, form):
         form.instance.user = self.request.user
