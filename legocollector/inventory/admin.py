@@ -11,7 +11,7 @@ class ColorAdmin(admin.ModelAdmin):
 
 class PartAdmin(admin.ModelAdmin):
     fieldsets = [
-        ('Identification', {'fields': ['part_num', 'name']}),
+        ('Identification', {'fields': ['part_num', 'name', 'category_id']}),
         ('Dimensions', {'fields': ['width', 'height', 'length']}),
         ('Attributes', {'fields': ['stud_count', 'multi_height', 'uneven_dimensions']}),
     ]
