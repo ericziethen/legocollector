@@ -174,14 +174,6 @@ class UserPartListView(LoginRequiredMixin, ListView):  # pylint: disable=too-man
         return UserPart.objects.filter(user=self.request.user)
 
 
-
-
-
-
-
-
-
-
 class InventoryCreateForm(ModelForm):
     class Meta:
         model = Inventory
@@ -190,7 +182,6 @@ class InventoryCreateForm(ModelForm):
     def __init__(self, *args, **kwargs):
         self.userpart = kwargs.pop('userpart')
         super().__init__(*args, **kwargs)
-
 
     def clean(self):
         # Get the cleaned data

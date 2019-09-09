@@ -56,7 +56,6 @@ class UserPart(models.Model):
         return reverse('userpart_detail', kwargs={'pk1': self.pk})
 
 
-
 class Inventory(models.Model):
     userpart = models.ForeignKey(UserPart, on_delete=models.CASCADE, related_name='inventory_list')
     color = models.ForeignKey(Color, on_delete=models.CASCADE, related_name='user_parts')
@@ -70,12 +69,6 @@ class Inventory(models.Model):
 
     def get_absolute_url(self):
         return reverse('inventory_detail', kwargs={'pk1': self.userpart_id, 'pk2': self.pk})
-
-
-
-
-
-
 
 
 class UserPartInventory(models.Model):
