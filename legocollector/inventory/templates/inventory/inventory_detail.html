@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="inventory-entry">
+    <p>{{ inventory }}</p>
+  </div>
+
+  {# <a href="{% url 'inventory_edit' inventory.pk %}">+ Edit Inventory</a> #}
+  {# <p><a href="{% url 'inventory_delete' inventory.pk %}">+ Delete Inventory</a></p> #}
+
+{% endblock content %}

@@ -8,7 +8,7 @@
   <div class="inventory-list">
     <h1>Inventory List</h1>
     {% for inventory in inventory_list %}
-      <p>{{ inventory }}</p>
+      <h2><a href="{% url 'inventory_detail' userpart.pk inventory.pk %}">{{ inventory }}</a></h2>
     {% endfor %}
   </div>
 

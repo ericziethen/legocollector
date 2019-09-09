@@ -129,6 +129,7 @@ class UserPartCreateView(LoginRequiredMixin, CreateView):  # pylint: disable=too
 
 class UserPartUpdateView(LoginRequiredMixin, UpdateView):  # pylint: disable=too-many-ancestors
     model = UserPart
+    pk_url_kwarg = 'pk1'
     template_name = 'inventory/userpart_update.html'
     form_class = UserPartUpdateForm
 
@@ -148,24 +149,21 @@ class UserPartUpdateView(LoginRequiredMixin, UpdateView):  # pylint: disable=too
 
 class UserPartDeleteView(LoginRequiredMixin, DeleteView):  # pylint: disable=too-many-ancestors
     model = UserPart
+    pk_url_kwarg = 'pk1'
     template_name = 'inventory/userpart_delete.html'
     success_url = reverse_lazy('home')
 
 
 class UserPartDetailView(LoginRequiredMixin, DetailView):  # pylint: disable=too-many-ancestors
     model = UserPart
+    pk_url_kwarg = 'pk1'
     template_name = 'inventory/userpart_detail.html'
-
 
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super().get_context_data(**kwargs)
         context['inventory_list'] = Inventory.objects.filter(userpart=self.object.id)
         return context
-
-
-
-
 
 
 class UserPartListView(LoginRequiredMixin, ListView):  # pylint: disable=too-many-ancestors
@@ -176,23 +174,14 @@ class UserPartListView(LoginRequiredMixin, ListView):  # pylint: disable=too-man
         return UserPart.objects.filter(user=self.request.user)
 
 
-
-'''
-Here's what I wanted in a Class Based View (CBV), my explanation of my issue was not very clear.
-
-def get_context_data(self, **kwargs):
-get_context_data is a way to get data that is not normally apart of a generic view. Vehicle is already provided to the View because its the model defined for it, if you wanted to pass objects from a different model you would need to provide a new context, get_context_data is the way to do this. statusUpdate is a model with a foreign key to Vehicle. Full example below.
-
-class VehicleDetail(generic.DetailView):
-    model = Vehicle
-    template_name = 'fleetdb/detail.html'
+class InventoryDeleteView(LoginRequiredMixin, DeleteView):  # pylint: disable=too-many-ancestors
+    model = Inventory
+    pk_url_kwarg = 'pk2'
+    template_name = 'inventory/inventory_delete.html'
+    success_url = reverse_lazy('home')
 
 
-    def get_context_data(self, **kwargs):
-        # Call the base implementation first to get a context
-        context = super(VehicleDetail, self).get_context_data(**kwargs)
-        context['updates'] = statusUpdate.objects.filter(vehicle_id=1).order_by('-dateTime')[:5]
-        return context
-'''
-
-
+class InventoryDetailView(LoginRequiredMixin, DetailView):  # pylint: disable=too-many-ancestors
+    model = Inventory
+    pk_url_kwarg = 'pk2'
+    template_name = 'inventory/inventory_detail.html'
