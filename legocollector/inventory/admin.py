@@ -22,7 +22,7 @@ class PartAdmin(admin.ModelAdmin):
 
 
 class UserPartAdmin(admin.ModelAdmin):
-    list_display = ('user', 'part', 'color', 'qty')
+    list_display = ('user', 'part')
 
 
 class InventoryAdmin(admin.ModelAdmin):

@@ -42,12 +42,8 @@ class UserPart(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_parts')
     part = models.ForeignKey(Part, on_delete=models.CASCADE, db_column='part_num_id', related_name='user_parts')
 
-
-    color = models.ForeignKey(Color, on_delete=models.CASCADE, related_name='user_parts2')
-    qty = models.PositiveIntegerField(default=0)
-
     class Meta:
-        unique_together = (('user', 'part', 'color'),)
+        unique_together = (('user', 'part'),)
 
     def __str__(self):
         return F'{self.user}: {self.part.name} ({self.part.part_num})'
@@ -65,7 +61,7 @@ class Inventory(models.Model):
         unique_together = (('userpart', 'color'),)
 
     def __str__(self):
-        return F'{self.qty} x {self.color}'
+        return F'{self.qty} x {self.color} ({self.userpart})'
 
     def get_absolute_url(self):
         return reverse('inventory_detail', kwargs={'pk1': self.userpart_id, 'pk2': self.pk})

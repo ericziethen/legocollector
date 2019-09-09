@@ -63,7 +63,7 @@ def export_userparts(request):
 class UserPartCreateForm(ModelForm):
     class Meta:
         model = UserPart
-        fields = ('part', 'color', 'qty')
+        fields = ('part',)
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user')
@@ -75,18 +75,17 @@ class UserPartCreateForm(ModelForm):
 
         # Find the unique_together fields
         part = cleaned_data.get('part')
-        color = cleaned_data.get('color')
 
-        if UserPart.objects.filter(user=self.user, part=part, color=color).exists():
-            raise ValidationError('You already have this Userpart in your list.')
+        if UserPart.objects.filter(user=self.user, part=part).exists():
+            raise ValidationError('You already have this Part in your list.')
 
         return cleaned_data
 
-
+'''
 class UserPartUpdateForm(ModelForm):
     class Meta:
         model = UserPart
-        fields = ('color', 'qty')
+        fields = ('part')
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user')
@@ -106,7 +105,7 @@ class UserPartUpdateForm(ModelForm):
                 raise ValidationError('You already have this Userpart in your list.')
 
         return cleaned_data
-
+'''
 
 class UserPartCreateView(LoginRequiredMixin, CreateView):  # pylint: disable=too-many-ancestors
     model = UserPart
@@ -118,7 +117,7 @@ class UserPartCreateView(LoginRequiredMixin, CreateView):  # pylint: disable=too
         try:
             return super().form_valid(form)
         except ValidationError:
-            form.add_error(None, 'You already have a Part with this color in your list')
+            form.add_error(None, 'You already have tthis Part in your list')
             return super().form_invalid(form)
 
     def get_form_kwargs(self):
@@ -131,19 +130,19 @@ class UserPartUpdateView(LoginRequiredMixin, UpdateView):  # pylint: disable=too
     model = UserPart
     pk_url_kwarg = 'pk1'
     template_name = 'inventory/userpart_update.html'
-    form_class = UserPartUpdateForm
+    form_class = UserPartCreateForm
 
     def form_valid(self, form):
         form.instance.user = self.request.user
         try:
             return super().form_valid(form)
         except ValidationError:
-            form.add_error(None, 'You already have a Part with this color in your list')
+            form.add_error(None, 'You already have a Part in your list')
             return super().form_invalid(form)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs.update({'user': self.request.user, 'part': self.object.part, 'color': self.object.color})
+        kwargs.update({'user': self.request.user, 'part': self.object.part})
         return kwargs
 
 
