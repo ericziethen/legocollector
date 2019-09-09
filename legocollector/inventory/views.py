@@ -60,7 +60,9 @@ def export_userparts(request):
     writer = csv.writer(response)
     writer.writerow(['Part', 'Color', 'Quantity'])
     for userpart in userparts:
-        writer.writerow([userpart.part.part_num, userpart.color.id, userpart.qty])
+        inventory_list = Inventory.objects.filter(userpart=userpart.id)
+        for inv in inventory_list:
+            writer.writerow([userpart.part.part_num, inv.color.id, inv.qty])
     return response
 
 
