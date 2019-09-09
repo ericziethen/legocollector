@@ -5,6 +5,13 @@
     <p>{{ userpart }}</p>
   </div>
 
+  <div class="inventory-list">
+    <h1>Inventory List</h1>
+    {% for inventory in inventory_list %}
+      <p>{{ inventory }}</p>
+    {% endfor %}
+  </div>
+
   <a href="{% url 'userpart_edit' userpart.pk %}">+ Edit User Part</a>
   <p><a href="{% url 'userpart_delete' userpart.pk %}">+ Delete User Part</a></p>
 

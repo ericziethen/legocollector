@@ -1,9 +1,6 @@
 from django.contrib import admin
 
-from .models import Color
-from .models import Part
-from .models import PartCategory
-from .models import UserPart
+from .models import Color, Part, PartCategory, UserPart, Inventory
 
 
 class ColorAdmin(admin.ModelAdmin):
@@ -28,8 +25,13 @@ class UserPartAdmin(admin.ModelAdmin):
     list_display = ('user', 'part', 'color', 'qty')
 
 
+class InventoryAdmin(admin.ModelAdmin):
+    list_display = ('userpart', 'color', 'qty')
+
+
 # Register your models here.
 admin.site.register(Color, ColorAdmin)
 admin.site.register(Part, PartAdmin)
 admin.site.register(PartCategory)
 admin.site.register(UserPart, UserPartAdmin)
+admin.site.register(Inventory, InventoryAdmin)

@@ -12,7 +12,7 @@ from django.urls import reverse_lazy
 from django.views.generic import DeleteView, DetailView, ListView, UpdateView
 from django.views.generic.edit import CreateView
 
-from .models import Color, Part, UserPart
+from .models import Color, Part, UserPart, Inventory
 
 
 @login_required
@@ -157,9 +157,42 @@ class UserPartDetailView(LoginRequiredMixin, DetailView):  # pylint: disable=too
     template_name = 'inventory/userpart_detail.html'
 
 
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super().get_context_data(**kwargs)
+        context['inventory_list'] = Inventory.objects.filter(userpart=self.object.id)
+        return context
+
+
+
+
+
+
 class UserPartListView(LoginRequiredMixin, ListView):  # pylint: disable=too-many-ancestors
     model = UserPart
 
     def get_queryset(self):
         """Only for current user."""
         return UserPart.objects.filter(user=self.request.user)
+
+
+
+'''
+Here's what I wanted in a Class Based View (CBV), my explanation of my issue was not very clear.
+
+def get_context_data(self, **kwargs):
+get_context_data is a way to get data that is not normally apart of a generic view. Vehicle is already provided to the View because its the model defined for it, if you wanted to pass objects from a different model you would need to provide a new context, get_context_data is the way to do this. statusUpdate is a model with a foreign key to Vehicle. Full example below.
+
+class VehicleDetail(generic.DetailView):
+    model = Vehicle
+    template_name = 'fleetdb/detail.html'
+
+
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super(VehicleDetail, self).get_context_data(**kwargs)
+        context['updates'] = statusUpdate.objects.filter(vehicle_id=1).order_by('-dateTime')[:5]
+        return context
+'''
+
+
