@@ -4,6 +4,8 @@
     <h1>Edit Inventory - {{ inventory }}</h1>
     <form action="" method="post">{% csrf_token %}
       {{ form.as_p }}
-    <input type="submit" value="Update" />
-</form>
+      <input type="submit" value="Update" />
+    </form>
+    <br/>
+    <a href="{% url 'inventory_detail' inventory.userpart.pk inventory.pk %}" class="btn btn-outline-dark" role="button">Cancel</a>
 {% endblock content %}
