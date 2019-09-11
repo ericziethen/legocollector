@@ -1,91 +1,38 @@
-{# HTML5 declaration #}
-<!--Based on: https://ultimatedjango.com/learn-django/lessons/create-the-project-base-template/-->
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
-    {# Make modifiable head elements #}
-    <head>
-        <title>{% block title %}Home {% endblock title %} | Legocollector</title>
-        {% block head_favicon %}
-            <link rel="icon" type="image/png"
-                  href="{{ STATIC_URL }}images/favicon.ico">
-        {% endblock head_favicon %}
-        {% block head_meta %}
-            {% block head_meta_charset %}
-                <meta http-equiv="Content-Type"
-                      content="text/html; charset=utf-8" />
-            {% endblock head_meta_charset %}
-            {% block head_meta_contentlanguage %}
-                <meta http-equiv="Content-Language" value="en-US" />
-            {% endblock head_meta_contentlanguage %}
-            {% block head_meta_viewport %}
-                <meta name="viewport"
-                      content="width=device-width, initial-scale=1.0">
-            {% endblock head_meta_viewport %}
-        {% endblock head_meta %}
-        {% block head_css %}
-            {% block head_css_site %}
-                <link href="{{ STATIC_URL }}css/bootstrap.min.css"
-                      rel="stylesheet" media="screen">
-                <link href="{{ STATIC_URL }}css/app.css"
-                      rel="stylesheet" media="screen">
-            {% endblock head_css_site %}
-            {% block head_css_section %}{% endblock head_css_section %}
-            {% block head_css_page %}{% endblock head_css_page %}
-        {% endblock head_css %}
-    </head>
-    <body>
-        {# Navigation Menu #}
-        <header>
-            {% if messages %}
-            <ul class="messages">
-                {% for message in messages %}
-                <h1 style="color:Tomato;" {% if message.tags %} class="{{ message.tags }}"{% endif %}><b>{{ message }}</b></h1>
-                {% endfor %}
-            </ul>
-            {% endif %}
-            <div class="navbar navbar-default navbar-static-top 
-            {% block nav-style %}{% endblock %}">
-                <div class="container p-none">
-                    <div class="navbar-header">
-                    </div>
-                    <div class="collapse navbar-collapse">
-                        <ul class="nav navbar-nav navbar-right">
-                            {% if user.is_authenticated %}
-                            <div class="nav-left">
-                                <p>Welcome, {{ user.get_username }}.</p>
-                                <h1><a href="{% url 'home' %}">Home</a></h1>
-                            </div>
-                            <div class="nav-right">
-                                <h1><a href="{% url 'logout' %}">Logout</a></h1>
-                            </div>
-                            {% else %}
-                            <div class="nav-left">
-                                <li><a href="/accounts/login">Login</a></li>
-                            </div>
-                            {% endif %}
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </header>
-        {# The Document Body #}
-        <div id="site-wrapper">
-            {% block content %}
-                if you see this, something is wrong!
-            {% endblock content %}
-        </div>
-        {# The Footer #}
-        <div class="footer">
-        </div>
-    </body>
-    {# Set of blocks that can be used to display JavaScript files #}
-    {% block footer_javascript %}
-        {% block footer_javascript_site %}
-            <script src="{{ STATIC_URL }}js/jquery.min.js"></script>
-            <script src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
-            <script src="{{ STATIC_URL }}js/app.js"></script>
-        {% endblock footer_javascript_site %}
-        {% block footer_javascript_section %}{% endblock footer_javascript_section %}
-        {% block footer_javascript_page %}{% endblock footer_javascript_page %}
-    {% endblock footer_javascript %}
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %}Legocollector{% endblock title %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet" href="{% static 'css/base.css' %}">
+</head>
+<body>
+  <header>
+    <!-- Fixed navbar -->
+    <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4\
+     mb-3 bg-white border-bottom shadow-sm">
+      <h1 class="navbar-brand my-0 mr-md-auto font-weight-normal">Lego Collector</h1>
+      <nav class="my-1 my-md-0 mr-md-2">
+        {% if user.is_authenticated %}
+          <p>Welcome, {{ user.get_username }}.</p>
+          <a class="p-2 text-dark" href="{% url 'home' %}">Home</a>
+          <a class="p-2 text-dark" href="{% url 'logout' %}">Log Out</a>
+        {% else %}
+          <a class="p-2 text-dark" href="{% url 'login' %}">Log In</a>
+        {% endif %}
+      </nav>
+    </div>
+  </header>
+  <div class="container">
+    {% block content %}
+    {% endblock content %}
+  </div>
+  <!-- JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</body>
 </html>

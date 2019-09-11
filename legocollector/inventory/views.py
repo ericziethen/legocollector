@@ -107,7 +107,7 @@ class UserPartUpdateForm(ModelForm):
 
         if form_part != self.part:
             if UserPart.objects.filter(user=self.user, part=form_part).exists():
-                raise ValidationError('You already have this Userpart in your list.')
+                raise ValidationError('You already have this part in your list.')
 
         return cleaned_data
 
@@ -122,7 +122,7 @@ class UserPartCreateView(LoginRequiredMixin, CreateView):  # pylint: disable=too
         try:
             return super().form_valid(form)
         except ValidationError:
-            form.add_error(None, 'You already have tthis Part in your list')
+            form.add_error(None, 'You already have this Part in your list')
             return super().form_invalid(form)
 
     def get_form_kwargs(self):
@@ -156,6 +156,10 @@ class UserPartDeleteView(LoginRequiredMixin, DeleteView):  # pylint: disable=too
     pk_url_kwarg = 'pk1'
     template_name = 'inventory/userpart_delete.html'
     success_url = reverse_lazy('home')
+
+    def get_cancel_url(self):
+        userpart = self.kwargs['pk1']
+        return reverse_lazy('userpart_detail', kwargs={'pk1': userpart})
 
 
 class UserPartDetailView(LoginRequiredMixin, DetailView):  # pylint: disable=too-many-ancestors
@@ -213,17 +217,45 @@ class InventoryCreateView(LoginRequiredMixin, CreateView):  # pylint: disable=to
             form.add_error(None, 'You already have a Part in this color in your list')
             return super().form_invalid(form)
 
+    def get_cancel_url(self):
+        userpart = self.kwargs['pk1']
+        return reverse_lazy('userpart_detail', kwargs={'pk1': userpart})
+
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs.update({'userpart': self.kwargs.get('pk1', '')})
         return kwargs
 
 
+class InventoryUpdateForm(ModelForm):
+    class Meta:
+        model = Inventory
+        fields = ('color', 'qty')
+
+    def __init__(self, *args, **kwargs):
+        self.userpart = kwargs.pop('userpart')
+        self.color = kwargs.pop('color')
+        super().__init__(*args, **kwargs)
+
+    def clean(self):
+        # Get the cleaned data
+        cleaned_data = super().clean()
+
+        # Find the unique_together fields
+        form_color = cleaned_data.get('color')
+
+        if form_color != self.color:
+            if Inventory.objects.filter(userpart=self.userpart, color=form_color).exists():
+                raise ValidationError('You already have this Inventory Color in your list.')
+
+        return cleaned_data
+
+
 class InventoryUpdateView(LoginRequiredMixin, UpdateView):  # pylint: disable=too-many-ancestors
     model = Inventory
     pk_url_kwarg = 'pk2'
     template_name = 'inventory/inventory_update.html'
-    form_class = InventoryCreateForm
+    form_class = InventoryUpdateForm
 
     def form_valid(self, form):
         form.instance.userpart = UserPart.objects.get(id=self.kwargs.get('pk1', ''))
@@ -235,7 +267,7 @@ class InventoryUpdateView(LoginRequiredMixin, UpdateView):  # pylint: disable=to
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs.update({'userpart': self.kwargs.get('pk1', '')})
+        kwargs.update({'userpart': self.kwargs.get('pk1', ''), 'color': self.object.color})
         return kwargs
 
 
@@ -244,6 +276,11 @@ class InventoryDeleteView(LoginRequiredMixin, DeleteView):  # pylint: disable=to
     pk_url_kwarg = 'pk2'
     template_name = 'inventory/inventory_delete.html'
     success_url = reverse_lazy('home')
+
+    def get_cancel_url(self):
+        userpart = self.kwargs['pk1']
+        inventory = self.kwargs['pk2']
+        return reverse_lazy('inventory_detail', kwargs={'pk1': userpart, 'pk2': inventory})
 
 
 class InventoryDetailView(LoginRequiredMixin, DetailView):  # pylint: disable=too-many-ancestors

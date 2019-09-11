@@ -122,7 +122,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-LOGIN_REDIRECT_URL = '/inventory/userparts'
+LOGIN_REDIRECT_URL = 'home'
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
