@@ -5,6 +5,6 @@
     <form action="" method="post">{% csrf_token %}
       {{ form.as_p }}
       <input type="submit" value="Update" />
+      <input type="button" class="button_active" value="Cancel" onclick="location.href='{{ view.get_success_url }}';" />
     </form>
-    <br/><a href="{% url 'inventory_detail' inventory.userpart.pk inventory.pk %}" class="btn btn-outline-dark" role="button">Cancel</a>
 {% endblock content %}

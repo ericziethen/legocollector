@@ -5,7 +5,6 @@
     <form action="" method="post">{% csrf_token %}
       {{ form.as_p }}
       <input type="submit" value="Save" />
-      <input type="submit" formnovalidate name="cancel" value="Cancel" class="btn btn-secondary"/>
-
+      <input type="button" class="button_active" value="Cancel" onclick="location.href='{% url "home" %}';" />
     </form>
 {% endblock content %}

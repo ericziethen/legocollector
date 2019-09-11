@@ -157,6 +157,10 @@ class UserPartDeleteView(LoginRequiredMixin, DeleteView):  # pylint: disable=too
     template_name = 'inventory/userpart_delete.html'
     success_url = reverse_lazy('home')
 
+    def get_cancel_url(self):
+        userpart = self.kwargs['pk1']
+        return reverse_lazy('userpart_detail', kwargs={'pk1': userpart})
+
 
 class UserPartDetailView(LoginRequiredMixin, DetailView):  # pylint: disable=too-many-ancestors
     model = UserPart
@@ -213,7 +217,7 @@ class InventoryCreateView(LoginRequiredMixin, CreateView):  # pylint: disable=to
             form.add_error(None, 'You already have a Part in this color in your list')
             return super().form_invalid(form)
 
-    def get_success_url(self):
+    def get_cancel_url(self):
         userpart = self.kwargs['pk1']
         return reverse_lazy('userpart_detail', kwargs={'pk1': userpart})
 
@@ -226,7 +230,7 @@ class InventoryCreateView(LoginRequiredMixin, CreateView):  # pylint: disable=to
 class InventoryUpdateForm(ModelForm):
     class Meta:
         model = Inventory
-        fields = ('userpart', 'color', 'qty')
+        fields = ('color', 'qty')
 
     def __init__(self, *args, **kwargs):
         self.userpart = kwargs.pop('userpart')
@@ -272,6 +276,11 @@ class InventoryDeleteView(LoginRequiredMixin, DeleteView):  # pylint: disable=to
     pk_url_kwarg = 'pk2'
     template_name = 'inventory/inventory_delete.html'
     success_url = reverse_lazy('home')
+
+    def get_cancel_url(self):
+        userpart = self.kwargs['pk1']
+        inventory = self.kwargs['pk2']
+        return reverse_lazy('inventory_detail', kwargs={'pk1': userpart, 'pk2': inventory})
 
 
 class InventoryDetailView(LoginRequiredMixin, DetailView):  # pylint: disable=too-many-ancestors
