@@ -213,6 +213,10 @@ class InventoryCreateView(LoginRequiredMixin, CreateView):  # pylint: disable=to
             form.add_error(None, 'You already have a Part in this color in your list')
             return super().form_invalid(form)
 
+    def get_success_url(self):
+        userpart = self.kwargs['pk1']
+        return reverse_lazy('userpart_detail', kwargs={'pk1': userpart})
+
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs.update({'userpart': self.kwargs.get('pk1', '')})

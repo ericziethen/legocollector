@@ -6,6 +6,5 @@
       {{ form.as_p }}
       <input type="submit" value="Update" />
     </form>
-    <br/>
-    <a href="{% url 'inventory_detail' inventory.userpart.pk inventory.pk %}" class="btn btn-outline-dark" role="button">Cancel</a>
+    <br/><a href="{% url 'inventory_detail' inventory.userpart.pk inventory.pk %}" class="btn btn-outline-dark" role="button">Cancel</a>
 {% endblock content %}
