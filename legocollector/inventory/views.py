@@ -165,6 +165,7 @@ class UserPartDeleteView(LoginRequiredMixin, DeleteView):  # pylint: disable=too
         userpart = self.kwargs['pk1']
         return reverse_lazy('userpart_detail', kwargs={'pk1': userpart})
 
+
 class UserPartDetailView(LoginRequiredMixin, SingleTableMixin, DetailView):  # pylint: disable=too-many-ancestors
     model = UserPart
     pk_url_kwarg = 'pk1'
@@ -180,10 +181,10 @@ class UserPartDetailView(LoginRequiredMixin, SingleTableMixin, DetailView):  # p
 class UserPartTable(Table):
     part = LinkColumn(None, accessor='part.name', args=[Accessor('pk1')])
 
-    class Meta:
+    class Meta:  # pylint: disable=too-few-public-methods
         model = UserPart
-        fields = ['part', 'part.part_num', 'part.category_id', 'part.width', 'part.height', 'part.length', 'part.stud_count',
-                  'part.multi_height', 'part.uneven_dimensions']
+        fields = ['part', 'part.part_num', 'part.category_id', 'part.width', 'part.height', 'part.length',
+                  'part.stud_count', 'part.multi_height', 'part.uneven_dimensions']
 
 
 class UserPartListView(LoginRequiredMixin, SingleTableMixin, ListView):  # pylint: disable=too-many-ancestors
