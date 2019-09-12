@@ -12,6 +12,9 @@ from django.urls import reverse_lazy
 from django.views.generic import DeleteView, DetailView, ListView, UpdateView
 from django.views.generic.edit import CreateView
 
+from django_tables2 import Table
+from django_tables2.views import SingleTableMixin
+
 from .models import Color, Part, UserPart, Inventory
 
 
@@ -174,8 +177,16 @@ class UserPartDetailView(LoginRequiredMixin, DetailView):  # pylint: disable=too
         return context
 
 
-class UserPartListView(LoginRequiredMixin, ListView):  # pylint: disable=too-many-ancestors
+class UserPartTable(Table):
+    class Meta:
+        model = UserPart
+        fields = ['part.name', 'part.part_num', 'part.category_id', 'part.width', 'part.height', 'part.length', 'part.stud_count',
+                  'part.multi_height', 'part.uneven_dimensions']
+
+
+class UserPartListView(LoginRequiredMixin, SingleTableMixin, ListView):  # pylint: disable=too-many-ancestors
     model = UserPart
+    table_class = UserPartTable
 
     def get_queryset(self):
         """Only for current user."""
