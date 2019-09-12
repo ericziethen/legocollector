@@ -165,8 +165,7 @@ class UserPartDeleteView(LoginRequiredMixin, DeleteView):  # pylint: disable=too
         userpart = self.kwargs['pk1']
         return reverse_lazy('userpart_detail', kwargs={'pk1': userpart})
 
-
-class UserPartDetailView(LoginRequiredMixin, DetailView):  # pylint: disable=too-many-ancestors
+class UserPartDetailView(LoginRequiredMixin, SingleTableMixin, DetailView):  # pylint: disable=too-many-ancestors
     model = UserPart
     pk_url_kwarg = 'pk1'
     template_name = 'inventory/userpart_detail.html'
