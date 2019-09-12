@@ -4,7 +4,8 @@ from django.views.generic import RedirectView
 from .import views
 
 urlpatterns = [
-    path('userparts/', views.UserPartListView.as_view(), name='home'),
+    path('', RedirectView.as_view(pattern_name='userpart_list', permanent=False), name='home'),
+    path('userparts/', views.UserPartListView.as_view(), name='userpart_list'),
     path('userparts/import/', views.import_userparts, name='userpart_import'),
     path('userparts/export/', views.export_userparts, name='userpart_export'),
     path('userparts/new/', views.UserPartCreateView.as_view(), name='userpart_create'),
@@ -17,5 +18,4 @@ urlpatterns = [
     path('userparts/<int:pk1>/inventory/<int:pk2>/delete/', views.InventoryDeleteView.as_view(), name='inventory_delete'),  # pylint:disable=line-too-long
     path('userparts/<int:pk1>/inventory/<int:pk2>/edit/', views.InventoryUpdateView.as_view(), name='inventory_edit'),
     path('userparts/<int:pk1>/inventory/<int:pk2>/', views.InventoryDetailView.as_view(), name='inventory_detail'),
-    path('', RedirectView.as_view(pattern_name='home', permanent=False)),
 ]
