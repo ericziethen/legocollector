@@ -12,6 +12,10 @@ from django.urls import reverse_lazy
 from django.views.generic import DeleteView, DetailView, ListView, UpdateView
 from django.views.generic.edit import CreateView
 
+from django_tables2 import LinkColumn, Table
+from django_tables2.utils import Accessor
+from django_tables2.views import SingleTableMixin
+
 from .models import Color, Part, UserPart, Inventory
 
 
@@ -22,12 +26,12 @@ def import_userparts(request):
     csv_file = request.FILES['csv_file']
     if not csv_file.name.lower().endswith('.csv'):
         messages.error(request, 'File does not have a csv extension')
-        return HttpResponseRedirect(reverse('home'))
+        return HttpResponseRedirect(reverse('userpart_list'))
 
     # if file is too large, return
     if csv_file.multiple_chunks():
         messages.error(request, 'Uploaded file is too big (%.2f MB).' % (csv_file.size / (1000 * 1000),))
-        return HttpResponseRedirect(reverse('home'))
+        return HttpResponseRedirect(reverse('userpart_list'))
 
     csv_file.seek(0)
     reader = csv.DictReader(io.StringIO(csv_file.read().decode('utf-8')))
@@ -47,7 +51,7 @@ def import_userparts(request):
             userpart.save()
 
     messages.info(request, F'"{csv_file}" processed ok')
-    return HttpResponseRedirect(reverse('home'))
+    return HttpResponseRedirect(reverse('userpart_list'))
 
 
 @login_required
@@ -162,7 +166,7 @@ class UserPartDeleteView(LoginRequiredMixin, DeleteView):  # pylint: disable=too
         return reverse_lazy('userpart_detail', kwargs={'pk1': userpart})
 
 
-class UserPartDetailView(LoginRequiredMixin, DetailView):  # pylint: disable=too-many-ancestors
+class UserPartDetailView(LoginRequiredMixin, SingleTableMixin, DetailView):  # pylint: disable=too-many-ancestors
     model = UserPart
     pk_url_kwarg = 'pk1'
     template_name = 'inventory/userpart_detail.html'
@@ -174,8 +178,18 @@ class UserPartDetailView(LoginRequiredMixin, DetailView):  # pylint: disable=too
         return context
 
 
-class UserPartListView(LoginRequiredMixin, ListView):  # pylint: disable=too-many-ancestors
+class UserPartTable(Table):
+    part = LinkColumn(None, accessor='part.name', args=[Accessor('pk1')])
+
+    class Meta:  # pylint: disable=too-few-public-methods
+        model = UserPart
+        fields = ['part', 'part.part_num', 'part.category_id', 'part.width', 'part.height', 'part.length',
+                  'part.stud_count', 'part.multi_height', 'part.uneven_dimensions']
+
+
+class UserPartListView(LoginRequiredMixin, SingleTableMixin, ListView):  # pylint: disable=too-many-ancestors
     model = UserPart
+    table_class = UserPartTable
 
     def get_queryset(self):
         """Only for current user."""
@@ -275,7 +289,7 @@ class InventoryDeleteView(LoginRequiredMixin, DeleteView):  # pylint: disable=to
     model = Inventory
     pk_url_kwarg = 'pk2'
     template_name = 'inventory/inventory_delete.html'
-    success_url = reverse_lazy('home')
+    success_url = reverse_lazy('userpart_list')
 
     def get_cancel_url(self):
         userpart = self.kwargs['pk1']

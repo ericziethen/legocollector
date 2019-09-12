@@ -1,13 +1,10 @@
 {% extends "base.html" %}
 
+{% load render_table from django_tables2 %}
+
 {% block content %}
     <h2>User Parts</h2>
-    <ul>
-        {% for userpart in object_list %}
-            <h2><a href="{% url 'userpart_detail' userpart.pk %}">{{ userpart }}</a></h2>
-        {% endfor %}
-    </ul>
-    <footer>
+    <header>
         <div class="nav-left">
             <h1><a href="{% url 'userpart_create' %}">+ New Userpart</h1>
             <h1><a href="{% url 'userpart_export' %}">+ Export Userparts</h1>
@@ -31,6 +28,9 @@
                 </div>
             </form>
         </div>
-    </footer>
+    </header>
+    <body>
+        {% render_table table 'django_tables2/bootstrap.html' %}
+    </body>
 {% endblock %}
 
