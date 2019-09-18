@@ -9,9 +9,12 @@ from django.forms import ModelForm, ValidationError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import reverse
 from django.urls import reverse_lazy
-from django.views.generic import DeleteView, DetailView, ListView, UpdateView
+from django.views.generic import DeleteView, DetailView, FormView, ListView, UpdateView
 from django.views.generic.edit import CreateView
 
+import django_filters as filters
+
+import django_tables2 as tables
 from django_tables2 import LinkColumn, Table
 from django_tables2.utils import Accessor
 from django_tables2.views import SingleTableMixin
@@ -216,6 +219,72 @@ class InventoryCreateForm(ModelForm):
             raise ValidationError('You already have this Userpart in your list.')
 
         return cleaned_data
+
+
+
+
+
+
+
+class PartFilter(filters.FilterSet):
+    part_num_contains = filters.CharFilter(field_name='part_num', lookup_expr='icontains')
+
+    class Meta:
+        model = Part
+        fields = ('part_num', 'name', 'width', 'height', 'length', 'stud_count', 'multi_height',
+                  'uneven_dimensions', 'category_id')
+
+
+class PartTable(Table):
+    SELECT_BOX_TEMPLATE = """<input id="label" maxlength="16" name="label" type="text"/>"""
+    label = tables.TemplateColumn(SELECT_BOX_TEMPLATE)
+    box_selection = tables.CheckBoxColumn(accessor='pk')
+
+    class Meta:
+        model = Part
+        fields = ('part_num', 'name', 'width', 'height', 'length', 'stud_count', 'multi_height',
+                  'uneven_dimensions', 'category_id')
+        attrs = {"class": "table-striped table-bordered"}
+        empty_text = "No Parts Found"
+
+
+class FilteredPartListUserPartCreateView(SingleTableMixin, FormView, filters.views.FilterView):
+    model = Part
+    template_name = 'inventory/userpart_from_part_create.html'
+    table_class = PartTable
+    filterset_class = PartFilter
+    success_url = reverse('userpart_list')
+
+
+    !!! COMPLETE ME BASED ON PLAYGROUND
+    1.) Create Templates
+    2.) Create Urls
+    3.) Make Functions nice and secure !!!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 class InventoryCreateView(LoginRequiredMixin, CreateView):  # pylint: disable=too-many-ancestors
