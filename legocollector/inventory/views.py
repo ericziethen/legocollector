@@ -13,6 +13,7 @@ from django.views.generic import DeleteView, DetailView, FormView, ListView, Upd
 from django.views.generic.edit import CreateView
 
 import django_filters as filters
+from django_filters.views import FilterView
 
 import django_tables2 as tables
 from django_tables2 import LinkColumn, Table
@@ -236,9 +237,7 @@ class PartFilter(filters.FilterSet):
 
 
 class PartTable(Table):
-    SELECT_BOX_TEMPLATE = """<input id="label" maxlength="16" name="label" type="text"/>"""
-    label = tables.TemplateColumn(SELECT_BOX_TEMPLATE)
-    box_selection = tables.CheckBoxColumn(accessor='pk')
+    box_selection = tables.CheckBoxColumn(accessor='id')
 
     class Meta:
         model = Part
@@ -248,37 +247,45 @@ class PartTable(Table):
         empty_text = "No Parts Found"
 
 
-class FilteredPartListUserPartCreateView(SingleTableMixin, FormView, filters.views.FilterView):
+class FilteredPartListUserPartCreateView(LoginRequiredMixin, SingleTableMixin, FilterView):
     model = Part
     template_name = 'inventory/userpart_from_part_create.html'
     table_class = PartTable
     filterset_class = PartFilter
-    success_url = reverse('userpart_list')
 
+    def post(self, request, **kwargs):
+        try:
+            part_id = self.get_part_id_from_post()
+        except ValidationError as error:
+            messages.error(self.request, str(error))
+            return HttpResponseRedirect(reverse_lazy('userpart_create'))
+        else:
+            userpart = UserPart.objects.create(
+                user=self.request.user,
+                part_id=part_id)
+            userpart.save()
+            return HttpResponseRedirect(reverse_lazy('userpart_detail', kwargs={'pk1': userpart.pk}))
+            #return reverse_lazy('userpart_detail', kwargs={'pk1': userpart.pk})
+            #return reverse_lazy('userpart_list')
 
-    !!! COMPLETE ME BASED ON PLAYGROUND
-    1.) Create Templates
-    2.) Create Urls
-    3.) Make Functions nice and secure !!!
+    # Don't use form_valid as name since we are not inheriting a Form
+    # Not the best name but ok for now
+    def get_part_id_from_post(self):
+        # Get all Selected Checkboxes
+        ids = self.request.POST.getlist('box_selection')
 
+        # Ensure exactly 1 Checkbox has been selected
+        ids_count = len(ids)
+        if ids_count != 1:
+            raise ValidationError(F'Select exactly 1 part to add, you selected {ids_count}')
 
+        part_id = ids[0]
+        # Ensure we don't already have this part
+        if UserPart.objects.filter(user=self.request.user, id=part_id).exists():
+            raise ValidationError(F'You already have this part in your list')
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        # Return the Primary Key
+        return part_id
 
 
 
