@@ -64,5 +64,4 @@ class Inventory(models.Model):
         return F'{self.qty} x {self.color} ({self.userpart})'
 
     def get_absolute_url(self):
-        # TODO - Should this be userpart_pk???
-        return reverse('inventory_detail', kwargs={'pk1': self.userpart_id, 'pk2': self.pk})
+        return reverse('inventory_detail', kwargs={'pk1': self.pk, 'pk2': self.pk})

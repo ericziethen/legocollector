@@ -217,14 +217,9 @@ class InventoryCreateForm(ModelForm):
         color = cleaned_data.get('color')
 
         if Inventory.objects.filter(userpart=self.userpart, color=color).exists():
-            raise ValidationError('You already have this Userpart in your list.')
+            raise ValidationError(F'You already have {color} in your list.')
 
         return cleaned_data
-
-
-
-
-
 
 
 class PartFilter(filters.FilterSet):
@@ -265,8 +260,6 @@ class FilteredPartListUserPartCreateView(LoginRequiredMixin, SingleTableMixin, F
                 part_id=part_id)
             userpart.save()
             return HttpResponseRedirect(reverse_lazy('userpart_detail', kwargs={'pk1': userpart.pk}))
-            #return reverse_lazy('userpart_detail', kwargs={'pk1': userpart.pk})
-            #return reverse_lazy('userpart_list')
 
     # Don't use form_valid as name since we are not inheriting a Form
     # Not the best name but ok for now
@@ -281,17 +274,11 @@ class FilteredPartListUserPartCreateView(LoginRequiredMixin, SingleTableMixin, F
 
         part_id = ids[0]
         # Ensure we don't already have this part
-        if UserPart.objects.filter(user=self.request.user, id=part_id).exists():
+        if UserPart.objects.filter(user=self.request.user, part=part_id).exists():
             raise ValidationError(F'You already have this part in your list')
 
         # Return the Primary Key
         return part_id
-
-
-
-
-
-
 
 
 class InventoryCreateView(LoginRequiredMixin, CreateView):  # pylint: disable=too-many-ancestors
@@ -308,6 +295,9 @@ class InventoryCreateView(LoginRequiredMixin, CreateView):  # pylint: disable=to
             return super().form_invalid(form)
 
     def get_cancel_url(self):
+        return self.get_success_url()
+
+    def get_success_url(self):
         userpart = self.kwargs['pk1']
         return reverse_lazy('userpart_detail', kwargs={'pk1': userpart})
 

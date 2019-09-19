@@ -16,7 +16,7 @@ class PartAdmin(admin.ModelAdmin):
         ('Attributes', {'fields': ['stud_count', 'multi_height', 'uneven_dimensions']}),
     ]
     list_display = ('part_num', 'name', 'category_id', 'width', 'height', 'length',
-                    'stud_count', 'multi_height', 'uneven_dimensions')
+                    'stud_count', 'multi_height', 'uneven_dimensions', 'id')
     list_filter = ['width', 'height', 'length', 'stud_count', 'multi_height', 'uneven_dimensions']
     search_fields = ['part_num', 'name', 'category_id__name']
 
