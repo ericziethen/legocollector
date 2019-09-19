@@ -9,7 +9,7 @@ from django.forms import ModelForm, ValidationError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import reverse
 from django.urls import reverse_lazy
-from django.views.generic import DeleteView, DetailView, FormView, ListView, UpdateView
+from django.views.generic import DeleteView, DetailView, ListView, UpdateView
 from django.views.generic.edit import CreateView
 
 import django_filters as filters
@@ -120,25 +120,6 @@ class UserPartUpdateForm(ModelForm):
         return cleaned_data
 
 
-class UserPartCreateView(LoginRequiredMixin, CreateView):  # pylint: disable=too-many-ancestors
-    model = UserPart
-    template_name = 'inventory/userpart_create.html'
-    form_class = UserPartCreateForm
-
-    def form_valid(self, form):
-        form.instance.user = self.request.user
-        try:
-            return super().form_valid(form)
-        except ValidationError:
-            form.add_error(None, 'You already have this Part in your list')
-            return super().form_invalid(form)
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs.update({'user': self.request.user})
-        return kwargs
-
-
 class UserPartUpdateView(LoginRequiredMixin, UpdateView):  # pylint: disable=too-many-ancestors
     model = UserPart
     pk_url_kwarg = 'pk1'
@@ -234,7 +215,7 @@ class PartFilter(filters.FilterSet):
 class PartTable(Table):
     box_selection = tables.CheckBoxColumn(accessor='id')
 
-    class Meta:
+    class Meta:  # pylint: disable=too-few-public-methods
         model = Part
         fields = ('part_num', 'name', 'width', 'height', 'length', 'stud_count', 'multi_height',
                   'uneven_dimensions', 'category_id')
@@ -242,7 +223,7 @@ class PartTable(Table):
         empty_text = "No Parts Found"
 
 
-class FilteredPartListUserPartCreateView(LoginRequiredMixin, SingleTableMixin, FilterView):
+class FilteredPartListUserPartCreateView(LoginRequiredMixin, SingleTableMixin, FilterView):   # pylint: disable=too-many-ancestors
     model = Part
     template_name = 'inventory/userpart_from_part_create.html'
     table_class = PartTable
