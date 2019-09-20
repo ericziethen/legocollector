@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% load bootstrap4 %}
+
+{% block content %}
+    <h1>Select the Part to add</h1>
+
+    {% load render_table from django_tables2 %}
+
+    {% if filter %}
+        <form action="" method="get" class="form form-inline">
+            {% bootstrap_form filter.form layout='inline' %}
+            {% bootstrap_button 'filter' %}
+        </form>
+    {% endif %}
+
+    <form action="" method="post" value="save_data">{% csrf_token %}
+      {% render_table table 'django_tables2/bootstrap.html' %}
+      <input type="submit" value="Add Part" />
+  </form>
+
+    <p><a href="{% url 'userpart_list' %}">+ Part List</a></p>
+
+{% endblock content %}

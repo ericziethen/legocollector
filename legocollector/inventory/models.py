@@ -23,7 +23,7 @@ class Color(models.Model):
 
 
 class Part(models.Model):
-    part_num = models.CharField(primary_key=True, max_length=20)
+    part_num = models.CharField(unique=True, max_length=20)
     name = models.CharField(max_length=250)
     width = models.PositiveIntegerField(blank=True, null=True)
     height = models.PositiveIntegerField(blank=True, null=True)
@@ -40,7 +40,7 @@ class Part(models.Model):
 
 class UserPart(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_parts')
-    part = models.ForeignKey(Part, on_delete=models.CASCADE, db_column='part_num_id', related_name='user_parts')
+    part = models.ForeignKey(Part, on_delete=models.CASCADE, related_name='user_parts')
 
     class Meta:
         unique_together = (('user', 'part'),)
@@ -64,4 +64,4 @@ class Inventory(models.Model):
         return F'{self.qty} x {self.color} ({self.userpart})'
 
     def get_absolute_url(self):
-        return reverse('inventory_detail', kwargs={'pk1': self.userpart_id, 'pk2': self.pk})
+        return reverse('inventory_detail', kwargs={'pk1': self.pk, 'pk2': self.pk})

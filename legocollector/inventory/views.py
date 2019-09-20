@@ -12,6 +12,10 @@ from django.urls import reverse_lazy
 from django.views.generic import DeleteView, DetailView, ListView, UpdateView
 from django.views.generic.edit import CreateView
 
+import django_filters as filters
+from django_filters.views import FilterView
+
+import django_tables2 as tables
 from django_tables2 import LinkColumn, Table
 from django_tables2.utils import Accessor
 from django_tables2.views import SingleTableMixin
@@ -116,25 +120,6 @@ class UserPartUpdateForm(ModelForm):
         return cleaned_data
 
 
-class UserPartCreateView(LoginRequiredMixin, CreateView):  # pylint: disable=too-many-ancestors
-    model = UserPart
-    template_name = 'inventory/userpart_create.html'
-    form_class = UserPartCreateForm
-
-    def form_valid(self, form):
-        form.instance.user = self.request.user
-        try:
-            return super().form_valid(form)
-        except ValidationError:
-            form.add_error(None, 'You already have this Part in your list')
-            return super().form_invalid(form)
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs.update({'user': self.request.user})
-        return kwargs
-
-
 class UserPartUpdateView(LoginRequiredMixin, UpdateView):  # pylint: disable=too-many-ancestors
     model = UserPart
     pk_url_kwarg = 'pk1'
@@ -213,9 +198,68 @@ class InventoryCreateForm(ModelForm):
         color = cleaned_data.get('color')
 
         if Inventory.objects.filter(userpart=self.userpart, color=color).exists():
-            raise ValidationError('You already have this Userpart in your list.')
+            raise ValidationError(F'You already have {color} in your list.')
 
         return cleaned_data
+
+
+class PartFilter(filters.FilterSet):
+    part_num_contains = filters.CharFilter(field_name='part_num', lookup_expr='icontains')
+
+    class Meta:
+        model = Part
+        fields = ('part_num', 'name', 'width', 'height', 'length', 'stud_count', 'multi_height',
+                  'uneven_dimensions', 'category_id')
+
+
+class PartTable(Table):
+    box_selection = tables.CheckBoxColumn(accessor='id')
+
+    class Meta:  # pylint: disable=too-few-public-methods
+        model = Part
+        fields = ('part_num', 'name', 'width', 'height', 'length', 'stud_count', 'multi_height',
+                  'uneven_dimensions', 'category_id')
+        attrs = {"class": "table-striped table-bordered"}
+        empty_text = "No Parts Found"
+
+
+class FilteredPartListUserPartCreateView(LoginRequiredMixin, SingleTableMixin, FilterView):   # pylint: disable=too-many-ancestors
+    model = Part
+    template_name = 'inventory/userpart_from_part_create.html'
+    table_class = PartTable
+    filterset_class = PartFilter
+
+    def post(self, request, **kwargs):
+        try:
+            part_id = self.get_part_id_from_post()
+        except ValidationError as error:
+            messages.error(self.request, str(error))
+            return HttpResponseRedirect(reverse_lazy('userpart_create'))
+        else:
+            userpart = UserPart.objects.create(
+                user=self.request.user,
+                part_id=part_id)
+            userpart.save()
+            return HttpResponseRedirect(reverse_lazy('userpart_detail', kwargs={'pk1': userpart.pk}))
+
+    # Don't use form_valid as name since we are not inheriting a Form
+    # Not the best name but ok for now
+    def get_part_id_from_post(self):
+        # Get all Selected Checkboxes
+        ids = self.request.POST.getlist('box_selection')
+
+        # Ensure exactly 1 Checkbox has been selected
+        ids_count = len(ids)
+        if ids_count != 1:
+            raise ValidationError(F'Select exactly 1 part to add, you selected {ids_count}')
+
+        part_id = ids[0]
+        # Ensure we don't already have this part
+        if UserPart.objects.filter(user=self.request.user, part=part_id).exists():
+            raise ValidationError(F'You already have this part in your list')
+
+        # Return the Primary Key
+        return part_id
 
 
 class InventoryCreateView(LoginRequiredMixin, CreateView):  # pylint: disable=too-many-ancestors
@@ -232,6 +276,9 @@ class InventoryCreateView(LoginRequiredMixin, CreateView):  # pylint: disable=to
             return super().form_invalid(form)
 
     def get_cancel_url(self):
+        return self.get_success_url()
+
+    def get_success_url(self):
         userpart = self.kwargs['pk1']
         return reverse_lazy('userpart_detail', kwargs={'pk1': userpart})
 
