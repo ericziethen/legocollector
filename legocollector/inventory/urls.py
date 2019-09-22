@@ -11,6 +11,7 @@ urlpatterns = [
     path('userparts/new/', views.FilteredPartListUserPartCreateView.as_view(), name='userpart_create'),
     path('userparts/<int:pk1>/delete/', views.UserPartDeleteView.as_view(), name='userpart_delete'),
     path('userparts/<int:pk1>/edit/', views.UserPartUpdateView.as_view(), name='userpart_edit'),
+    path('userparts/<int:pk1>/colors/', views.UserPartManageColorslView.as_view(), name='userpart_colors'),
     path('userparts/<int:pk1>/', views.UserPartDetailView.as_view(), name='userpart_detail'),
 
     # path('userparts/<int:pk1>/inventory/', views.UserPartInventoryListView.as_view(), name='inventory_list'),

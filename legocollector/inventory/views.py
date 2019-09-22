@@ -348,3 +348,30 @@ class InventoryDetailView(LoginRequiredMixin, DetailView):  # pylint: disable=to
     model = Inventory
     pk_url_kwarg = 'pk2'
     template_name = 'inventory/inventory_detail.html'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class UserPartManageColorslView(LoginRequiredMixin, UpdateView):
+    model = UserPart
+    fields = []
+    template_name = 'inventory/userpart_manage_colors.html'
+    pk_url_kwarg = 'pk1'
+
+
+
+
+
+
