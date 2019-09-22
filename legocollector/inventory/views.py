@@ -364,7 +364,7 @@ UserPartInventoryFormset = inlineformset_factory(
 )
 
 
-class UserPartManageColorslView(LoginRequiredMixin, UpdateView):
+class UserPartManageColorsView(LoginRequiredMixin, UpdateView):
     model = UserPart
     fields = []
     template_name = 'inventory/userpart_manage_colors.html'
