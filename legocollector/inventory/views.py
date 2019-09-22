@@ -5,7 +5,7 @@ from django.db import transaction
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.forms import ModelForm, ValidationError
+from django.forms import ModelForm, ValidationError, inlineformset_factory
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import reverse
 from django.urls import reverse_lazy
@@ -350,18 +350,18 @@ class InventoryDetailView(LoginRequiredMixin, DetailView):  # pylint: disable=to
     template_name = 'inventory/inventory_detail.html'
 
 
+class InventoryForm(ModelForm):
+    class Meta:
+        model = Inventory
+        fields = ['color', 'qty']
+
+    # TODO
+    # Fields and Functions for Verification and Validation
 
 
-
-
-
-
-
-
-
-
-
-
+UserPartInventoryFormset = inlineformset_factory(
+    UserPart, Inventory, form=InventoryForm, extra=2
+)
 
 
 class UserPartManageColorslView(LoginRequiredMixin, UpdateView):
@@ -370,8 +370,28 @@ class UserPartManageColorslView(LoginRequiredMixin, UpdateView):
     template_name = 'inventory/userpart_manage_colors.html'
     pk_url_kwarg = 'pk1'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.POST:
+            context['inventory_list'] = UserPartInventoryFormset(self.request.POST)
+        else:
+            context['inventory_list'] = UserPartInventoryFormset()
+        return context
 
+    def form_valid(self, form):
+        context = self.get_context_data()
+        inventory_formset = context['inventory_list']
 
+        for inventory_form in inventory_formset:
+            if inventory_form.is_valid():
+                inventory = Inventory.objects.create(
+                    userpart=self.object,
+                    color=inventory_form.cleaned_data['color'],
+                    qty=inventory_form.cleaned_data['qty']
+                    )
+                inventory.save()
+            else:
+                pass
 
-
+        return super.form_valid()
 

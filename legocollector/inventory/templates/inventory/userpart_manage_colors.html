@@ -8,9 +8,9 @@
     <form method="post">{% csrf_token %}
         <h2>Colors</h2>
      <table class="table">
-            {{ inventory.management_form }}
+            {{ inventory_list.management_form }}
 
-            {% for form in inventory.forms %}
+            {% for form in inventory_list.forms %}
                 {% if forloop.first %}
                     <thead>
                     <tr>
