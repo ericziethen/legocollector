@@ -5,7 +5,9 @@ from django.db import transaction
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.forms import ModelForm, ValidationError, inlineformset_factory
+from django.forms import ModelForm, ValidationError, modelformset_factory
+from django.forms.formsets import BaseFormSet
+
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import reverse
 from django.urls import reverse_lazy
@@ -359,8 +361,46 @@ class InventoryForm(ModelForm):
     # Fields and Functions for Verification and Validation
 
 
-UserPartInventoryFormset = inlineformset_factory(
-    UserPart, Inventory, form=InventoryForm, extra=2
+# TODO - We need Formset Validation to avoid Duplicate Colors
+# See https://whoisnicoleharris.com/2015/01/06/implementing-django-formsets.html
+
+class BaseInventoryFormset(BaseFormSet):
+    def clean(self):
+        """
+        Adds Validation that no 2 forms have the same color.
+        """
+        print('BaseInventoryFormset.clean() - ENTER')
+
+        color_list = []
+        duplicates = False
+
+        # Don't need to validata if invalid forms are found
+        if any(self.errors):
+            return
+
+        for form in self.forms:
+            # Ignore Forms that are meant for deletion
+            if self.can_delete and self._should_delete_form(form):
+                continue
+
+            color = form.cleaned_data.get('color')
+            if color in color_list:
+                duplicates = True
+            color_list.append(color)
+
+            !!! NOT WORKING YET !!!
+            if duplicates:
+                raise ValidationError(
+                    'Inventories must have unique colors.',
+                    code='duplicate_colors'
+                )
+
+
+        print('BaseInventoryFormset.clean() - EXIT')
+
+
+InventoryFormset = modelformset_factory(
+    Inventory, form=InventoryForm, formset=BaseInventoryFormset, extra=2
 )
 
 
@@ -372,15 +412,20 @@ class UserPartManageColorsView(LoginRequiredMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        initial_data = [{'color': inv.color, 'qty': inv.qty}
+                        for inv in Inventory.objects.filter(userpart=self.object)]
         if self.request.POST:
-            context['inventory_list'] = UserPartInventoryFormset(self.request.POST)
+            context['inventory_list'] = InventoryFormset(self.request.POST, initial=initial_data)
         else:
-            context['inventory_list'] = UserPartInventoryFormset()
+            context['inventory_list'] = InventoryFormset(initial=initial_data)
         return context
 
     def form_valid(self, form):
         context = self.get_context_data()
         inventory_formset = context['inventory_list']
+
+        # Verify the Forms and Formset
+        inventory_formset.full_clean()
 
         for inventory_form in inventory_formset:
             if inventory_form.is_valid():
@@ -395,6 +440,7 @@ class UserPartManageColorsView(LoginRequiredMixin, UpdateView):
                 '''
             else:
                 print("##### FORM INVALID")
+                #print(F"##### FORM INVALID::: {inventory_form}")
                 pass
 
         # TODO - add "static 'formset/jquery.formset.js"
