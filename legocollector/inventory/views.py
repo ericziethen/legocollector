@@ -384,14 +384,20 @@ class UserPartManageColorsView(LoginRequiredMixin, UpdateView):
 
         for inventory_form in inventory_formset:
             if inventory_form.is_valid():
+                print("##### FORM VALID")
+                '''
                 inventory = Inventory.objects.create(
                     userpart=self.object,
                     color=inventory_form.cleaned_data['color'],
                     qty=inventory_form.cleaned_data['qty']
                     )
                 inventory.save()
+                '''
             else:
+                print("##### FORM INVALID")
                 pass
 
-        return super.form_valid()
+        # TODO - add "static 'formset/jquery.formset.js"
+        # Same as in Playground
 
+        return super().form_valid(form)
