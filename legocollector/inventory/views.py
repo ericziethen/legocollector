@@ -437,6 +437,14 @@ class UserPartManageColorsView(LoginRequiredMixin, UpdateView):
             if inventory_form.is_valid():
                 print("##### FORM VALID")
                 '''
+
+                THIS SHOULD BE ENOUGH FOR SAVING FORMS (DELETION MAYBE AS WELL???)
+                infentory_form.save()
+
+                WE SHOULDN"T NEED THIS FOR CREATION OR UPDATE, FORM.save() should do that
+
+                WHAT IF WE SAVE EMPTY FORMS???
+
                 inventory = Inventory.objects.create(
                     userpart=self.object,
                     color=inventory_form.cleaned_data['color'],
