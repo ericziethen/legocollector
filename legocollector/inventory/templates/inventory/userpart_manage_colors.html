@@ -38,6 +38,12 @@
             {% endfor %}
         </table>
 
+        {% if inventory_list.non_form_errors %}
+            {% for error in inventory_list.non_form_errors %}
+                {{ error|escape }}
+            {% endfor %}
+        {% endif %}
+
         <input type="submit" value="Save">
     </form>
 

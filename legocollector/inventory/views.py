@@ -384,12 +384,13 @@ class BaseInventoryFormset(BaseFormSet):
                 continue
 
             color = form.cleaned_data.get('color')
-            if color in color_list:
+            if color and color in color_list:
                 duplicates = True
             color_list.append(color)
 
-            !!! NOT WORKING YET !!!
+            # !!! NOT WORKING YET !!!
             if duplicates:
+                print('Raise Validation Error')
                 raise ValidationError(
                     'Inventories must have unique colors.',
                     code='duplicate_colors'
@@ -427,6 +428,11 @@ class UserPartManageColorsView(LoginRequiredMixin, UpdateView):
         # Verify the Forms and Formset
         inventory_formset.full_clean()
 
+        # Handle Any Errors
+        if any(inventory_formset.errors) or any(inventory_formset.non_form_errors()):
+            return super().form_invalid(form)
+
+
         for inventory_form in inventory_formset:
             if inventory_form.is_valid():
                 print("##### FORM VALID")
@@ -442,7 +448,6 @@ class UserPartManageColorsView(LoginRequiredMixin, UpdateView):
                 print("##### FORM INVALID")
                 #print(F"##### FORM INVALID::: {inventory_form}")
                 pass
-
         # TODO - add "static 'formset/jquery.formset.js"
         # Same as in Playground
 
