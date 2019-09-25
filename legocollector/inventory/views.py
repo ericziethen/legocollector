@@ -357,6 +357,11 @@ class InventoryForm(ModelForm):
         model = Inventory
         fields = ['color', 'qty']
 
+    '''
+    def is_valid(self):
+        return super().is_valid()
+    '''
+
     # TODO
     # Fields and Functions for Verification and Validation
 
@@ -428,14 +433,31 @@ class UserPartManageColorsView(LoginRequiredMixin, UpdateView):
         # Verify the Forms and Formset
         inventory_formset.full_clean()
 
+        '''
         # Handle Any Errors
         if any(inventory_formset.errors) or any(inventory_formset.non_form_errors()):
             return super().form_invalid(form)
-
+        '''
 
         for inventory_form in inventory_formset:
+            #print('FORM:::', str(inventory_form))
             if inventory_form.is_valid():
                 print("##### FORM VALID")
+
+                print(F'HAS COLOR::: {"color" in inventory_form.cleaned_data}')
+
+                !!! STILL NOT SAVING
+                m = inventory_form.save()
+                m.userpart = self.object
+                m.save()
+                
+                #inventory_form.save()
+                '''
+                model_instance = inventory_form.save(commit=False)
+                model_instance.post = self.object
+                model_instance.save()
+                '''
+
                 '''
 
                 THIS SHOULD BE ENOUGH FOR SAVING FORMS (DELETION MAYBE AS WELL???)
