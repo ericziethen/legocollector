@@ -439,6 +439,14 @@ class UserPartManageColorsView(LoginRequiredMixin, UpdateView):
             return super().form_invalid(form)
         '''
 
+
+        #for deleted_forms in inventory_formset.deleted_forms:
+        #print(F'FORMSET: {inventory_formset}')
+        #print(F'DELETED FORMS: {inventory_formset.deleted_forms}')
+        #print(F'DELETED OBJECTS: {inventory_formset.deleted_ojects}')
+
+        print(F'self.object: {self.object}')
+
         for inventory_form in inventory_formset:
             #print('FORM:::', str(inventory_form))
             if inventory_form.is_valid():
@@ -446,11 +454,16 @@ class UserPartManageColorsView(LoginRequiredMixin, UpdateView):
 
                 print(F'HAS COLOR::: {"color" in inventory_form.cleaned_data}')
 
+                inventory = inventory_form.save(commit=False)
+                inventory.userpart = self.object
+                inventory.save()
+                '''
                 !!! STILL NOT SAVING
                 m = inventory_form.save()
                 m.userpart = self.object
                 m.save()
-                
+                '''
+
                 #inventory_form.save()
                 '''
                 model_instance = inventory_form.save(commit=False)
