@@ -5,7 +5,7 @@ from django.db import transaction
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.forms import ModelForm, ValidationError, modelformset_factory
+from django.forms import BaseModelFormSet, ModelForm, ValidationError, modelformset_factory
 from django.forms.formsets import BaseFormSet
 
 from django.http import HttpResponse, HttpResponseRedirect
@@ -159,9 +159,11 @@ class UserPartDetailView(LoginRequiredMixin, SingleTableMixin, DetailView):  # p
     template_name = 'inventory/userpart_detail.html'
 
     def get_context_data(self, **kwargs):
+        print('UserPartDetailView.get_context_data() - ENTER')
         # Call the base implementation first to get a context
         context = super().get_context_data(**kwargs)
         context['inventory_list'] = Inventory.objects.filter(userpart=self.object.id)
+        print('UserPartDetailView.get_context_data() - EXIT')
         return context
 
 
@@ -359,16 +361,16 @@ class InventoryForm(ModelForm):
 
     def __init__(self, *args, userpart, **kwargs):
         
-        print('InventoryForm.__init__()')
+        #print('InventoryForm.__init__()')
         '''
         print(F'  args: {args}')
         print(F'  kwargs: {kwargs}')
         print(F'  Userpart: {kwargs.get("pk1")}')
         '''
         self.userpart = userpart
-        print(F'  Userpart init: {userpart}')
+        #print(F'  Userpart init: {userpart}')
         #print(F'  Userpart: {self.userpart}')
-        print(F'  Type Userpart: {type(self.userpart)}')
+        #print(F'  Type Userpart: {type(self.userpart)}')
         #kwargs.update({'userpart': self.kwargs.get('pk1', '')})
         super().__init__(*args, **kwargs)
     '''
@@ -383,7 +385,18 @@ class InventoryForm(ModelForm):
 # TODO - We need Formset Validation to avoid Duplicate Colors
 # See https://whoisnicoleharris.com/2015/01/06/implementing-django-formsets.html
 
-class BaseInventoryFormset(BaseFormSet):
+#class BaseInventoryFormset(BaseFormSet):
+class BaseInventoryFormset(BaseModelFormSet):
+
+    def __init__(self, *args, **kwargs):
+        print('BaseInventoryFormset.__init__() - ENTER')
+        super().__init__(*args, **kwargs)
+
+        print(F'kwargs::: {kwargs}')
+        #create filtering here whatever that suits you needs
+        self.queryset = Inventory.objects.filter(userpart=kwargs.get('userpart'))
+        print('BaseInventoryFormset.__init__() - EXIT')
+
     def clean(self):
         """
         Adds Validation that no 2 forms have the same color.
@@ -417,7 +430,6 @@ class BaseInventoryFormset(BaseFormSet):
         print('BaseInventoryFormset.clean() - EXIT')
 
 
-
 InventoryFormset = modelformset_factory(
     Inventory, form=InventoryForm, formset=BaseInventoryFormset, extra=2
 )
@@ -430,13 +442,20 @@ class UserPartManageColorsView(LoginRequiredMixin, UpdateView):
     pk_url_kwarg = 'pk1'
 
     def get_context_data(self, **kwargs):
+        print('UserPartManageColorsView.get_context_data() - ENTER')
         context = super().get_context_data(**kwargs)
         initial_data = [{'color': inv.color, 'qty': inv.qty}
                         for inv in Inventory.objects.filter(userpart=self.object)]
+        print(F'INITIAL DATA: {initial_data}')
+        if 'inventory_list' in context:
+            print(F'inventory_list: {context["inventory_list"]}')
+
         if self.request.POST:
             context['inventory_list'] = InventoryFormset(self.request.POST, initial=initial_data, form_kwargs={'userpart': self.object})
         else:
             context['inventory_list'] = InventoryFormset(initial=initial_data, form_kwargs={'userpart': self.object})
+        #print(F'inventory_list set:::  {context["inventory_list"]}')
+        print('UserPartManageColorsView.get_context_data() - EXIT')
         return context
 
     def form_valid(self, form):
@@ -458,6 +477,16 @@ class UserPartManageColorsView(LoginRequiredMixin, UpdateView):
         #print(F'DELETED FORMS: {inventory_formset.deleted_forms}')
         #print(F'DELETED OBJECTS: {inventory_formset.deleted_ojects}')
 
+        if inventory_formset.is_valid():
+            print(F'FORMSET: VALID')
+            instances = inventory_formset.save(commit=False)
+            for instance in instances:
+                # do something with instance
+                instance.userpart = self.object
+                instance.save()
+        else:
+            print(F'FORMSET: INVALID')
+
         for inventory_form in inventory_formset:
             #print('FORM:::', str(inventory_form))
             if inventory_form.is_valid():
@@ -465,7 +494,8 @@ class UserPartManageColorsView(LoginRequiredMixin, UpdateView):
                 print(F'HAS USERPART::: {"userpart" in inventory_form.cleaned_data}')
                 # Valid Form might be empty Forms, so check if it has all the data we need
 
-                !!! STILL NOT UPDATING
+                '''
+                !!! STILL NOT UPDATING - Move saving to formset.save() !!!
 
                 if (('color' in inventory_form.cleaned_data) and
                     ('userpart' in inventory_form.cleaned_data) and
@@ -473,6 +503,7 @@ class UserPartManageColorsView(LoginRequiredMixin, UpdateView):
                     inventory = inventory_form.save(commit=False)
                     inventory.userpart = self.object
                     inventory.save()
+                '''
 
                 print("##### FORM VALID")
 
