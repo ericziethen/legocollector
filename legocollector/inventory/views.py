@@ -524,6 +524,8 @@ class UserPartManageColorsView(LoginRequiredMixin, UpdateView):
                     #inventory = inventory_form.save(commit=False)
                     #inventory.userpart = self.object
                     #inventory.color = color
+
+                    # There are some issues with unique_together and form.save, so look up the the object directly
                     inventory, _ = Inventory.objects.get_or_create(
                         userpart=self.object,
                         color=color
