@@ -381,6 +381,16 @@ class InventoryForm(ModelForm):
     # TODO
     # Fields and Functions for Verification and Validation
 
+    def save(self, commit=True):
+        print('InventoryForm.save() - ENTER')
+        instance = super().save(commit=False)
+        if commit:
+            print('InventoryForm.save() - commit')
+            instance.save()
+        print('InventoryForm.save() - EXIT')
+        return instance
+
+
 
 # TODO - We need Formset Validation to avoid Duplicate Colors
 # See https://whoisnicoleharris.com/2015/01/06/implementing-django-formsets.html
@@ -477,33 +487,52 @@ class UserPartManageColorsView(LoginRequiredMixin, UpdateView):
         #print(F'DELETED FORMS: {inventory_formset.deleted_forms}')
         #print(F'DELETED OBJECTS: {inventory_formset.deleted_ojects}')
 
+        '''
         if inventory_formset.is_valid():
             print(F'FORMSET: VALID')
             instances = inventory_formset.save(commit=False)
             for instance in instances:
                 # do something with instance
+                #print(F'Instance::: {instance}')
+                #print(F'    Instance.color::: {instance.color}')
+                #print(F'    Instance.userpart::: {instance.userpart}')
+                #print(F'    Instance.qty::: {instance.qty}')
                 instance.userpart = self.object
+                print(F'    New Instance.userpart::: {instance.userpart}')
+                print(F'    Instance Type::: {type(instance)}')
                 instance.save()
         else:
             print(F'FORMSET: INVALID')
+        '''
 
         for inventory_form in inventory_formset:
             #print('FORM:::', str(inventory_form))
             if inventory_form.is_valid():
 
                 print(F'HAS USERPART::: {"userpart" in inventory_form.cleaned_data}')
+                print(F'HAS id::: {"id" in inventory_form.cleaned_data}')
                 # Valid Form might be empty Forms, so check if it has all the data we need
 
                 '''
                 !!! STILL NOT UPDATING - Move saving to formset.save() !!!
+                '''
 
                 if (('color' in inventory_form.cleaned_data) and
-                    ('userpart' in inventory_form.cleaned_data) and
                     ('qty' in inventory_form.cleaned_data)):
-                    inventory = inventory_form.save(commit=False)
-                    inventory.userpart = self.object
+                    color = inventory_form.cleaned_data['color']
+                    qty = inventory_form.cleaned_data['qty']
+                    #inventory = inventory_form.save(commit=False)
+                    #inventory.userpart = self.object
+                    #inventory.color = color
+                    inventory, _ = Inventory.objects.get_or_create(
+                        userpart=self.object,
+                        color=color
+                    )
+                    inventory.qty = qty
                     inventory.save()
-                '''
+
+                else:
+                    print('DATA NOT FOUND')
 
                 print("##### FORM VALID")
 
