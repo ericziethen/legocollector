@@ -28,6 +28,7 @@ from .tables import (
     SingleTableMixin
 )
 
+
 @login_required
 def import_userparts(request):
     # Implementation example at https://www.pythoncircle.com/post/30/how-to-upload-and-process-the-csv-file-in-django/
@@ -122,7 +123,6 @@ class UserPartDetailView(LoginRequiredMixin, SingleTableMixin, DetailView):  # p
         context['inventory_list'] = Inventory.objects.filter(userpart=self.object.id)
         # print('UserPartDetailView.get_context_data() - EXIT')
         return context
-
 
 
 class UserPartListView(LoginRequiredMixin, SingleTableMixin, ListView):  # pylint: disable=too-many-ancestors

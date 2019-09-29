@@ -1,5 +1,5 @@
 from django_filters import CharFilter, FilterSet
-from django_filters.views import FilterView
+from django_filters.views import FilterView  # (for import in views.py)  pylint: disable=unused-import
 
 from .models import Part
 
