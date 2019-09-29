@@ -156,11 +156,11 @@ class UserPartDetailView(LoginRequiredMixin, SingleTableMixin, DetailView):  # p
     template_name = 'inventory/userpart_detail.html'
 
     def get_context_data(self, **kwargs):
-        print('UserPartDetailView.get_context_data() - ENTER')
+        # print('UserPartDetailView.get_context_data() - ENTER')
         # Call the base implementation first to get a context
         context = super().get_context_data(**kwargs)
         context['inventory_list'] = Inventory.objects.filter(userpart=self.object.id)
-        print('UserPartDetailView.get_context_data() - EXIT')
+        # print('UserPartDetailView.get_context_data() - EXIT')
         return context
 
 
