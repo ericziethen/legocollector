@@ -12,10 +12,10 @@ from django.urls import reverse_lazy
 from django.views.generic import DeleteView, DetailView, ListView, UpdateView
 from django.views.generic.edit import CreateView
 
-from django_filters.views import FilterView
-from django_tables2.views import SingleTableMixin
-
-from .filters import PartFilter
+from .filters import (
+    PartFilter,
+    FilterView
+)
 from .forms import (
     UserPartUpdateForm,
     InventoryCreateForm, InventoryUpdateForm,
@@ -23,7 +23,10 @@ from .forms import (
     ValidationError
 )
 from .models import Color, Part, UserPart, Inventory
-from .tables import PartTable, UserPartTable
+from .tables import (
+    PartTable, UserPartTable,
+    SingleTableMixin
+)
 
 @login_required
 def import_userparts(request):

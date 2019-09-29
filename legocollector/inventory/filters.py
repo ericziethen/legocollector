@@ -1,4 +1,5 @@
 from django_filters import CharFilter, FilterSet
+from django_filters.views import FilterView
 
 from .models import Part
 
