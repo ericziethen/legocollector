@@ -1,4 +1,3 @@
-
 from django_tables2 import CheckBoxColumn, LinkColumn, Table
 from django_tables2.utils import Accessor
 
