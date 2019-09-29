@@ -5,7 +5,9 @@ from django.db import transaction
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.forms import ModelForm, ValidationError
+from django.forms import ModelForm, ValidationError, modelformset_factory
+from django.forms.formsets import BaseFormSet
+
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import reverse
 from django.urls import reverse_lazy
@@ -157,9 +159,11 @@ class UserPartDetailView(LoginRequiredMixin, SingleTableMixin, DetailView):  # p
     template_name = 'inventory/userpart_detail.html'
 
     def get_context_data(self, **kwargs):
+        print('UserPartDetailView.get_context_data() - ENTER')
         # Call the base implementation first to get a context
         context = super().get_context_data(**kwargs)
         context['inventory_list'] = Inventory.objects.filter(userpart=self.object.id)
+        print('UserPartDetailView.get_context_data() - EXIT')
         return context
 
 
@@ -348,3 +352,134 @@ class InventoryDetailView(LoginRequiredMixin, DetailView):  # pylint: disable=to
     model = Inventory
     pk_url_kwarg = 'pk2'
     template_name = 'inventory/inventory_detail.html'
+
+
+class InventoryForm(ModelForm):
+    class Meta:
+        model = Inventory
+        fields = ['color', 'qty']
+
+    def __init__(self, *args, userpart, **kwargs):
+
+        # print('InventoryForm.__init__()')
+        self.userpart = userpart
+        # print(F'  Userpart init: {userpart}')
+        # print(F'  Userpart: {self.userpart}')
+        # print(F'  Type Userpart: {type(self.userpart)}')
+        # kwargs.update({'userpart': self.kwargs.get('pk1', '')})
+        super().__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        # print('InventoryForm.save() - ENTER')
+        instance = super().save(commit=False)
+        if commit:
+            # print('InventoryForm.save() - commit')
+            instance.save()
+        # print('InventoryForm.save() - EXIT')
+        return instance
+
+
+class BaseInventoryFormset(BaseFormSet):
+
+    def __init__(self, *args, **kwargs):
+        # print('BaseInventoryFormset.__init__() - ENTER')
+        super().__init__(*args, **kwargs)
+
+        # print(F'kwargs::: {kwargs}')
+        # create filtering here whatever that suits you needs
+        # print('userpart', kwargs.get('userpart'))
+        # print('userpart2', kwargs.get('form_kwargs').get('userpart'))
+
+        userpart = kwargs.get('form_kwargs').get('userpart')
+
+        self.queryset = Inventory.objects.filter(userpart=userpart)
+        # print('queryset', self.queryset)
+        # print('BaseInventoryFormset.__init__() - EXIT')
+
+    '''  # pylint: disable=pointless-string-statement
+    NOT WORKING YET - Probably need to check for duplicate colors
+    # See https://whoisnicoleharris.com/2015/01/06/implementing-django-formsets.html
+    def clean(self):
+        """
+        Adds Validation that no 2 forms have the same color.
+        """
+        print('BaseInventoryFormset.clean() - ENTER')
+
+        color_list = []
+        duplicates = False
+
+        # Don't need to validata if invalid forms are found
+        print(F'  Check Errors::: {self.errors}')
+        if any(self.errors):
+            print( '  -> Errors Found')
+            return
+
+        for form in self.forms:
+            print(F' Check Form:')
+            # Ignore Forms that are meant for deletion
+            if self.can_delete and self._should_delete_form(form):
+                print('  Ignoring form Meant for Deletion')
+                continue
+
+            color = form.cleaned_data.get('color')
+            if color and color in color_list:
+                duplicates = True
+            color_list.append(color)
+            print(F'  Color: "{color}" - List: {color_list}')
+
+            # !!! NOT WORKING YET !!!
+            if duplicates:
+                print('Raise Validation Error')
+                raise ValidationError(
+                    'Inventories must have unique colors.',
+                    code='duplicate_colors'
+                )
+        print('BaseInventoryFormset.clean() - EXIT')
+    '''  # pylint: disable=pointless-string-statement
+
+
+InventoryFormset = modelformset_factory(
+    Inventory, form=InventoryForm, formset=BaseInventoryFormset, extra=2
+)
+
+
+class UserPartManageColorsView(LoginRequiredMixin, UpdateView):  # pylint: disable=too-many-ancestors
+    model = UserPart
+    fields = []
+    template_name = 'inventory/userpart_manage_colors.html'
+    pk_url_kwarg = 'pk1'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        initial_data = [{'color': inv.color, 'qty': inv.qty}
+                        for inv in Inventory.objects.filter(userpart=self.object)]
+        if self.request.POST:
+            context['inventory_list'] = InventoryFormset(self.request.POST, initial=initial_data,
+                                                         form_kwargs={'userpart': self.object})
+        else:
+            context['inventory_list'] = InventoryFormset(initial=initial_data, form_kwargs={'userpart': self.object})
+        return context
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        inventory_formset = context['inventory_list']
+
+        # Verify the Forms and Formset - Maybe needed??? Maybe not
+        # inventory_formset.full_clean()
+
+        for inventory_form in inventory_formset:
+            if inventory_form.is_valid():
+                # Check that it's not a blank unchanged form
+                if (('color' in inventory_form.cleaned_data) and ('qty' in inventory_form.cleaned_data)):
+                    color = inventory_form.cleaned_data['color']
+                    qty = inventory_form.cleaned_data['qty']
+
+                    inventory, _ = Inventory.objects.get_or_create(userpart=self.object,
+                                                                   color=color)
+                    inventory.qty = qty
+                    inventory.save()
+            else:
+                form.add_error(None, 'Invalid Form')
+                return super().form_invalid(form)
+
+        return super().form_valid(form)
