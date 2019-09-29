@@ -14,11 +14,11 @@ from django.urls import reverse_lazy
 from django.views.generic import DeleteView, DetailView, ListView, UpdateView
 from django.views.generic.edit import CreateView
 
-import django_filters as filters
 from django_filters.views import FilterView
 
 from django_tables2.views import SingleTableMixin
 
+from .filters import PartFilter
 from .models import Color, Part, UserPart, Inventory
 from .tables import PartTable, UserPartTable
 
@@ -194,18 +194,6 @@ class InventoryCreateForm(ModelForm):
             raise ValidationError(F'You already have {color} in your list.')
 
         return cleaned_data
-
-
-class PartFilter(filters.FilterSet):
-    part_num_contains = filters.CharFilter(field_name='part_num', lookup_expr='icontains')
-
-    class Meta:
-        model = Part
-        fields = ('part_num', 'name', 'width', 'height', 'length', 'stud_count', 'multi_height',
-                  'uneven_dimensions', 'category_id')
-
-
-
 
 
 class FilteredPartListUserPartCreateView(LoginRequiredMixin, SingleTableMixin, FilterView):   # pylint: disable=too-many-ancestors
