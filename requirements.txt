@@ -38,7 +38,8 @@ pydocstyle==4.0.1
 Pygments==2.4.2
 pyinstrument==3.0.3
 pyinstrument-cext==0.2.2
-pylint==2.4.1
+#Use older version of Pylint because 3.4.1 breaks pylint-django
+pylint==2.3.1
 pylint-django==2.0.11
 pylint-plugin-utils==0.5
 pyparsing==2.4.2
