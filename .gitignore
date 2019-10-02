@@ -1,6 +1,7 @@
 # Personal space
 .eric
 *.dia~
+legocollector/static/PartColours/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
