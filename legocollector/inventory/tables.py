@@ -10,7 +10,7 @@ from .models import Part, UserPart
 class PartImage(Column):
     def render(self, value):
         pic_url = static(F'inventory/PartColours/parts_-1/{value}.png')
-        return format_html(F'<img src="{pic_url}" alt="Part Picture" height="50" width="50">')
+        return format_html(F'<img src="{pic_url}" alt="Part Picture" class="part_thumbnail" height="50" width="50">')
 
 
 class PartTable(Table):
