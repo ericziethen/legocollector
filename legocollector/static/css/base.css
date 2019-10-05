@@ -3,8 +3,9 @@
     position:relative;
     top:25px;
     left:35px;
-    width:500px;
-    height:500px;
+    right:100px;
+    width:150px;
+    height:150px;
     display:block;
     z-index:999;
 }

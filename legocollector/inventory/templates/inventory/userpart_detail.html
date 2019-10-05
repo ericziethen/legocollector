@@ -24,6 +24,6 @@
   <p><a href="{% url 'userpart_delete' userpart.pk %}">+ Delete User Part</a></p>
   <p><a href="{% url 'userpart_list' %}">+ Userparts</a></p>
 
-  <img src ="{% static 'inventory/PartColours/parts_-1/' %}{{ userpart.part.part_num }}.png" alt="Part Picture" height="500" width="500">
+  <img src ="{% static 'inventory/PartColours/parts_-1/' %}{{ userpart.part.part_num }}.png" class="zoom"alt="Part Picture" height="500" width="500">
 
 {% endblock content %}
