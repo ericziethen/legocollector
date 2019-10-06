@@ -6,15 +6,12 @@ from django_tables2.views import SingleTableMixin  # (for import in views.py)  p
 
 from .models import Part, UserPart
 
-from django.contrib.staticfiles import finders
-from django.core.files.storage import default_storage
+
 class PartImage(Column):
     def render(self, value):
         pic_url = static(F'inventory/PartColours/parts_-1/{value}.png')
 
         img_class = 'part_image_zoom'
-        # TODO - Set if file doesn't exist
-        # img_class = 'part_image_not_found'
 
         return format_html(F'<img src="{pic_url}" alt="Part Picture" class="{img_class}" height="50" width="50">')
 
