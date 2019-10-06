@@ -1,0 +1,11 @@
+/* simple hover as per https://success.figure-eight.com/hc/en-us/articles/202703155-CSS-Guide-to-Enlarge-Images-on-Hover */
+.part_thumbnail:hover {
+    position:relative;
+    top:25px;
+    left:35px;
+    right:100px;
+    width:150px;
+    height:150px;
+    display:block;
+    z-index:999;
+}
