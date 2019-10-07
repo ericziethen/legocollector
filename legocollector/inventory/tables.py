@@ -1,3 +1,5 @@
+
+from django.contrib.staticfiles import finders
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.utils.html import format_html
 from django_tables2 import CheckBoxColumn, Column, LinkColumn, Table
@@ -9,9 +11,14 @@ from .models import Part, UserPart
 
 class PartImage(Column):
     def render(self, value):
-        pic_url = static(F'inventory/PartColours/parts_-1/{value}.png')
+        rel_pic_path = F'inventory/PartColours/parts_-1/{value}.png'
+        pic_url = static(rel_pic_path)
+        abs_pic_path = finders.find(rel_pic_path)
 
-        img_class = 'part_image_zoom'
+        if abs_pic_path:
+            img_class = 'part_image_zoom'
+        else:
+            img_class = 'image_not_found'
 
         return format_html(F'<img src="{pic_url}" alt="Part Picture" class="{img_class}" height="50" width="50">')
 
