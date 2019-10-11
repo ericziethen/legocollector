@@ -9,11 +9,11 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import reverse
 from django.urls import reverse_lazy
-from django.views.generic import DeleteView, DetailView, ListView, UpdateView
+from django.views.generic import DeleteView, DetailView, UpdateView
 from django.views.generic.edit import CreateView
 
 from .filters import (
-    PartFilter,
+    UserPartFilter, PartFilter,
     FilterView
 )
 from .forms import (
@@ -125,9 +125,11 @@ class UserPartDetailView(LoginRequiredMixin, SingleTableMixin, DetailView):  # p
         return context
 
 
-class UserPartListView(LoginRequiredMixin, SingleTableMixin, ListView):  # pylint: disable=too-many-ancestors
+class UserPartListView(LoginRequiredMixin, SingleTableMixin, FilterView):  # pylint: disable=too-many-ancestors
     model = UserPart
+    template_name = 'inventory/userpart_list.html'
     table_class = UserPartTable
+    filterset_class = UserPartFilter
 
     def get_queryset(self):
         """Only for current user."""
