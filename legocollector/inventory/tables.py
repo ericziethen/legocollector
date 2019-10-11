@@ -42,3 +42,5 @@ class UserPartTable(Table):
         model = UserPart
         fields = ['part', 'part.part_num', 'part.category_id', 'part.width', 'part.height', 'part.length',
                   'part.stud_count', 'part.multi_height', 'part.uneven_dimensions']
+        attrs = {"class": "table-striped table-bordered"}
+        empty_text = "No Parts Found"
