@@ -260,20 +260,27 @@ class UserPartManageColorsView(LoginRequiredMixin, UpdateView):  # pylint: disab
         context = self.get_context_data()
         inventory_formset = context['inventory_list']
 
-        # Verify the Forms and Formset - Maybe needed??? Maybe not
-        # inventory_formset.full_clean()
+        # First delete all forms to be deleted in case a different form adds the deleted color
+        # Otherwise we might add a 2nd form before deletion which will fail
+        for deleted_form in inventory_formset.deleted_forms:
+            if 'color' in deleted_form.cleaned_data:
+                color = deleted_form.cleaned_data['color']
+                inventory = Inventory.objects.filter(userpart=self.object, color=color)
+                inventory.delete()
 
         for inventory_form in inventory_formset:
             if inventory_form.is_valid():
                 # Check that it's not a blank unchanged form
-                if (('color' in inventory_form.cleaned_data) and ('qty' in inventory_form.cleaned_data)):
-                    color = inventory_form.cleaned_data['color']
-                    qty = inventory_form.cleaned_data['qty']
+                if inventory_form not in inventory_formset.deleted_forms:
+                    if (('color' in inventory_form.cleaned_data) and ('qty' in inventory_form.cleaned_data)):
+                        color = inventory_form.cleaned_data['color']
+                        qty = inventory_form.cleaned_data['qty']
 
-                    inventory, _ = Inventory.objects.get_or_create(userpart=self.object,
-                                                                   color=color)
-                    inventory.qty = qty
-                    inventory.save()
+                        inventory, _ = Inventory.objects.get_or_create(
+                            userpart=self.object, color=color)
+                        inventory.qty = qty
+                        print(F'CREATE INV: {inventory}')
+                        inventory.save()
             else:
                 form.add_error(None, 'Invalid Form')
                 return super().form_invalid(form)

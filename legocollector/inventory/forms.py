@@ -159,5 +159,6 @@ class BaseInventoryFormset(BaseFormSet):
 
 
 InventoryFormset = modelformset_factory(
-    Inventory, form=InventoryForm, formset=BaseInventoryFormset, extra=2
+    Inventory, form=InventoryForm, formset=BaseInventoryFormset, extra=2,
+    can_delete=True
 )
