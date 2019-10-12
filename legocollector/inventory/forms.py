@@ -116,46 +116,34 @@ class BaseInventoryFormset(BaseFormSet):
         # print('queryset', self.queryset)
         # print('BaseInventoryFormset.__init__() - EXIT')
 
-    '''  # pylint: disable=pointless-string-statement
-    NOT WORKING YET - Probably need to check for duplicate colors
     # See https://whoisnicoleharris.com/2015/01/06/implementing-django-formsets.html
     def clean(self):
         """
         Adds Validation that no 2 forms have the same color.
         """
-        print('BaseInventoryFormset.clean() - ENTER')
 
         color_list = []
-        duplicates = False
+        duplicates = []
 
-        # Don't need to validata if invalid forms are found
-        print(F'  Check Errors::: {self.errors}')
+        # Don't need to validate if invalid forms are found
         if any(self.errors):
-            print( '  -> Errors Found')
             return
 
         for form in self.forms:
-            print(F' Check Form:')
             # Ignore Forms that are meant for deletion
-            if self.can_delete and self._should_delete_form(form):
-                print('  Ignoring form Meant for Deletion')
+            if self.can_delete and self._should_delete_form(form):  # pylint: disable=no-member
                 continue
 
             color = form.cleaned_data.get('color')
-            if color and color in color_list:
-                duplicates = True
-            color_list.append(color)
-            print(F'  Color: "{color}" - List: {color_list}')
+            if color:
+                if color.name in color_list:
+                    duplicates.append(color.name)
+                else:
+                    color_list.append(color.name)
 
-            # !!! NOT WORKING YET !!!
-            if duplicates:
-                print('Raise Validation Error')
-                raise ValidationError(
-                    'Inventories must have unique colors.',
-                    code='duplicate_colors'
-                )
-        print('BaseInventoryFormset.clean() - EXIT')
-    '''  # pylint: disable=pointless-string-statement
+        if duplicates:
+            raise ValidationError(F'Diplicate Colors Found: {set(duplicates)}',
+                                  code='duplicate_colors')
 
 
 InventoryFormset = modelformset_factory(

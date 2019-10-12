@@ -6,43 +6,44 @@
 
     <h1>{{ userpart }}</h1>
     <form method="post">{% csrf_token %}
-        <h2>Colors</h2>
-     <table class="table">
-            {{ inventory_list.management_form }}
 
-            {% for form in inventory_list.forms %}
-                {% if forloop.first %}
-                    <thead>
-                    <tr>
-                        {% for field in form.visible_fields %}
-                            <th>{{ field.label|capfirst }}</th>
-                        {% endfor %}
-                    </tr>
-                    </thead>
-                {% endif %}
-                <tr class="{% cycle 'row1' 'row2' %} formset_row">
+    {% if inventory_list.non_form_errors %}
+        {% for error in inventory_list.non_form_errors %}
+            <h1>{{ error|escape }}</h1>
+        {% endfor %}
+    {% endif %}
+
+    <h2>Colors</h2>
+    <table class="table">
+        {{ inventory_list.management_form }}
+
+        {% for form in inventory_list.forms %}
+            {% if forloop.first %}
+                <thead>
+                <tr>
                     {% for field in form.visible_fields %}
-                        <td>
-                            {# Include the hidden fields in the form #}
-                            {% if forloop.first %}
-                                {% for hidden in form.hidden_fields %}
-                                    {{ hidden }}
-                                {% endfor %}
-                            {% endif %}
-                            {{ field.errors.as_ul }}
-                            {{ field }}
-                            {{ form.fieldname.errors|striptags }}
-                        </td>
+                        <th>{{ field.label|capfirst }}</th>
                     {% endfor %}
                 </tr>
-            {% endfor %}
-        </table>
-
-        {% if inventory_list.non_form_errors %}
-            {% for error in inventory_list.non_form_errors %}
-                {{ error|escape }}
-            {% endfor %}
-        {% endif %}
+                </thead>
+            {% endif %}
+            <tr class="{% cycle 'row1' 'row2' %} formset_row">
+                {% for field in form.visible_fields %}
+                    <td>
+                        {# Include the hidden fields in the form #}
+                        {% if forloop.first %}
+                            {% for hidden in form.hidden_fields %}
+                                {{ hidden }}
+                            {% endfor %}
+                        {% endif %}
+                        {{ field.errors.as_ul }}
+                        {{ field }}
+                        {{ form.fieldname.errors|striptags }}
+                    </td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </table>
 
         <input type="submit" value="Save">
     </form>

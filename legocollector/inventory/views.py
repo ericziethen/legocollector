@@ -260,17 +260,30 @@ class UserPartManageColorsView(LoginRequiredMixin, UpdateView):  # pylint: disab
         context = self.get_context_data()
         inventory_formset = context['inventory_list']
 
-        # First delete all forms to be deleted in case a different form adds the deleted color
-        # Otherwise we might add a 2nd form before deletion which will fail
+        # Check for Form Errors
+        for inventory_form in inventory_formset:
+            if not inventory_form.is_valid():
+                form.add_error(None, 'Invalid Form')
+                return super().form_invalid(form)
+
+        # Check for Non-Form errors
+        if inventory_formset.non_form_errors():
+            return super().form_invalid(form)
+
+        # Delete Removed Objects, delete all first to avoid issues with duplicates
         for deleted_form in inventory_formset.deleted_forms:
             if 'color' in deleted_form.cleaned_data:
                 color = deleted_form.cleaned_data['color']
                 inventory = Inventory.objects.filter(userpart=self.object, color=color)
+                # print(F'DELETE INV: {inventory}')
                 inventory.delete()
 
+        # Create new Objects
         for inventory_form in inventory_formset:
             if inventory_form.is_valid():
                 # Check that it's not a blank unchanged form
+                # Don't check fo unchanged or we might delete an object which forms hasn't been changed and
+                # another one with the same color got removed
                 if inventory_form not in inventory_formset.deleted_forms:
                     if (('color' in inventory_form.cleaned_data) and ('qty' in inventory_form.cleaned_data)):
                         color = inventory_form.cleaned_data['color']
@@ -279,10 +292,7 @@ class UserPartManageColorsView(LoginRequiredMixin, UpdateView):  # pylint: disab
                         inventory, _ = Inventory.objects.get_or_create(
                             userpart=self.object, color=color)
                         inventory.qty = qty
-                        print(F'CREATE INV: {inventory}')
+                        # print(F'CREATE INV: {inventory}')
                         inventory.save()
-            else:
-                form.add_error(None, 'Invalid Form')
-                return super().form_invalid(form)
 
         return super().form_valid(form)
