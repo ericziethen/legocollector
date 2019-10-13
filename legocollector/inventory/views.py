@@ -86,9 +86,16 @@ from django.http import JsonResponse
 
 def convert_color_id_to_rgb(request):
     color_id = request.GET.get('color_id', None)
-    # TODO - Get the correct Value from Color
+
+    rgb = ''
+    if color_id:
+        color = Color.objects.filter(id=color_id)
+        if color.exists():
+            print(F'Color Found: {color}')
+            rgb = color[0].rgb
+
     data = {
-        'rbg_val': '0055BF'
+        'rbg_val': rgb
     }
     return JsonResponse(data)
 

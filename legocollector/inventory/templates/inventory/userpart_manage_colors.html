@@ -76,6 +76,7 @@
     <script type="text/javascript">
         //$("#id_form-5-color").on("change", function(row) {
         $("[id$=-color]").on("change", function(row) {
+            console.log("\n\n##########################")
             var color_id = $(this).val()
             //alert($(this).val());
             //console.log('Eric is here');
@@ -83,11 +84,16 @@
             //console.log(row)
             console.log('value: ' + $(this).val());
             console.log("ID:        " + this.id)
+            if (color_id) {
+                console.log("Color ID:  " + color_id)
+            } else {
+                console.log("No Color ID found")
+                //color_id = -99999
+            }
             var target = this.id.replace("-color", "-rgb");
-            document.getElementById(target).value = "GIVE ME THE CORRECT VALUE";
+            //document.getElementById(target).value = "GIVE ME THE CORRECT VALUE";
             //document.getElementById(target).setAttribute("style", "background-color: red;");
             //$(this).setAttribute("style", "background-color: red;");
-
             $.ajax({
                 url: '/ajax/convert_color_id_to_rgb/',
                 data: {
@@ -95,8 +101,21 @@
                 },
                 dataType: 'json',
                 success: function (data) {
-                    console.log("RGB from Code: " + data.rbg_val)
-                    document.getElementById(target).setAttribute("style", "background-color:#" + data.rbg_val + ";")
+                    console.log("Return Data: " + data)
+                    console.log("Return Value: " + data.rbg_val)
+                    console.log("Return Value END:")
+                    if (data.rbg_val) {
+                        console.log("RGB FOUND");
+                        document.getElementById(target).value = data.rbg_val;
+                        document.getElementById(target).setAttribute("style", "background-color:#" + data.rbg_val + ";")
+                    } else {
+                        console.log("RGB NOT FOUND");
+                        document.getElementById(target).removeAttribute("style")
+                        document.getElementById(target).value = null;
+                    }
+                    
+                    //console.log("RGB from Code: " + data.rbg_val)
+                    //console.log('eric::: ' + document.getElementById(target).style)
                 }
             });
 
