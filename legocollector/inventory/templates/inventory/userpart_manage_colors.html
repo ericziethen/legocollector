@@ -37,7 +37,13 @@
                             {% endfor %}
                         {% endif %}
                         {{ field.errors.as_ul }}
-                        {{ field }}
+
+                        {% if field.label == "Rgb" and field.value %}
+                            <!--{{field.value}}-->
+                            <p class="rgb" style="background-color:#{{ field.value }}">{{ field.value }}</p>
+                        {% else %}
+                            {{ field }}
+                        {% endif %}
                         {{ form.fieldname.errors|striptags }}
                     </td>
                 {% endfor %}
@@ -63,8 +69,18 @@
         $('.formset_row').formset({
             addText: 'add Color',
             deleteText: 'remove',
-            prefix: 'inventory_list_set',
-            removed: removed  // Custom Handler WHen Removed is pressed
+            prefix: 'inventory_list_set'
+        });
+    </script>
+
+    <script type="text/javascript">
+        $("#id_form-5-color").on("change", function(row) {
+            console.log('Eric is here');
+            console.log(row);
+            console.log(document.getElementById("id_form-5-color"));
+            // TODO - Maybe can use a filter to get the RGB Value
+            document.getElementById("id_form-5-rgb").value = "My value";
+            document.getElementById("id_form-5-rgb").setAttribute("style", "background-color: red;");
         });
     </script>
 
