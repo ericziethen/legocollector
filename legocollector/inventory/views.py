@@ -80,6 +80,23 @@ def export_userparts(request):
     return response
 
 
+
+
+from django.http import JsonResponse
+
+def convert_color_id_to_rgb(request):
+    color_id = request.GET.get('color_id', None)
+    # TODO - Get the correct Value from Color
+    data = {
+        'rbg_val': '0055BF'
+    }
+    return JsonResponse(data)
+
+
+
+
+
+
 class UserPartUpdateView(LoginRequiredMixin, UpdateView):  # pylint: disable=too-many-ancestors
     model = UserPart
     pk_url_kwarg = 'pk1'

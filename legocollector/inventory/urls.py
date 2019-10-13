@@ -1,3 +1,4 @@
+from django.conf.urls import url
 from django.urls import path
 from django.views.generic import RedirectView
 
@@ -19,4 +20,5 @@ urlpatterns = [
     path('userparts/<int:pk1>/inventory/<int:pk2>/delete/', views.InventoryDeleteView.as_view(), name='inventory_delete'),  # pylint:disable=line-too-long
     path('userparts/<int:pk1>/inventory/<int:pk2>/edit/', views.InventoryUpdateView.as_view(), name='inventory_edit'),
     path('userparts/<int:pk1>/inventory/<int:pk2>/', views.InventoryDetailView.as_view(), name='inventory_detail'),
+    path('ajax/convert_color_id_to_rgb/', views.convert_color_id_to_rgb, name='convert_color_id_to_rgb'),
 ]

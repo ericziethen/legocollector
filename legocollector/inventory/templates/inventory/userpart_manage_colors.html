@@ -74,13 +74,32 @@
     </script>
 
     <script type="text/javascript">
-        $("#id_form-5-color").on("change", function(row) {
-            console.log('Eric is here');
-            console.log(row);
-            console.log(document.getElementById("id_form-5-color"));
-            // TODO - Maybe can use a filter to get the RGB Value
-            document.getElementById("id_form-5-rgb").value = "My value";
-            document.getElementById("id_form-5-rgb").setAttribute("style", "background-color: red;");
+        //$("#id_form-5-color").on("change", function(row) {
+        $("[id$=-color]").on("change", function(row) {
+            var color_id = $(this).val()
+            //alert($(this).val());
+            //console.log('Eric is here');
+            //console.log($(this).currentTarget)
+            //console.log(row)
+            console.log('value: ' + $(this).val());
+            console.log("ID:        " + this.id)
+            var target = this.id.replace("-color", "-rgb");
+            document.getElementById(target).value = "GIVE ME THE CORRECT VALUE";
+            //document.getElementById(target).setAttribute("style", "background-color: red;");
+            //$(this).setAttribute("style", "background-color: red;");
+
+            $.ajax({
+                url: '/ajax/convert_color_id_to_rgb/',
+                data: {
+                'color_id': color_id
+                },
+                dataType: 'json',
+                success: function (data) {
+                    console.log("RGB from Code: " + data.rbg_val)
+                    document.getElementById(target).setAttribute("style", "background-color:#" + data.rbg_val + ";")
+                }
+            });
+
         });
     </script>
 
