@@ -96,8 +96,6 @@ class InventoryForm(ModelForm):
             #print(F'  Color: {color}')
             self.fields['rgb'].initial = color.rgb
 
-
-
         #self.fields['rgb'].initial = 'Eric2'
         #choices = [(ts.pk, ts.name) for hiker in Club.objects.filter(pk=club_pk)]
         #self.fields['hikers'].choices = choices

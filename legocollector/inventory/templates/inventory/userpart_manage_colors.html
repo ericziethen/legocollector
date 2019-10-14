@@ -40,7 +40,7 @@
 
                         {% if field.label == "Rgb" and field.value %}
                             <!--{{field.value}}-->
-                            <p class="rgb" style="background-color:#{{ field.value }}">{{ field.value }}</p>
+                            <p class="rgb" id="id_form-{{forloop.parentloop.counter0}}-rgb" style="background-color:#{{ field.value }}">{{ field.value }}</p>
                         {% else %}
                             {{ field }}
                         {% endif %}
@@ -57,43 +57,20 @@
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <script src="{% static 'formset/jquery.formset.js' %}"></script>
     <script type="text/javascript">
-        function removed(row) {
-            // console.log(row);
-            // var x = $(row);
-            // var y = x['0'].getElementsByTagName('select');
-            // console.log(y.material_select())
-            // x.getElementsByTagName('')
-            // $('select').material_select();
-        }
-
         $('.formset_row').formset({
             addText: 'add Color',
             deleteText: 'remove',
             prefix: 'inventory_list_set'
         });
-    </script>
 
-    <script type="text/javascript">
-        //$("#id_form-5-color").on("change", function(row) {
         $("[id$=-color]").on("change", function(row) {
-            console.log("\n\n##########################")
+            console.log("\n\n################## ON CHANGE ##################")
             var color_id = $(this).val()
-            //alert($(this).val());
-            //console.log('Eric is here');
-            //console.log($(this).currentTarget)
-            //console.log(row)
-            console.log('value: ' + $(this).val());
-            console.log("ID:        " + this.id)
-            if (color_id) {
-                console.log("Color ID:  " + color_id)
-            } else {
-                console.log("No Color ID found")
-                //color_id = -99999
-            }
+            console.log("$(this).val():     " + $(this).val());
+            console.log("this.id:           " + this.id)
+            console.log("this.value         " + this.value)
             var target = this.id.replace("-color", "-rgb");
-            //document.getElementById(target).value = "GIVE ME THE CORRECT VALUE";
-            //document.getElementById(target).setAttribute("style", "background-color: red;");
-            //$(this).setAttribute("style", "background-color: red;");
+            console.log("target.value       " + document.getElementById(target).value)
             $.ajax({
                 url: '/ajax/convert_color_id_to_rgb/',
                 data: {
@@ -105,20 +82,14 @@
                     console.log("Return Value: " + data.rbg_val)
                     console.log("Return Value END:")
                     if (data.rbg_val) {
-                        console.log("RGB FOUND");
                         document.getElementById(target).value = data.rbg_val;
                         document.getElementById(target).setAttribute("style", "background-color:#" + data.rbg_val + ";")
                     } else {
-                        console.log("RGB NOT FOUND");
                         document.getElementById(target).removeAttribute("style")
                         document.getElementById(target).value = null;
                     }
-                    
-                    //console.log("RGB from Code: " + data.rbg_val)
-                    //console.log('eric::: ' + document.getElementById(target).style)
                 }
             });
-
         });
     </script>
 
