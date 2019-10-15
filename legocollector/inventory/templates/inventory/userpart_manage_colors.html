@@ -64,13 +64,25 @@
         });
 
         $("[id$=-color]").on("change", function(row) {
-            console.log("\n\n################## ON CHANGE ##################")
             var color_id = $(this).val()
-            console.log("$(this).val():     " + $(this).val());
-            console.log("this.id:           " + this.id)
-            console.log("this.value         " + this.value)
-            var target = this.id.replace("-color", "-rgb");
-            console.log("target.value       " + document.getElementById(target).value)
+            setRgbField(color_id, getRgbFieldFromChoiceField(this.id));
+        });
+
+        $(document).ready(function(){
+            $("[id$=-color]").each(function(){
+                var color_id = $(this).val()
+                if ($(this).val()) {
+                    setRgbField(color_id, getRgbFieldFromChoiceField(this.id));
+                }
+            });
+        });
+
+        function getRgbFieldFromChoiceField(choice_field) {
+            var rgb_field = choice_field.replace("-color", "-rgb");
+            return rgb_field
+        }
+
+        function setRgbField(color_id, target) {
             $.ajax({
                 url: '/ajax/convert_color_id_to_rgb/',
                 data: {
@@ -78,19 +90,17 @@
                 },
                 dataType: 'json',
                 success: function (data) {
-                    console.log("Return Data: " + data)
-                    console.log("Return Value: " + data.rbg_val)
-                    console.log("Return Value END:")
                     if (data.rbg_val) {
                         document.getElementById(target).value = data.rbg_val;
-                        document.getElementById(target).setAttribute("style", "background-color:#" + data.rbg_val + ";")
+                        document.getElementById(target).setAttribute("style", "background-color:#" + data.rbg_val + ";");
                     } else {
-                        document.getElementById(target).removeAttribute("style")
+                        document.getElementById(target).removeAttribute("style");
                         document.getElementById(target).value = null;
                     }
                 }
             });
-        });
+        }
+
     </script>
 
     <input type="button" class="button_active" value="Cancel" onclick="location.href='{% url "userpart_detail" userpart.pk %}';" />

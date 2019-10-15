@@ -75,7 +75,7 @@ class InventoryUpdateForm(ModelForm):
 
 
 class InventoryForm(ModelForm):
-    rgb = CharField(disabled=False, required=False)
+    rgb = CharField(disabled=True, required=False)
 
     class Meta:
         model = Inventory
@@ -84,25 +84,6 @@ class InventoryForm(ModelForm):
     def __init__(self, *args, userpart, **kwargs):
         super().__init__(*args, **kwargs)
         self.userpart = userpart
-
-        #print(F'args: {args}, kwargs: {kwargs}')
-
-        color = None
-        if 'initial' in kwargs:
-            initials = kwargs['initial']
-            color = initials.get('color')
-
-        if color:
-            #print(F'  Color: {color}')
-            self.fields['rgb'].initial = color.rgb
-
-        #self.fields['rgb'].initial = 'Eric2'
-        #choices = [(ts.pk, ts.name) for hiker in Club.objects.filter(pk=club_pk)]
-        #self.fields['hikers'].choices = choices
-        #print(F'self.fields: {self.fields["color"]}')
-        #self.fields['eric'] = CharField(initial='Test', disabled=True)
-        #self.Meta.fields.append('test2')
-
 
     def save(self, commit=True):
         # print('InventoryForm.save() - ENTER')
