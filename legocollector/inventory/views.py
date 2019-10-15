@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import reverse
 from django.urls import reverse_lazy
 from django.views.generic import DeleteView, DetailView, UpdateView
@@ -27,6 +27,21 @@ from .tables import (
     PartTable, UserPartTable,
     SingleTableMixin
 )
+
+
+def convert_color_id_to_rgb(request):
+    color_id = request.GET.get('color_id', None)
+
+    rgb = ''
+    if color_id:
+        color = Color.objects.filter(id=color_id)
+        if color.exists():
+            rgb = color[0].rgb
+
+    data = {
+        'rbg_val': rgb
+    }
+    return JsonResponse(data)
 
 
 @login_required

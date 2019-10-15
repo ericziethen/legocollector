@@ -37,7 +37,13 @@
                             {% endfor %}
                         {% endif %}
                         {{ field.errors.as_ul }}
-                        {{ field }}
+
+                        {% if field.label == "Rgb" and field.value %}
+                            <!--{{field.value}}-->
+                            <p class="rgb" id="id_form-{{forloop.parentloop.counter0}}-rgb" style="background-color:#{{ field.value }}">{{ field.value }}</p>
+                        {% else %}
+                            {{ field }}
+                        {% endif %}
                         {{ form.fieldname.errors|striptags }}
                     </td>
                 {% endfor %}
@@ -51,21 +57,50 @@
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <script src="{% static 'formset/jquery.formset.js' %}"></script>
     <script type="text/javascript">
-        function removed(row) {
-            // console.log(row);
-            // var x = $(row);
-            // var y = x['0'].getElementsByTagName('select');
-            // console.log(y.material_select())
-            // x.getElementsByTagName('')
-            // $('select').material_select();
-        }
-
         $('.formset_row').formset({
             addText: 'add Color',
             deleteText: 'remove',
-            prefix: 'inventory_list_set',
-            removed: removed  // Custom Handler WHen Removed is pressed
+            prefix: 'inventory_list_set'
         });
+
+        $("[id$=-color]").on("change", function(row) {
+            var color_id = $(this).val()
+            setRgbField(color_id, getRgbFieldFromChoiceField(this.id));
+        });
+
+        $(document).ready(function(){
+            $("[id$=-color]").each(function(){
+                var color_id = $(this).val()
+                if ($(this).val()) {
+                    setRgbField(color_id, getRgbFieldFromChoiceField(this.id));
+                }
+            });
+        });
+
+        function getRgbFieldFromChoiceField(choice_field) {
+            var rgb_field = choice_field.replace("-color", "-rgb");
+            return rgb_field
+        }
+
+        function setRgbField(color_id, target) {
+            $.ajax({
+                url: '/ajax/convert_color_id_to_rgb/',
+                data: {
+                'color_id': color_id
+                },
+                dataType: 'json',
+                success: function (data) {
+                    if (data.rbg_val) {
+                        document.getElementById(target).value = data.rbg_val;
+                        document.getElementById(target).setAttribute("style", "background-color:#" + data.rbg_val + ";");
+                    } else {
+                        document.getElementById(target).removeAttribute("style");
+                        document.getElementById(target).value = null;
+                    }
+                }
+            });
+        }
+
     </script>
 
     <input type="button" class="button_active" value="Cancel" onclick="location.href='{% url "userpart_detail" userpart.pk %}';" />

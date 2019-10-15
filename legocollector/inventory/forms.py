@@ -1,4 +1,4 @@
-from django.forms import ModelForm, ValidationError, modelformset_factory
+from django.forms import CharField, ModelForm, ValidationError, modelformset_factory
 from django.forms.formsets import BaseFormSet
 
 from .models import Inventory, UserPart
@@ -75,19 +75,15 @@ class InventoryUpdateForm(ModelForm):
 
 
 class InventoryForm(ModelForm):
+    rgb = CharField(disabled=True, required=False)
+
     class Meta:
         model = Inventory
-        fields = ['color', 'qty']
+        fields = ['color', 'rgb', 'qty']
 
     def __init__(self, *args, userpart, **kwargs):
-
-        # print('InventoryForm.__init__()')
-        self.userpart = userpart
-        # print(F'  Userpart init: {userpart}')
-        # print(F'  Userpart: {self.userpart}')
-        # print(F'  Type Userpart: {type(self.userpart)}')
-        # kwargs.update({'userpart': self.kwargs.get('pk1', '')})
         super().__init__(*args, **kwargs)
+        self.userpart = userpart
 
     def save(self, commit=True):
         # print('InventoryForm.save() - ENTER')
