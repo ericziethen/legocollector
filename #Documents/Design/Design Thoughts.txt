@@ -1,0 +1,42 @@
+
+https://stackoverflow.com/questions/6658488/should-i-use-a-seperate-table-instead-of-many-to-many-field-in-django
+
+### Part Relatioship Analysis ###
+
+    # CSV Line
+    rel_type,child_part_num,parent_part_num
+    A,50990b,50990a
+
+
+    # Relationship Types (rel_type)
+            rel_type,child_part_num,parent_part_num
+    - A ->  A,50990b,50990a         -> Alternate Parts (of each other)
+    - M ->  M,30361pr1,30361cpr1    -> Different Mold (30361pr1 Superseeded by 30361cpr1)
+    - M ->  M,92950,3455            -> Different Mold (3455 Superseeded by 92950)
+        -> Can't tell thich superseedes the other, just that they are the same
+    - P ->  P,27382pr0005,27382     -> Prints (Child different print of Parent)
+    - T ->  T,53547pat0001,53547    -> Pattern (Child different Pattern of Parent)
+
+??? Are there any recursive Relationships ???
+    e.g. A == B == C
+    -> How to find all parts that should have the same relationship???
+    -> Do we need a master part? Probably not since there is none.
+
+    # Part Relationships Needed
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
