@@ -35,6 +35,8 @@ https://stackoverflow.com/questions/6658488/should-i-use-a-seperate-table-instea
         Table PartAttributes
             attributes (multiple)
 
+
+
     2.) Option 2
         Table Part
             Nothing added for Relationship
@@ -54,12 +56,20 @@ https://stackoverflow.com/questions/6658488/should-i-use-a-seperate-table-instea
                 parentPart.setChild(childPart)
                 parentPart.ChildPart.type = fileType
 
+            calculateAttributes
+                for each part that has no attribute
+                    find attribute from any related part (recursive???)
+                    if found = set
+                    else set blank attribute
+
             -> At the end, we have all relationships set
 
         2.) Import Attributes
+            for each part
+                getAttributeForPart
 
 
-
+            def getAttributeForPart
 
 
 
