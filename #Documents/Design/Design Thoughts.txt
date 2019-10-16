@@ -24,6 +24,40 @@ https://stackoverflow.com/questions/6658488/should-i-use-a-seperate-table-instea
 
     # Part Relationships Needed
 
+    1.) Option 1 - Preferrable
+        Table Part:
+            child_relationship = ManyToMany('self', through='ChildPart', symmetrical=False)
+            part_attributes = ForeignKey(PartAttributes)
+
+        Table ChildPart:
+            type (Enum, 4 types)
+
+        Table PartAttributes
+            attributes (multiple)
+
+    2.) Option 2
+        Table Part
+            Nothing added for Relationship
+            attribute
+
+        Table PartRelationship
+            child = ForeignKey(Part, on_delete=models.CASCADE, related_name='part_children')
+            parent = ForeignKey(Part, on_delete=models.CASCADE, related_name='part_parents')
+            type (Enum, 4 types)
+
+        Table PartAttributes
+            attributes (multiple)
+
+    # Data Population
+        1.) Import Relationships - Option 1
+            for each relationship in separated file
+                parentPart.setChild(childPart)
+                parentPart.ChildPart.type = fileType
+
+            -> At the end, we have all relationships set
+
+        2.) Import Attributes
+
 
 
 
