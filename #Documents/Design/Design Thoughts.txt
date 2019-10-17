@@ -24,7 +24,20 @@ https://stackoverflow.com/questions/6658488/should-i-use-a-seperate-table-instea
 
     # Part Relationships Needed
 
-    1.) Option 1 - Preferrable
+    1.) Option 0 - Preferrable
+        Table Part:
+            child_relationship = ManyToMany('self', through='ChildPart', symmetrical=False)
+            width
+            height
+            length
+
+        Table ChildPart:
+            type (Enum, 4 types)
+
+        Table PartAttributes
+            attributes (multiple)
+
+    1.) Option 1
         Table Part:
             child_relationship = ManyToMany('self', through='ChildPart', symmetrical=False)
             part_attributes = ForeignKey(PartAttributes)
@@ -49,6 +62,7 @@ https://stackoverflow.com/questions/6658488/should-i-use-a-seperate-table-instea
 
         Table PartAttributes
             attributes (multiple)
+            !!! Maybe only width Heigh Length for Now?
 
     # Data Population
         1.) Import Relationships - Option 1
@@ -66,21 +80,6 @@ https://stackoverflow.com/questions/6658488/should-i-use-a-seperate-table-instea
 
         2.) Import Attributes
             for each part
-                getAttributeForPart
-
-
-            def getAttributeForPart
-
-
-
-
-
-
-
-
-
-
-
-
-
+                if attribute in db
+                    set attributes
 
