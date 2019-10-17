@@ -28,14 +28,31 @@ class Part(models.Model):
     width = models.PositiveIntegerField(blank=True, null=True)
     height = models.PositiveIntegerField(blank=True, null=True)
     length = models.PositiveIntegerField(blank=True, null=True)
-    stud_count = models.PositiveIntegerField(blank=True, null=True)
-    multi_height = models.BooleanField(blank=True, null=True)
-    uneven_dimensions = models.BooleanField(blank=True, null=True)
 
     category_id = models.ForeignKey(PartCategory, on_delete=models.CASCADE, related_name='parts')
+    child_relationship = models.ManyToManyField('self', through='PartRelationship', symmetrical=False)
 
     def __str__(self):
         return self.name
+
+
+class PartRelationship(models.Model):
+    child_partt = models.ForeignKey(Part, on_delete=models.CASCADE, related_name='parent')
+    parent_part = models.ForeignKey(Part, on_delete=models.CASCADE, related_name='child')
+
+    # pylint: disable=invalid-name
+    ALTERNATE_PART = 'Alternate part'
+    DIFFERENT_MOLD = 'Different Mold'
+    DIFFERENT_PRINT = 'Different Print'
+    DIFFERENT_PATTERN = 'Different Pattern'
+    # pylint: enable=invalid-name
+    type_choices = [
+        (ALTERNATE_PART, 'Part'),
+        (DIFFERENT_MOLD, 'Mold'),
+        (DIFFERENT_PRINT, 'Print'),
+        (DIFFERENT_PATTERN, 'Pattern'),
+    ]
+    relationship_type = models.CharField(max_length=32, choices=type_choices)
 
 
 class UserPart(models.Model):

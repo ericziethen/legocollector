@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Color, Part, PartCategory, UserPart, Inventory
+from .models import PartRelationship, Color, Part, PartCategory, UserPart, Inventory
 
 
 class ColorAdmin(admin.ModelAdmin):
@@ -13,11 +13,9 @@ class PartAdmin(admin.ModelAdmin):
     fieldsets = [
         ('Identification', {'fields': ['part_num', 'name', 'category_id']}),
         ('Dimensions', {'fields': ['width', 'height', 'length']}),
-        ('Attributes', {'fields': ['stud_count', 'multi_height', 'uneven_dimensions']}),
     ]
-    list_display = ('part_num', 'name', 'category_id', 'width', 'height', 'length',
-                    'stud_count', 'multi_height', 'uneven_dimensions', 'id')
-    list_filter = ['width', 'height', 'length', 'stud_count', 'multi_height', 'uneven_dimensions']
+    list_display = ('part_num', 'name', 'category_id', 'width', 'height', 'length', 'id')
+    list_filter = ['width', 'height', 'length']
     search_fields = ['part_num', 'name', 'category_id__name']
 
 
@@ -30,6 +28,7 @@ class InventoryAdmin(admin.ModelAdmin):
 
 
 # Register your models here.
+admin.site.register(PartRelationship)
 admin.site.register(Color, ColorAdmin)
 admin.site.register(Part, PartAdmin)
 admin.site.register(PartCategory)

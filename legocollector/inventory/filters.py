@@ -21,8 +21,7 @@ class PartFilter(FilterSet):
 
     class Meta:
         model = Part
-        fields = ('part_num', 'name', 'width', 'height', 'length', 'stud_count', 'multi_height',
-                  'uneven_dimensions', 'category')
+        fields = ('part_num', 'name', 'width', 'height', 'length', 'category')
 
 
 class UserPartFilter(FilterSet):
