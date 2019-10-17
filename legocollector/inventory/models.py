@@ -37,7 +37,7 @@ class Part(models.Model):
 
 
 class PartRelationship(models.Model):
-    child_partt = models.ForeignKey(Part, on_delete=models.CASCADE, related_name='parent')
+    child_part = models.ForeignKey(Part, on_delete=models.CASCADE, related_name='parent')
     parent_part = models.ForeignKey(Part, on_delete=models.CASCADE, related_name='child')
 
     # pylint: disable=invalid-name
@@ -53,6 +53,9 @@ class PartRelationship(models.Model):
         (DIFFERENT_PATTERN, 'Pattern'),
     ]
     relationship_type = models.CharField(max_length=32, choices=type_choices)
+
+    def __str__(self):
+        return ''
 
 
 class UserPart(models.Model):
