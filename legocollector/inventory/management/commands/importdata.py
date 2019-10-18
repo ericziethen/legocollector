@@ -77,61 +77,27 @@ class Command(BaseCommand):
 
     def _populate_relationships(self, csv_data):
         with transaction.atomic():
-            child_part = Part.objects.get(part_num='50990b')
-            parent_part = Part.objects.get(part_num='50990a')
+            relation_mapping = {
+                'A': PartRelationship.ALTERNATE_PART,
+                'M': PartRelationship.DIFFERENT_MOLD,
+                'P': PartRelationship.DIFFERENT_PRINT,
+                'T': PartRelationship.DIFFERENT_PATTERN
+            }
 
-            PartRelationship.objects.get_or_create(
-                child_part=child_part,
-                parent_part=parent_part,
-                relationship_type=PartRelationship.ALTERNATE_PART
-            )
-
-            child_part = Part.objects.get(part_num='50990pr0003b')
-            parent_part = Part.objects.get(part_num='50990a')
-
-            PartRelationship.objects.get_or_create(
-                child_part=child_part,
-                parent_part=parent_part,
-                relationship_type=PartRelationship.ALTERNATE_PART
-            )
-
-            child_part = Part.objects.get(part_num='50990pr0003a')
-            parent_part = Part.objects.get(part_num='50990a')
-
-            PartRelationship.objects.get_or_create(
-                child_part=child_part,
-                parent_part=parent_part,
-                relationship_type=PartRelationship.ALTERNATE_PART
-            )
-
-            child_part = Part.objects.get(part_num='50990a')
-            parent_part = Part.objects.get(part_num='50990pb01')
-
-            PartRelationship.objects.get_or_create(
-                child_part=child_part,
-                parent_part=parent_part,
-                relationship_type=PartRelationship.ALTERNATE_PART
-            )
-
-            child_part = Part.objects.get(part_num='50990a')
-            parent_part = Part.objects.get(part_num='50990pb02')
-
-            PartRelationship.objects.get_or_create(
-                child_part=child_part,
-                parent_part=parent_part,
-                relationship_type=PartRelationship.ALTERNATE_PART
-            )
-
-            
-
-
-
-
-            '''
-            for row in csv_data:
+            for idx, row in enumerate(csv_data, 1):
                 rel_type = row['rel_type']
                 child_part_num = row['child_part_num']
                 parent_part_num = row['parent_part_num']
-            '''
 
+                child_part = Part.objects.get(part_num=child_part_num)
+                parent_part = Part.objects.get(part_num=parent_part_num)
 
+                PartRelationship.objects.get_or_create(
+                    child_part=child_part,
+                    parent_part=parent_part,
+                    relationship_type=relation_mapping[rel_type]
+                )
+
+                if (idx % 1000) == 0:
+                    self.stdout.write(F'Relationships Processed: {idx}')
+        self.stdout.write(F'FINAL: Relationships Processed: {idx}')

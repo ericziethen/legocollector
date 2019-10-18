@@ -43,6 +43,10 @@ class Part(models.Model):
     def get_related_parts(self):
         return self.get_children() + self.get_parents()
 
+    def related_part_count(self):
+        return len(self.get_related_parts())
+
+
 class PartRelationship(models.Model):
     child_part = models.ForeignKey(Part, on_delete=models.CASCADE, related_name='parent')
     parent_part = models.ForeignKey(Part, on_delete=models.CASCADE, related_name='child')
@@ -63,6 +67,7 @@ class PartRelationship(models.Model):
 
     def __str__(self):
         return F'{self.parent_part.part_num} => {self.relationship_type} => {self.child_part.part_num}'
+
 
 class UserPart(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_parts')

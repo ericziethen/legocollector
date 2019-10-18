@@ -13,21 +13,22 @@ class PartAdmin(admin.ModelAdmin):
     fieldsets = [
         ('Identification', {'fields': ['part_num', 'name', 'category_id']}),
         ('Dimensions', {'fields': ['width', 'height', 'length']}),
-        ('Related parts', {'fields': ['related_parts', 'parent_parts', 'children_parts']}),
+        ('Related parts', {'fields': ['parent_parts', 'children_parts']}),
     ]
-    list_display = ('part_num', 'name', 'category_id', 'width', 'height', 'length', 'id')
+    list_display = ('part_num', 'name', 'category_id', 'width', 'height', 'length',
+                    'id', 'related_part_count')
     list_filter = ['width', 'height', 'length']
     search_fields = ['part_num', 'name', 'category_id__name']
-    readonly_fields = ['related_parts', 'parent_parts', 'children_parts']
+    readonly_fields = ['parent_parts', 'children_parts']
 
-    def children_parts(self, obj):
+    def children_parts(self, obj):  # pylint:disable=no-self-use
         return ', '.join(p.part_num for p in obj.get_children())
 
-    def parent_parts(self, obj):
+    def parent_parts(self, obj):  # pylint:disable=no-self-use
         return ', '.join(p.part_num for p in obj.get_parents())
 
-    def related_parts(self, obj):
-        return ', '.join(p.part_num for p in obj.get_related_parts())
+    def related_part_count(self, obj):  # pylint:disable=no-self-use
+        return F'{obj.related_part_count()}'
 
 
 class PartRelationshipAdmin(admin.ModelAdmin):
