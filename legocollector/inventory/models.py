@@ -28,14 +28,45 @@ class Part(models.Model):
     width = models.PositiveIntegerField(blank=True, null=True)
     height = models.PositiveIntegerField(blank=True, null=True)
     length = models.PositiveIntegerField(blank=True, null=True)
-    stud_count = models.PositiveIntegerField(blank=True, null=True)
-    multi_height = models.BooleanField(blank=True, null=True)
-    uneven_dimensions = models.BooleanField(blank=True, null=True)
 
     category_id = models.ForeignKey(PartCategory, on_delete=models.CASCADE, related_name='parts')
 
     def __str__(self):
-        return self.name
+        return F'{self.name} ({self.part_num})'
+
+    def get_children(self):
+        return [p.child_part for p in PartRelationship.objects.filter(parent_part=self)]
+
+    def get_parents(self):
+        return [p.parent_part for p in PartRelationship.objects.filter(child_part=self)]
+
+    def get_related_parts(self):
+        return self.get_children() + self.get_parents()
+
+    def related_part_count(self):
+        return len(self.get_related_parts())
+
+
+class PartRelationship(models.Model):
+    child_part = models.ForeignKey(Part, on_delete=models.CASCADE, related_name='parent')
+    parent_part = models.ForeignKey(Part, on_delete=models.CASCADE, related_name='child')
+
+    # pylint: disable=invalid-name
+    ALTERNATE_PART = 'Alternate part'
+    DIFFERENT_MOLD = 'Different Mold'
+    DIFFERENT_PRINT = 'Different Print'
+    DIFFERENT_PATTERN = 'Different Pattern'
+    # pylint: enable=invalid-name
+    type_choices = [
+        (ALTERNATE_PART, 'Part'),
+        (DIFFERENT_MOLD, 'Mold'),
+        (DIFFERENT_PRINT, 'Print'),
+        (DIFFERENT_PATTERN, 'Pattern'),
+    ]
+    relationship_type = models.CharField(max_length=32, choices=type_choices)
+
+    def __str__(self):
+        return F'{self.parent_part.part_num} => {self.relationship_type} => {self.child_part.part_num}'
 
 
 class UserPart(models.Model):

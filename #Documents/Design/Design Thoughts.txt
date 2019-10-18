@@ -1,0 +1,85 @@
+
+https://stackoverflow.com/questions/6658488/should-i-use-a-seperate-table-instead-of-many-to-many-field-in-django
+
+### Part Relatioship Analysis ###
+
+    # CSV Line
+    rel_type,child_part_num,parent_part_num
+    A,50990b,50990a
+
+
+    # Relationship Types (rel_type)
+            rel_type,child_part_num,parent_part_num
+    - A ->  A,50990b,50990a         -> Alternate Parts (of each other)
+    - M ->  M,30361pr1,30361cpr1    -> Different Mold (30361pr1 Superseeded by 30361cpr1)
+    - M ->  M,92950,3455            -> Different Mold (3455 Superseeded by 92950)
+        -> Can't tell thich superseedes the other, just that they are the same
+    - P ->  P,27382pr0005,27382     -> Prints (Child different print of Parent)
+    - T ->  T,53547pat0001,53547    -> Pattern (Child different Pattern of Parent)
+
+??? Are there any recursive Relationships ???
+    e.g. A == B == C
+    -> How to find all parts that should have the same relationship???
+    -> Do we need a master part? Probably not since there is none.
+
+    # Part Relationships Needed
+
+    1.) Option 0 - Preferrable
+        Table Part:
+            child_relationship = ManyToMany('self', through='ChildPart', symmetrical=False)
+            width
+            height
+            length
+
+        Table ChildPart:
+            type (Enum, 4 types)
+
+        Table PartAttributes
+            attributes (multiple)
+
+    1.) Option 1
+        Table Part:
+            child_relationship = ManyToMany('self', through='ChildPart', symmetrical=False)
+            part_attributes = ForeignKey(PartAttributes)
+
+        Table ChildPart:
+            type (Enum, 4 types)
+
+        Table PartAttributes
+            attributes (multiple)
+
+
+
+    2.) Option 2
+        Table Part
+            Nothing added for Relationship
+            attribute
+
+        Table PartRelationship
+            child = ForeignKey(Part, on_delete=models.CASCADE, related_name='part_children')
+            parent = ForeignKey(Part, on_delete=models.CASCADE, related_name='part_parents')
+            type (Enum, 4 types)
+
+        Table PartAttributes
+            attributes (multiple)
+            !!! Maybe only width Heigh Length for Now?
+
+    # Data Population
+        1.) Import Relationships - Option 1
+            for each relationship in separated file
+                parentPart.setChild(childPart)
+                parentPart.ChildPart.type = fileType
+
+            calculateAttributes
+                for each part that has no attribute
+                    find attribute from any related part (recursive???)
+                    if found = set
+                    else set blank attribute
+
+            -> At the end, we have all relationships set
+
+        2.) Import Attributes
+            for each part
+                if attribute in db
+                    set attributes
+

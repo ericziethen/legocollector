@@ -6,7 +6,7 @@ from collections import OrderedDict
 
 from django.db import transaction
 from django.core.management.base import BaseCommand, CommandError
-from inventory.models import Color, PartCategory, Part
+from inventory.models import Color, PartCategory, Part, PartRelationship
 
 
 # TODO - We need to combine functionality with import/export userparts
@@ -23,6 +23,7 @@ class Command(BaseCommand):
         import_files[os.path.join(import_dir, 'colors.csv')] = self._populate_colors
         import_files[os.path.join(import_dir, 'part_categories.csv')] = self._populate_part_categories
         import_files[os.path.join(import_dir, 'parts.csv')] = self._populate_parts
+        import_files[os.path.join(import_dir, 'part_relationships.csv')] = self._populate_relationships
 
         try:
             self._validate_config_path(import_dir, import_files.keys())
@@ -73,3 +74,30 @@ class Command(BaseCommand):
                         part_num=row['part_num'],
                         name=row['name'],
                         category_id=PartCategory.objects.get(id=row['part_cat_id']))
+
+    def _populate_relationships(self, csv_data):
+        with transaction.atomic():
+            relation_mapping = {
+                'A': PartRelationship.ALTERNATE_PART,
+                'M': PartRelationship.DIFFERENT_MOLD,
+                'P': PartRelationship.DIFFERENT_PRINT,
+                'T': PartRelationship.DIFFERENT_PATTERN
+            }
+
+            for idx, row in enumerate(csv_data, 1):
+                rel_type = row['rel_type']
+                child_part_num = row['child_part_num']
+                parent_part_num = row['parent_part_num']
+
+                child_part = Part.objects.get(part_num=child_part_num)
+                parent_part = Part.objects.get(part_num=parent_part_num)
+
+                PartRelationship.objects.get_or_create(
+                    child_part=child_part,
+                    parent_part=parent_part,
+                    relationship_type=relation_mapping[rel_type]
+                )
+
+                if (idx % 1000) == 0:
+                    self.stdout.write(F'Relationships Processed: {idx}')
+        self.stdout.write(F'FINAL: Relationships Processed: {idx}')
