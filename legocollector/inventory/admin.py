@@ -11,14 +11,14 @@ class ColorAdmin(admin.ModelAdmin):
 
 class PartAdmin(admin.ModelAdmin):
     fieldsets = [
-        ('Identification', {'fields': ['part_num', 'name', 'category_id']}),
+        ('Identification', {'fields': ['part_num', 'name', 'category']}),
         ('Dimensions', {'fields': ['width', 'height', 'length']}),
         ('Related parts', {'fields': ['parent_parts', 'children_parts']}),
     ]
-    list_display = ('part_num', 'name', 'category_id', 'width', 'height', 'length',
+    list_display = ('part_num', 'name', 'category', 'width', 'height', 'length',
                     'id', 'related_part_count')
     list_filter = ['width', 'height', 'length']
-    search_fields = ['part_num', 'name', 'category_id__name']
+    search_fields = ['part_num', 'name', 'category__name']
     readonly_fields = ['parent_parts', 'children_parts']
 
     def children_parts(self, obj):  # pylint:disable=no-self-use

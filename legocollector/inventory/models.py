@@ -29,7 +29,7 @@ class Part(models.Model):
     height = models.DecimalField(max_digits=8, decimal_places=4, blank=True, null=True)
     length = models.DecimalField(max_digits=8, decimal_places=4, blank=True, null=True)
 
-    category_id = models.ForeignKey(PartCategory, on_delete=models.CASCADE, related_name='parts')
+    category = models.ForeignKey(PartCategory, on_delete=models.CASCADE, related_name='parts')
 
     def __str__(self):
         return F'{self.name} ({self.part_num})'
