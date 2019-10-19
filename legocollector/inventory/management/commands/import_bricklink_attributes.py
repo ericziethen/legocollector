@@ -1,0 +1,48 @@
+
+import csv
+import os
+
+from collections import OrderedDict
+
+from xml.etree import ElementTree as ET
+
+from django.db import transaction
+from django.core.management.base import BaseCommand, CommandError
+from inventory.models import Color, PartCategory, Part, PartRelationship
+
+
+class Command(BaseCommand):
+
+    def add_arguments(self, parser):
+        parser.add_argument('parts_xml_path', type=str)
+
+    def handle(self, *args, **options):
+        parts_xml_path = options['parts_xml_path']
+
+        # parse the xml file
+        tree = ET.parse(parts_xml_path)
+        root = tree.getroot()
+
+        with transaction.atomic():
+            for idx, item_tag in enumerate(root.findall('ITEM')):
+                item_id = item_tag.find('ITEMID').text
+                item_x = item_tag.find('ITEMDIMX').text
+                item_y = item_tag.find('ITEMDIMY').text
+                item_z = item_tag.find('ITEMDIMZ').text
+                if item_id:
+                    if any([item_x, item_y, item_z]):
+                        part = Part.objects.filter(part_num=item_id).first()
+                        if part:
+                            if item_x and item_y and (item_y > item_x):
+                                part.length = item_y
+                                part.width = item_x
+                            else:
+                                part.length = item_x
+                                part.width = item_y
+                            part.height = item_z
+                            part.save()
+                else:
+                    self.stdout.write(F'Invalid item Id Found: "{item_id}"')
+
+                if (idx % 1000) == 0:
+                    self.stdout.write(F'Items Processed: {idx}')

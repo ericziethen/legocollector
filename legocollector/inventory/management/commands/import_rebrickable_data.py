@@ -100,4 +100,3 @@ class Command(BaseCommand):
 
                 if (idx % 1000) == 0:
                     self.stdout.write(F'Relationships Processed: {idx}')
-        self.stdout.write(F'FINAL: Relationships Processed: {idx}')
