@@ -25,9 +25,9 @@ class Color(models.Model):
 class Part(models.Model):
     part_num = models.CharField(unique=True, max_length=20)
     name = models.CharField(max_length=250)
-    width = models.PositiveIntegerField(blank=True, null=True)
-    height = models.PositiveIntegerField(blank=True, null=True)
-    length = models.PositiveIntegerField(blank=True, null=True)
+    width = models.DecimalField(max_digits=8, decimal_places=4, blank=True, null=True)
+    height = models.DecimalField(max_digits=8, decimal_places=4, blank=True, null=True)
+    length = models.DecimalField(max_digits=8, decimal_places=4, blank=True, null=True)
 
     category_id = models.ForeignKey(PartCategory, on_delete=models.CASCADE, related_name='parts')
 
