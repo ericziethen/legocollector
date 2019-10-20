@@ -66,12 +66,13 @@ class Command(BaseCommand):
         return updated_parts_dic
 
     def _calc_related_attributes(self, updated_parts_dic):
+        self.stdout.write(F'Calculating Related Part Attributes')
         related_updated_dic = updated_parts_dic.copy()
         # Only look based on the original updated dic
         related_attributes_set_count = 0
         with transaction.atomic():
             for idx, part in enumerate(updated_parts_dic.values()):
-                print('CHecking Part:', part.part_num)
+                #print('CHecking Part:', part.part_num)
                 for related_part in part.get_related_parts():
                     if related_part.part_num not in related_updated_dic:
                         related_part.width = part.width
@@ -86,36 +87,3 @@ class Command(BaseCommand):
                     self.stdout.write(F'  Items Processed: {idx}')
 
         self.stdout.write(F'  Attributes Set on: {related_attributes_set_count} related parts')
-
-        '''
-            get list of all parts
-            for each updated part
-                for each related part
-                    if related part not in updated list
-                        set related part attributes
-                        set related updated dic
-
-
-
-
-
-
-
-
-            get list of all parts
-            for each part
-                if part not in updated parts
-                    get related parts (recursive)
-                    for each related part
-                        if not in updated list
-                            set attributes for part
-                            set into updated list
-
-
-        '''
-
-
-
-
-
-
