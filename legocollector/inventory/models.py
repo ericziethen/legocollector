@@ -65,7 +65,15 @@ class Part(models.Model):
         return parents
 
     def get_related_parts(self):
-        return self.get_children() + self.get_parents()
+        # Get the Children
+        related_parts = self.get_children()
+
+        # Add Parents and avoid Duplicates, e.g. if circular dependency
+        for part in self.get_parents():
+            if part not in related_parts:
+                related_parts.append(part)
+
+        return related_parts
 
     def related_part_count(self):
         return len(self.get_related_parts())

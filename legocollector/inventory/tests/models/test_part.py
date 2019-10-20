@@ -70,16 +70,15 @@ class PartTests(TestCase):
         self.assertEqual(part1of3.related_part_count(), 2)
         self.assertEqual(part2of3.related_part_count(), 2)
         self.assertEqual(part3of3.related_part_count(), 2)
-'''
+
     def test_children_circular(self):
         part1of3 = Part.objects.get(part_num='part1of3')
         part2of3 = Part.objects.get(part_num='part2of3')
         part3of3 = Part.objects.get(part_num='part3of3')
-        PartRelationship.objects.create(parent_part=part3of3, child_part=part1of3, 
+        PartRelationship.objects.create(parent_part=part3of3, child_part=part1of3,
                                         relationship_type=PartRelationship.ALTERNATE_PART)
 
         self.assertListEqual(part1of3.get_children(), [part2of3, part3of3])
         self.assertListEqual(part1of3.get_parents(), [part3of3, part2of3])
         self.assertListEqual(part1of3.get_related_parts(), [part2of3, part3of3])
         self.assertEqual(part1of3.related_part_count(), 2)
-'''
