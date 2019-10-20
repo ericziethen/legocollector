@@ -35,16 +35,7 @@ class PartTests(TestCase):
         self.assertListEqual(part.get_children(), [])
         self.assertListEqual(part.get_parents(), [])
         self.assertListEqual(part.get_related_parts(), [])
-        self.assertEquals(part.related_part_count(), 0)
-
-    def test_related_parts(self):
-        part1of3 = Part.objects.get(part_num='part1of3')
-        part2of3 = Part.objects.get(part_num='part2of3')
-        part3of3 = Part.objects.get(part_num='part3of3')
-
-        self.assertEquals(part1of3.related_part_count(), 2)
-        self.assertEquals(part2of3.related_part_count(), 2)
-        self.assertEquals(part3of3.related_part_count(), 2)
+        self.assertEqual(part.related_part_count(), 0)
 
     def test_children(self):
         part1of3 = Part.objects.get(part_num='part1of3')
@@ -61,7 +52,26 @@ class PartTests(TestCase):
 
         self.assertListEqual(part3of3.get_parents(recursive=False), [part2of3])
         self.assertListEqual(part3of3.get_parents(), [part2of3, part1of3])
-    '''
+
+    def test_related_parte(self):
+        part1of3 = Part.objects.get(part_num='part1of3')
+        part2of3 = Part.objects.get(part_num='part2of3')
+        part3of3 = Part.objects.get(part_num='part3of3')
+
+        self.assertListEqual(part1of3.get_related_parts(), [part2of3, part3of3])
+        self.assertListEqual(part2of3.get_related_parts(), [part3of3, part1of3])
+        self.assertListEqual(part3of3.get_related_parts(), [part2of3, part1of3])
+'''
+    def test_related_part_count(self):
+        part1of3 = Part.objects.get(part_num='part1of3')
+        part2of3 = Part.objects.get(part_num='part2of3')
+        part3of3 = Part.objects.get(part_num='part3of3')
+
+        self.assertEqual(part1of3.related_part_count(), 2)
+        self.assertEqual(part2of3.related_part_count(), 2)
+        self.assertEqual(part3of3.related_part_count(), 2)
+'''
+'''
     def test_children_circular(self):
         part1of3 = Part.objects.get(part_num='part1of3')
         part2of3 = Part.objects.get(part_num='part2of3')
@@ -72,5 +82,5 @@ class PartTests(TestCase):
         self.assertListEqual(part1of3.get_children(), [part2of3, part3of3])
         self.assertListEqual(part1of3.get_parents(), [part3of3, part2of3])
         self.assertListEqual(part1of3.get_related_parts(), [part2of3, part3of3])
-        self.assertEquals(part1of3.related_part_count(), 2)
-    '''
+        self.assertEqual(part1of3.related_part_count(), 2)
+'''
