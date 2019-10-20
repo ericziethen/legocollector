@@ -40,9 +40,14 @@ class Command(BaseCommand):
                 item_x = item_tag.find('ITEMDIMX').text
                 item_y = item_tag.find('ITEMDIMY').text
                 item_z = item_tag.find('ITEMDIMZ').text
+                item_name = item_tag.find('ITEMNAME').text
+
                 if item_id:
                     if any([item_x, item_y, item_z]):
                         part = Part.objects.filter(part_num=item_id).first()
+                        if not part:
+                            part = Part.objects.filter(name=item_name).first()
+
                         if part:
                             if item_x and item_y and (item_y > item_x):
                                 part.length = item_y
@@ -55,13 +60,16 @@ class Command(BaseCommand):
 
                             updated_parts_dic[part.part_num] = part
                             attributes_set_count += 1
+
+                            if (attributes_set_count % 1000) == 0:
+                                self.stdout.write(F'   Attributes Set on: {attributes_set_count} parts')
                 else:
                     self.stdout.write(F'  Invalid item Id Found: "{item_id}"')
 
                 if (idx % 1000) == 0:
                     self.stdout.write(F'  Items Processed: {idx}')
 
-        self.stdout.write(F'  Attributes Set on: {attributes_set_count} parts')
+        self.stdout.write(F'  Total Attributes Set on: {attributes_set_count} parts')
 
         return updated_parts_dic
 
