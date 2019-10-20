@@ -19,9 +19,20 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         parts_xml_path = options['parts_xml_path']
 
+        # Import Attributes
+        updated_parts_dic = self._import_attributes(parts_xml_path)
+
+        # Calculate Related Attributes
+        self._calc_related_attributes(updated_parts_dic)
+
+    def _import_attributes(self, parts_xml_path):
+        self.stdout.write(F'Importing Part Attributes')
         # parse the xml file
         tree = ET.parse(parts_xml_path)
         root = tree.getroot()
+
+        attributes_set_count = 0
+        updated_parts_dic = {}
 
         with transaction.atomic():
             for idx, item_tag in enumerate(root.findall('ITEM')):
@@ -41,8 +52,70 @@ class Command(BaseCommand):
                                 part.width = item_y
                             part.height = item_z
                             part.save()
+
+                            updated_parts_dic[part.part_num] = part
+                            attributes_set_count += 1
                 else:
-                    self.stdout.write(F'Invalid item Id Found: "{item_id}"')
+                    self.stdout.write(F'  Invalid item Id Found: "{item_id}"')
 
                 if (idx % 1000) == 0:
-                    self.stdout.write(F'Items Processed: {idx}')
+                    self.stdout.write(F'  Items Processed: {idx}')
+
+        self.stdout.write(F'  Attributes Set on: {attributes_set_count} parts')
+
+        return updated_parts_dic
+
+    def _calc_related_attributes(self, updated_parts_dic):
+        related_updated_dic = updated_parts_dic.copy()
+        # Only look based on the original updated dic
+        related_attributes_set_count = 0
+        with transaction.atomic():
+            for idx, part in enumerate(updated_parts_dic.values()):
+                print('CHecking Part:', part.part_num)
+                for related_part in part.get_related_parts():
+                    if related_part.part_num not in related_updated_dic:
+                        related_part.width = part.width
+                        related_part.length = part.length
+                        related_part.height = part.height
+                        related_part.save()
+
+                        related_updated_dic[related_part.part_num] = True
+                        related_attributes_set_count += 1
+
+                if (idx % 1000) == 0:
+                    self.stdout.write(F'  Items Processed: {idx}')
+
+        self.stdout.write(F'  Attributes Set on: {related_attributes_set_count} related parts')
+
+        '''
+            get list of all parts
+            for each updated part
+                for each related part
+                    if related part not in updated list
+                        set related part attributes
+                        set related updated dic
+
+
+
+
+
+
+
+
+            get list of all parts
+            for each part
+                if part not in updated parts
+                    get related parts (recursive)
+                    for each related part
+                        if not in updated list
+                            set attributes for part
+                            set into updated list
+
+
+        '''
+
+
+
+
+
+

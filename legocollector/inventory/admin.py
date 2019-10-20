@@ -22,10 +22,10 @@ class PartAdmin(admin.ModelAdmin):
     readonly_fields = ['parent_parts', 'children_parts']
 
     def children_parts(self, obj):  # pylint:disable=no-self-use
-        return ', '.join(p.part_num for p in obj.get_children())
+        return ', '.join(p.child_part.part_num for p in obj.get_children(recursive=False))
 
     def parent_parts(self, obj):  # pylint:disable=no-self-use
-        return ', '.join(p.part_num for p in obj.get_parents())
+        return ', '.join(p.parent_part.part_num for p in obj.get_parents(recursive=False))
 
     def related_part_count(self, obj):  # pylint:disable=no-self-use
         return F'{obj.related_part_count()}'
