@@ -17,12 +17,53 @@ class Command(BaseCommand):
         parser.add_argument('json_file_path', type=str)
 
     def handle(self, *args, **options):
+        self.parts_per_scrape = 100
         rebrickabe_api_key = options['rebrickabe_api_key']
         json_file_path = options['json_file_path']
 
-        self._scrape_rebrickable_parts(rebrickabe_api_key, json_file_path)
+        self.scrape_rebrickable_parts(rebrickabe_api_key, json_file_path)
 
-    def _scrape_rebrickable_parts(self, api_key, json_file_path):
+    def scrape_rebrickable_parts(self, api_key, json_file_path):
+        self.stdout.write(F'Scraping Rebrickable Parts')
+
+        # Get the data to scrape
+        part_num_list, data_dic = self._get_data_to_scrape(json_file_path)
+
+        # Get the list to scrape next
+        # TODO - Once upgraded t Python 3.8 get assign directly in while loop
+        part_nums_to_scrape, part_num_list = self._get_next_part_nums_to_scrape(part_num_list, self.parts_per_scrape)
+        while(part_nums_to_scrape):
+            url = _form_scrape_url(part_nums_to_scrape)
+
+            # Do the scraping
+
+            # Get the next Part Nums to scrape
+            part_nums_to_scrape, part_num_list = self._get_next_part_nums_to_scrape(part_num_list, self.parts_per_scrape)
+
+
+        ''' NEW PSEUDO code
+
+
+                scrape url (FUNCTION), return Raw Data Dic or None
+
+                if scrape ok:
+                    data_dic = process data received (MAYBE FUNCTION), combine existing with new data
+                    sav current state (FUNCTION, data_dic, part_num_list) in json, to continue with next
+
+                else:
+                    sav current state (FUNCTION, data_dic, part_num_list+scrape_list) in json, to continue with next
+                        - save 2 lists, outstanding + issue list
+
+                wait 1 second
+
+        '''
+
+
+
+
+    def scrape_rebrickable_parts_OLD(self, api_key, json_file_path):
+        # Get the data to scrape
+
         ''' NEW PSEUDO code
 
             Get Scrape Data
@@ -106,17 +147,43 @@ class Command(BaseCommand):
 
                 time.sleep(1)
 
+    def _get_data_to_scrape(self, json_file_path):
+        data_dic = {}
+        part_num_list = []
+
+        ''' TODO
+            if json file doesn't exist
+                initialize empty base directory
+            else
+                read data dic from file
+                read part_num_list from file
+
+            if part_num_list empty
+                fill part_num list with all part_nums in db
         '''
-            load json
-            get all parts
-            while more parts
-                build up url with 100 parts
-                scrape url
-                store in dictionary[part_num} = {}
-                store in json
-                wait 1 second
-            return dictionary
+
+        return (part_num_list, data_dic)
+
+    def _get_next_part_nums_to_scrape(self, part_num_list, count):
+        part_nums_to_scrape = []
+        leftover_part_num_list = []
+
+        ''' TODO
+            if len(part_num_list) > count
+                parts to scrape = first count parst of list (use slice)
+                leftover list is orig list - parts to scrap
+            else:
+                parts to scrape = full list
+                leftover = []
         '''
+
+        return (part_nums_to_scrape, leftover_part_num_list)
+
+    def _form_scrape_url(self, part_num_list):
+        ''' TODO
+            Build up the url
+        '''
+        return ''
 
 
 ERIC_JSON = {
