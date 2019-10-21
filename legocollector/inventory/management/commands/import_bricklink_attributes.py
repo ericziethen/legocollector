@@ -65,7 +65,7 @@ class Command(BaseCommand):
                                     6099p05,Baseplate 32 x 32 Road 9-Stud Landing Pad Type 2 (Orange),1,1
                                     6099p06,Baseplate 32 x 32 Road 9-Stud Landing Pad Type 3 (Orange),1,1
 
-
+                        !!! We need a brickling id field in part, and look that one up, we can later populate it
                         if not part:
                             part = Part.objects.filter(name=item_name).first()
 
