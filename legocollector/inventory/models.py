@@ -25,23 +25,55 @@ class Color(models.Model):
 class Part(models.Model):
     part_num = models.CharField(unique=True, max_length=20)
     name = models.CharField(max_length=250)
-    width = models.PositiveIntegerField(blank=True, null=True)
-    height = models.PositiveIntegerField(blank=True, null=True)
-    length = models.PositiveIntegerField(blank=True, null=True)
+    width = models.DecimalField(max_digits=8, decimal_places=4, blank=True, null=True)
+    height = models.DecimalField(max_digits=8, decimal_places=4, blank=True, null=True)
+    length = models.DecimalField(max_digits=8, decimal_places=4, blank=True, null=True)
 
-    category_id = models.ForeignKey(PartCategory, on_delete=models.CASCADE, related_name='parts')
+    category = models.ForeignKey(PartCategory, on_delete=models.CASCADE, related_name='parts')
 
     def __str__(self):
         return F'{self.name} ({self.part_num})'
 
-    def get_children(self):
-        return [p.child_part for p in PartRelationship.objects.filter(parent_part=self)]
+    def get_children(self, recursive=True, children_processed=None):
+        child_rels = PartRelationship.objects.filter(parent_part=self)
+        children = []
 
-    def get_parents(self):
-        return [p.parent_part for p in PartRelationship.objects.filter(child_part=self)]
+        if not children_processed:
+            children_processed = []
+
+        for relationship in child_rels:
+            child = relationship.child_part
+            children.append(child)
+            if recursive and (self.part_num not in children_processed):
+                children += child.get_children(children_processed.append(self.part_num))
+
+        return children
+
+    def get_parents(self, recursive=True, parents_processed=None):
+        parent_rels = PartRelationship.objects.filter(child_part=self)
+        parents = []
+
+        if not parents_processed:
+            parents_processed = []
+
+        for relationship in parent_rels:
+            parent = relationship.parent_part
+            parents.append(parent)
+            if recursive and (self.part_num not in parents_processed):
+                parents += parent.get_parents(parents_processed.append(self.part_num))
+
+        return parents
 
     def get_related_parts(self):
-        return self.get_children() + self.get_parents()
+        # Get the Children
+        related_parts = self.get_children()
+
+        # Add Parents and avoid Duplicates, e.g. if circular dependency
+        for part in self.get_parents():
+            if part not in related_parts:
+                related_parts.append(part)
+
+        return related_parts
 
     def related_part_count(self):
         return len(self.get_related_parts())

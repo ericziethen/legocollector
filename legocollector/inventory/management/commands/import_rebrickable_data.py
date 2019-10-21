@@ -73,7 +73,7 @@ class Command(BaseCommand):
                     Part.objects.create(
                         part_num=row['part_num'],
                         name=row['name'],
-                        category_id=PartCategory.objects.get(id=row['part_cat_id']))
+                        category=PartCategory.objects.get(id=row['part_cat_id']))
 
     def _populate_relationships(self, csv_data):
         with transaction.atomic():
@@ -100,4 +100,3 @@ class Command(BaseCommand):
 
                 if (idx % 1000) == 0:
                     self.stdout.write(F'Relationships Processed: {idx}')
-        self.stdout.write(F'FINAL: Relationships Processed: {idx}')

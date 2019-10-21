@@ -16,7 +16,7 @@ def color_id_to_rgb(value):
 
 class PartFilter(FilterSet):
     part_num_contains = CharFilter(field_name='part_num', lookup_expr='icontains')
-    category = ModelChoiceFilter(empty_label='### Category ###', field_name='category_id',
+    category = ModelChoiceFilter(empty_label='### Category ###', field_name='category',
                                  queryset=PartCategory.objects.all())
 
     class Meta:
@@ -26,7 +26,7 @@ class PartFilter(FilterSet):
 
 class UserPartFilter(FilterSet):
     part_num_contains = CharFilter(field_name='part__part_num', lookup_expr='icontains')
-    category = ModelChoiceFilter(empty_label='### Category ###', field_name='part__category_id',
+    category = ModelChoiceFilter(empty_label='### Category ###', field_name='part__category',
                                  queryset=PartCategory.objects.all())
 
     class Meta:
