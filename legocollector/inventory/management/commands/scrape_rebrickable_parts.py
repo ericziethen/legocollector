@@ -28,6 +28,7 @@ class Command(BaseCommand):
             Get Scrape Data
                 - full List of Part numbers to read (FUNCTION) -> Full Part Num List
                     - read from file, if no file or empty, get all from DB
+                    - decide if want to return including previous issue list
                 - current file data dic
 
             while split list in scrape_list and part_num_list (FUNCTION, to handle less than full count left)
@@ -43,6 +44,7 @@ class Command(BaseCommand):
 
                 else:
                     sav current state (FUNCTION, data_dic, part_num_list+scrape_list) in json, to continue with next
+                        - save 2 lists, outstanding + issue list
 
                 wait 1 second
 
