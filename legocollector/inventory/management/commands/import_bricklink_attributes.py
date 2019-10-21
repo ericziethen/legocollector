@@ -4,7 +4,7 @@ import os
 
 from collections import OrderedDict
 
-from xml.etree import ElementTree as ET
+from defusedxml import ElementTree as ET
 
 from django.db import transaction
 from django.core.management.base import BaseCommand, CommandError
