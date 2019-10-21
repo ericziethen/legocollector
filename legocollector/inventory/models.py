@@ -29,6 +29,9 @@ class Part(models.Model):
     height = models.DecimalField(max_digits=8, decimal_places=4, blank=True, null=True)
     length = models.DecimalField(max_digits=8, decimal_places=4, blank=True, null=True)
 
+    bricklink_id = models.CharField(unique=True, max_length=20, blank=True, null=True)
+    brickowl_id = models.CharField(unique=True, max_length=20, blank=True, null=True)
+
     category = models.ForeignKey(PartCategory, on_delete=models.CASCADE, related_name='parts')
 
     def __str__(self):
