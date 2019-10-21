@@ -9,7 +9,6 @@ from django.core.management.base import BaseCommand, CommandError
 from inventory.models import Color, PartCategory, Part, PartRelationship
 
 
-# TODO - We need to combine functionality with import/export userparts
 class Command(BaseCommand):
 
     def add_arguments(self, parser):
@@ -36,18 +35,8 @@ class Command(BaseCommand):
                 reader = csv.DictReader(csvfile)
                 import_func(reader)
 
-    def _validate_config_path(self, base_path, expected_file_list):
-        # Check path exists as directory
-        if not os.path.exists(base_path) or not os.path.isdir(base_path):
-            raise ValueError(F'{base_path} is not a valid DIrectory')
-
-        # Check all expected files are present
-        for file_path in expected_file_list:
-            if not os.path.exists(file_path):
-                raise ValueError(F'Expected file "{file_path}" not found')
-
-    # TODO - All populate functions should use a generic approach
     def _populate_colors(self, csv_data):
+        self.stdout.write(F'Populate Colors')
         with transaction.atomic():
             for row in csv_data:
                 Color.objects.get_or_create(
@@ -57,6 +46,7 @@ class Command(BaseCommand):
                     transparent=row['is_trans'])
 
     def _populate_part_categories(self, csv_data):
+        self.stdout.write(F'Populate Part Categories')
         with transaction.atomic():
             for row in csv_data:
                 PartCategory.objects.get_or_create(
@@ -64,7 +54,7 @@ class Command(BaseCommand):
                     name=row['name'])
 
     def _populate_parts(self, csv_data):
-        # TODO - This should be wrapped into a context manager so we can use it easier for multiple tables
+        self.stdout.write(F'Populate Parts')
         part_list = Part.objects.values_list('part_num', flat=True)
         with transaction.atomic():
             for row in csv_data:
@@ -76,6 +66,7 @@ class Command(BaseCommand):
                         category=PartCategory.objects.get(id=row['part_cat_id']))
 
     def _populate_relationships(self, csv_data):
+        self.stdout.write(F'Populate Relationships')
         with transaction.atomic():
             relation_mapping = {
                 'A': PartRelationship.ALTERNATE_PART,
@@ -100,3 +91,14 @@ class Command(BaseCommand):
 
                 if (idx % 1000) == 0:
                     self.stdout.write(F'Relationships Processed: {idx}')
+
+    @staticmethod
+    def _validate_config_path(base_path, expected_file_list):
+        # Check path exists as directory
+        if not os.path.exists(base_path) or not os.path.isdir(base_path):
+            raise ValueError(F'{base_path} is not a valid DIrectory')
+
+        # Check all expected files are present
+        for file_path in expected_file_list:
+            if not os.path.exists(file_path):
+                raise ValueError(F'Expected file "{file_path}" not found')

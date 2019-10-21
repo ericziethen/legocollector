@@ -1,14 +1,8 @@
-
-import csv
-import os
-
-from collections import OrderedDict
-
 from defusedxml import ElementTree as ET
 
 from django.db import transaction
-from django.core.management.base import BaseCommand, CommandError
-from inventory.models import Color, PartCategory, Part, PartRelationship
+from django.core.management.base import BaseCommand
+from inventory.models import Part
 
 
 class Command(BaseCommand):
