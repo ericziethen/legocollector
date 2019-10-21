@@ -2,6 +2,7 @@ from django.test import TestCase
 
 from inventory.models import Part, PartCategory, PartRelationship
 
+
 class PartTests(TestCase):
 
     def setUp(self):
