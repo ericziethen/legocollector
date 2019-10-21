@@ -43,6 +43,15 @@ class Command(BaseCommand):
 
                 # Scrape the URL:
                 result = scraper.scrape_url(ScrapeConfig(url))
+
+
+        !!! GOT: ERROR EXCEPTION: ReadTimeout - HTTPSConnectionPool(host='rebrickable.com', port=443): Read timed out. (read timeout=5.0)
+            -> Handle in EZSCRAPE or here???
+            -> Have a more logic way to resume later?
+            -> Maybe can store the list of items in the Dictionary first,
+               and work from there, removing some all the time
+
+
                 if result.status == ScrapeStatus.SUCCESS:
                     json_result = json.loads(result.first_page.html)
                     #print(F'RESULT: {json_result}')
