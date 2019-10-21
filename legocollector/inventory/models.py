@@ -78,6 +78,7 @@ class Part(models.Model):
     def related_part_count(self):
         return len(self.get_related_parts())
 
+
 class PartRelationship(models.Model):
     child_part = models.ForeignKey(Part, on_delete=models.CASCADE, related_name='parent')
     parent_part = models.ForeignKey(Part, on_delete=models.CASCADE, related_name='child')
