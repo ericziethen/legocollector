@@ -23,6 +23,32 @@ class Command(BaseCommand):
         self._scrape_rebrickable_parts(rebrickabe_api_key, json_file_path)
 
     def _scrape_rebrickable_parts(self, api_key, json_file_path):
+        ''' NEW PSEUDO code
+
+            Get Scrape Data
+                - full List of Part numbers to read (FUNCTION) -> Full Part Num List
+                    - read from file, if no file or empty, get all from DB
+                - current file data dic
+
+            while split list in scrape_list and part_num_list (FUNCTION, to handle less than full count left)
+                -> Return 2 lists
+
+                form url from scrape_list (FUNCTION)   -> Returns URL string
+
+                scrape url (FUNCTION), return Raw Data Dic or None
+
+                if scrape ok:
+                    data_dic = process data received (MAYBE FUNCTION), combine existing with new data
+                    sav current state (FUNCTION, data_dic, part_num_list) in json, to continue with next
+
+                else:
+                    sav current state (FUNCTION, data_dic, part_num_list+scrape_list) in json, to continue with next
+
+                wait 1 second
+
+        '''
+
+
         self.stdout.write(F'Scraping Rebrickable Parts')
         json_dic = {}
         if os.path.exists(json_file_path):
@@ -44,13 +70,13 @@ class Command(BaseCommand):
                 # Scrape the URL:
                 result = scraper.scrape_url(ScrapeConfig(url))
 
-
-        !!! GOT: ERROR EXCEPTION: ReadTimeout - HTTPSConnectionPool(host='rebrickable.com', port=443): Read timed out. (read timeout=5.0)
-            -> Handle in EZSCRAPE or here???
-            -> Have a more logic way to resume later?
-            -> Maybe can store the list of items in the Dictionary first,
-               and work from there, removing some all the time
-
+                '''
+                !!! GOT: ERROR EXCEPTION: ReadTimeout - HTTPSConnectionPool(host='rebrickable.com', port=443): Read timed out. (read timeout=5.0)
+                    -> Handle in EZSCRAPE or here???
+                    -> Have a more logic way to resume later?
+                    -> Maybe can store the list of items in the Dictionary first,
+                    and work from there, removing some all the time
+                '''
 
                 if result.status == ScrapeStatus.SUCCESS:
                     json_result = json.loads(result.first_page.html)
