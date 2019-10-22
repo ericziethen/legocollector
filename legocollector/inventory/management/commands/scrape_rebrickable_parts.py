@@ -46,6 +46,10 @@ class Command(BaseCommand):
             # delay between scrape attempts
             time.sleep(1)
 
+            # TODO - Remove
+            import sys
+            sys.exit(1)
+
         self.stdout.write(F'Scraping Complete')
 
     def scrape_rebrickable_parts_OLD(self, api_key, json_file_path):
@@ -192,16 +196,22 @@ class Command(BaseCommand):
 
         return json_result
 
-    def _process_scrape_result(self, scrape_data, data_dic):
-        ''' TODO
-            populate the data dic with the scrape result
-        '''
+    def _process_scrape_result(self, scrape_result, data_dic):
+        for result in scrape_result['results']:
+            result_dic = {}
+            part_num = result['part_num']
+            result_dic['external_ids'] = result['external_ids']
+            data_dic[part_num] = result_dic
+
         return data_dic
 
     def _save_scrape(self, json_file_path, data_dic, unscraped_list):
-        ''' TODO
-            store the data dic and unscraped list in the json file
-        '''
+        json_dic = {}
+        json_dic['unscraped_parts'] = unscraped_list
+        json_dic['parts'] = data_dic
+
+        with open(json_file_path, 'w', encoding='utf-8') as fp:
+            json.dump(json_dic, fp)
 
 
 ERIC_JSON = {
