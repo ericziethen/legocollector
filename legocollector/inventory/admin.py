@@ -35,7 +35,7 @@ class PartAdmin(admin.ModelAdmin):
 
 
 class PartExternalIdpAdmin(admin.ModelAdmin):
-    list_display = ('part', 'part.part_num', 'provider', 'external_id')
+    list_display = ('part', 'provider', 'external_id')
 
 
 class PartRelationshipAdmin(admin.ModelAdmin):
