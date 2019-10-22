@@ -46,10 +46,6 @@ class Command(BaseCommand):
             # delay between scrape attempts
             time.sleep(1)
 
-            # TODO - Remove
-            import sys
-            sys.exit(1)
-
         self.stdout.write(F'Scraping Complete')
 
     def scrape_rebrickable_parts_OLD(self, api_key, json_file_path):
@@ -143,22 +139,15 @@ class Command(BaseCommand):
         part_nums = []
 
         if os.path.exists(json_file_path):
-            # TODO - Load data from File
-            pass
+            with open(json_file_path, 'r', encoding='utf-8') as fp:
+                json_dic = json.load(fp)
 
-        ''' TODO
-            if json file doesn't exist
-                initialize empty base directory
-            else
-                read data dic from file
-                read part_nums from file
-
-            if part_nums empty
-                fill part_num list with all part_nums in db
-        '''
+                part_nums = json_dic['unscraped_parts']
+                data_dic = json_dic['parts']
 
         # !!! TODO - Remove !!!
-        part_nums = [str(x) for x in range(1020)]
+        else:
+            part_nums = [str(x) for x in range(1020)]
 
         return (part_nums, data_dic)
 
