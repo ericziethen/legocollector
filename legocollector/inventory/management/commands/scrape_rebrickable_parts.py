@@ -12,12 +12,15 @@ from inventory.models import Part
 
 class Command(BaseCommand):
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.parts_per_scrape = 100
+
     def add_arguments(self, parser):
         parser.add_argument('rebrickabe_api_key', type=str)
         parser.add_argument('json_file_path', type=str)
 
     def handle(self, *args, **options):
-        self.parts_per_scrape = 100
         rebrickabe_api_key = options['rebrickabe_api_key']
         json_file_path = options['json_file_path']
 
@@ -48,13 +51,13 @@ class Command(BaseCommand):
 
         self.stdout.write(F'Scraping Complete')
 
-    def _load_scrape_data(self, json_file_path):
+    def _load_scrape_data(self, json_file_path):  # pylint: disable=no-self-use
         part_dic = {}
         part_nums = []
 
         if os.path.exists(json_file_path):
-            with open(json_file_path, 'r', encoding='utf-8') as fp:
-                json_dic = json.load(fp)
+            with open(json_file_path, 'r', encoding='utf-8') as file_ptr:
+                json_dic = json.load(file_ptr)
 
                 part_nums = json_dic['unscraped_parts']
                 part_dic = json_dic['parts']
@@ -64,7 +67,7 @@ class Command(BaseCommand):
 
         return (part_nums, part_dic)
 
-    def _get_scrape_list(self, part_nums, count):
+    def _get_scrape_list(self, part_nums, count):  # pylint: disable=no-self-use
         scrape_list = []
         leftover_part_nums = []
 
@@ -76,7 +79,7 @@ class Command(BaseCommand):
 
         return (scrape_list, leftover_part_nums)
 
-    def _form_scrape_url(self, part_nums, api_key):
+    def _form_scrape_url(self, part_nums, api_key):  # pylint: disable=no-self-use
         part_list_str = ','.join(part_nums)
         # to include part relationships, add "&inc_part_details=1" to the url
         return F'https://rebrickable.com/api/v3/lego/parts/?part_nums={part_list_str}&key={api_key}'
@@ -93,7 +96,7 @@ class Command(BaseCommand):
 
         return json_result
 
-    def _process_scrape_result(self, scrape_result, data_dic):
+    def _process_scrape_result(self, scrape_result, data_dic):  # pylint: disable=no-self-use
         for result in scrape_result['results']:
             result_dic = {}
             part_num = result['part_num']
@@ -108,5 +111,5 @@ class Command(BaseCommand):
         json_dic['unscraped_parts'] = unscraped_list
         json_dic['parts'] = data_dic
 
-        with open(json_file_path, 'w', encoding='utf-8') as fp:
-            json.dump(json_dic, fp)
+        with open(json_file_path, 'w', encoding='utf-8') as file_ptr:
+            json.dump(json_dic, file_ptr)
