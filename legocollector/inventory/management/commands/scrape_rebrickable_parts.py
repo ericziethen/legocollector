@@ -32,7 +32,6 @@ class Command(BaseCommand):
         # Get the list to scrape next
         scrape_list, part_nums = self._get_scrape_list(part_nums, self.parts_per_scrape)
         while scrape_list:
-
             # Do the scraping
             scrape_data = self._scrape(self._form_scrape_url(scrape_list, api_key))
             if scrape_data:
@@ -139,6 +138,10 @@ class Command(BaseCommand):
         data_dic = {}
         part_nums = []
 
+        if os.path.exists(json_file_path):
+            # TODO - Load data from File
+            pass
+
         ''' TODO
             if json file doesn't exist
                 initialize empty base directory
@@ -150,40 +153,44 @@ class Command(BaseCommand):
                 fill part_num list with all part_nums in db
         '''
 
+        # !!! TODO - Remove !!!
+        part_nums = [str(x) for x in range(1020)]
+
         return (part_nums, data_dic)
 
     def _get_scrape_list(self, part_nums, count):
         scrape_list = []
         leftover_part_nums = []
 
-        ''' TODO
-            if len(part_nums) > count
-                parts to scrape = first count parst of list (use slice)
-                leftover list is orig list - parts to scrap
-            else:
-                parts to scrape = full list
-                leftover = []
-        '''
+        if len(part_nums) > count:
+            scrape_list = part_nums[:count]
+            leftover_part_nums = part_nums[count:]
+        else:
+            scrape_list = part_nums
 
         return (scrape_list, leftover_part_nums)
 
     def _form_scrape_url(self, part_nums, api_key):
-        ''' TODO
-            Build up the url
-        '''
-        return ''
+        part_list_str = ','.join(part_nums)
+        # to include part relationships, add "&inc_part_details=1" to the url
+        return F'https://rebrickable.com/api/v3/lego/parts/?part_nums={part_list_str}&key={api_key}'
 
     def _scrape(self, url):
-        scraped_dic = {}
-        ''' TODO
-            scrape the url
-            if scrape ok
-                scraped_dic = result
-            else
-                log error
-                scraped_dic = empty
+        self.stdout.write(F'  Scraping Url: {url}')
+        json_result = {}
+
+        ''' TODO - ENABLE FOR FULL TESTING
+        result = scraper.scrape_url(ScrapeConfig(url))
+        if result.status == ScrapeStatus.SUCCESS:
+            json_result = json.loads(result.first_page.html)
+        else:
+            self.stderr.write(F'Scraping Issue: {result.error_msg}')
         '''
-        return scraped_dic
+
+        # TODO - DISABLE WHEN DONE
+        json_result = ERIC_JSON
+
+        return json_result
 
     def _process_scrape_result(self, scrape_data, data_dic):
         ''' TODO
