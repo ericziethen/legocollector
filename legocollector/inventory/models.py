@@ -114,6 +114,7 @@ class PartExternalId(models.Model):
     BRICKSET = 'Brickset'
     LDRAW = 'Ldraw'
     LEGO = 'Lego'
+    PEERON = 'Peeron'
     # pylint: enable=invalid-name
     provider_list = [
         (BRICKLINK, 'BrickLink'),
@@ -121,6 +122,7 @@ class PartExternalId(models.Model):
         (BRICKSET, 'Brickset'),
         (LDRAW, 'Ldraw'),
         (LEGO, 'Lego'),
+        (PEERON, 'Peeron'),
     ]
     provider = models.CharField(max_length=32, choices=provider_list)
 
