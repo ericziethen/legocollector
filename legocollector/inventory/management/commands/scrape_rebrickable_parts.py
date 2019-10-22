@@ -47,7 +47,7 @@ class Command(BaseCommand):
             scrape_list, part_nums = self._get_scrape_list(part_nums, self.parts_per_scrape)
 
             # delay between scrape attempts
-            time.sleep(1)
+            time.sleep(2)
 
         self.stdout.write(F'Scraping Complete')
 
