@@ -34,9 +34,9 @@ class Command(BaseCommand):
         while scrape_list:
 
             # Do the scraping
-            scrape_data = self._scrape(self._form_scrape_url(scrape_list))
+            scrape_data = self._scrape(self._form_scrape_url(scrape_list, api_key))
             if scrape_data:
-                data_dic = _process_scrape_result(scrape_data, data_dic)
+                data_dic = self._process_scrape_result(scrape_data, data_dic)
                 self._save_scrape(json_file_path, data_dic, part_nums)
             else:
                 self._save_scrape(json_file_path, data_dic, part_nums + scrape_list)
@@ -46,6 +46,8 @@ class Command(BaseCommand):
 
             # delay between scrape attempts
             time.sleep(1)
+
+        self.stdout.write(F'Scraping Complete')
 
     def scrape_rebrickable_parts_OLD(self, api_key, json_file_path):
         # Get the data to scrape
@@ -165,7 +167,7 @@ class Command(BaseCommand):
 
         return (scrape_list, leftover_part_nums)
 
-    def _form_scrape_url(self, part_nums):
+    def _form_scrape_url(self, part_nums, api_key):
         ''' TODO
             Build up the url
         '''
