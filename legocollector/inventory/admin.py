@@ -1,6 +1,9 @@
 from django.contrib import admin
 
-from .models import Color, Part, PartCategory, PartRelationship, UserPart, Inventory
+from .models import (
+    Color, Part, PartCategory, PartRelationship,
+    PartExternalId, UserPart, Inventory
+)
 
 
 class ColorAdmin(admin.ModelAdmin):
@@ -31,6 +34,10 @@ class PartAdmin(admin.ModelAdmin):
         return F'{obj.related_part_count()}'
 
 
+class PartExternalIdpAdmin(admin.ModelAdmin):
+    list_display = ('part', 'part.part_num', 'provider', 'external_id')
+
+
 class PartRelationshipAdmin(admin.ModelAdmin):
     list_display = ('parent_part', 'child_part')
 
@@ -48,5 +55,6 @@ admin.site.register(Color, ColorAdmin)
 admin.site.register(Part, PartAdmin)
 admin.site.register(PartCategory)
 admin.site.register(PartRelationship, PartRelationshipAdmin)
+admin.site.register(PartExternalId, PartExternalIdpAdmin)
 admin.site.register(UserPart, UserPartAdmin)
 admin.site.register(Inventory, InventoryAdmin)

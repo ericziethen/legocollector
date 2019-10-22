@@ -135,7 +135,7 @@ class Command(BaseCommand):
                 time.sleep(1)
 
     def _load_scrape_data(self, json_file_path):
-        data_dic = {}
+        part_dic = {}
         part_nums = []
 
         if os.path.exists(json_file_path):
@@ -143,13 +143,16 @@ class Command(BaseCommand):
                 json_dic = json.load(fp)
 
                 part_nums = json_dic['unscraped_parts']
-                data_dic = json_dic['parts']
+                part_dic = json_dic['parts']
+
+        if not part_nums:
+            part_nums = [x.part_num for x in Part.objects.all()]
 
         # !!! TODO - Remove !!!
         else:
             part_nums = [str(x) for x in range(1020)]
 
-        return (part_nums, data_dic)
+        return (part_nums, part_dic)
 
     def _get_scrape_list(self, part_nums, count):
         scrape_list = []
