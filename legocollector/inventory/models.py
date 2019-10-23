@@ -97,8 +97,37 @@ class PartRelationship(models.Model):
     ]
     relationship_type = models.CharField(max_length=32, choices=type_choices)
 
+    class Meta:
+        unique_together = (('child_part', 'parent_part'),)
+
     def __str__(self):
         return F'{self.parent_part.part_num} => {self.relationship_type} => {self.child_part.part_num}'
+
+
+class PartExternalId(models.Model):
+    part = models.ForeignKey(Part, on_delete=models.CASCADE, related_name='external_ids')
+    external_id = models.CharField(max_length=32)
+
+    # pylint: disable=invalid-name
+    BRICKLINK = 'BrickLink'
+    BRICKOWL = 'BrickOwl'
+    BRICKSET = 'Brickset'
+    LDRAW = 'Ldraw'
+    LEGO = 'Lego'
+    PEERON = 'Peeron'
+    # pylint: enable=invalid-name
+    provider_list = [
+        (BRICKLINK, 'BrickLink'),
+        (BRICKOWL, 'BrickOwl'),
+        (BRICKSET, 'Brickset'),
+        (LDRAW, 'Ldraw'),
+        (LEGO, 'Lego'),
+        (PEERON, 'Peeron'),
+    ]
+    provider = models.CharField(max_length=32, choices=provider_list)
+
+    class Meta:
+        unique_together = (('part', 'provider', 'external_id'),)
 
 
 class UserPart(models.Model):

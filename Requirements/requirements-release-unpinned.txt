@@ -1,7 +1,12 @@
 
+# Django
 django
 django_tables2
 django-filter
 django-bootstrap4
 
+# Network
+ezscrape
+
+# Misc
 defusedxml

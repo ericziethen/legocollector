@@ -1,14 +1,8 @@
-
-import csv
-import os
-
-from collections import OrderedDict
-
 from defusedxml import ElementTree as ET
 
 from django.db import transaction
-from django.core.management.base import BaseCommand, CommandError
-from inventory.models import Color, PartCategory, Part, PartRelationship
+from django.core.management.base import BaseCommand
+from inventory.models import Part, PartExternalId
 
 
 class Command(BaseCommand):
@@ -43,9 +37,19 @@ class Command(BaseCommand):
 
                 if item_id:
                     if any([item_x, item_y, item_z]):
-                        part = Part.objects.filter(part_num=item_id).first()
+                        part_list = []
+                        part_external_ids = PartExternalId.objects.filter(
+                            provider=PartExternalId.BRICKLINK,
+                            external_id=item_id
+                        )
+                        if part_external_ids:
+                            part_list = [p.part for p in part_external_ids]
+                        else:
+                            part = Part.objects.filter(part_num=item_id).first()
+                            if part:
+                                part_list.append(part)
 
-                        if part:
+                        for part in part_list:
                             if item_x and item_y and (item_y > item_x):
                                 part.length = item_y
                                 part.width = item_x
