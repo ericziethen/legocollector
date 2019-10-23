@@ -30,7 +30,7 @@ class Command(BaseCommand):
             with open(json_file_path, 'r', encoding='utf-8') as file_ptr:
                 json_dic = json.load(file_ptr)
         else:
-            self.stderr(F'ERROR - Json file "{json_file_path}" does not exist')
+            self.stderr.write(F'ERROR - Json file "{json_file_path}" does not exist')
 
         self.import_external_ids(json_dic['parts'])
 
@@ -55,9 +55,9 @@ class Command(BaseCommand):
                             if (external_id_counts % 1000) == 0:
                                 self.stdout.write(F'  {external_id_counts} External IDs imported')
                 else:
-                    self.stderr(F'  WARNING - Part not found in DB: "{part_num}"')
+                    self.stderr.write(F'  WARNING - Part not found in DB: "{part_num}"')
 
         self.stdout.write(F'Total of {external_id_counts} External IDs imported')
 
-    def provider_from_string(self, text):
+    def provider_from_string(self, text):  # pylint: disable=no-self-use
         return TEXT_TO_PROVIDER_DIC[text]
