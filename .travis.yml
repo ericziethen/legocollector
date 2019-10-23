@@ -14,10 +14,10 @@ branches:
 
 matrix:
   include:
-  - name: "Linux, Python 3.6"
-    os: linux
-    dist: xenial
-    python: "3.6"
+#  - name: "Linux, Python 3.6"
+#    os: linux
+#    dist: xenial
+#    python: "3.6"
   - name: "Linux, Python 3.7.5"
     os: linux
     dist: xenial
