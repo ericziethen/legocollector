@@ -14,23 +14,29 @@ class Command(BaseCommand):
 
         related_attributes_set_count = 0
         with transaction.atomic():
-            for idx, part in enumerate(Part.objects.all()):
-                if any(part.width, part.length, part.height):
-                    for related_part in part.get_related_parts():
-                        if related_part.part_num not in processed_parts:
-                            related_part.width = part.width
-                            related_part.length = part.length
-                            related_part.height = part.height
-                            related_part.save()
+            for count in [3, 2, 1]:
+                parts = self.get_part_with_attributes_set(count)
 
-                            processed_parts[related_part.part_num] = True
-                            related_attributes_set_count += 1
+                for idx, part in enumerate(parts):
+                    if any([part.width, part.length, part.height]):
+                        for related_part in part.get_related_parts():
+                            if related_part.part_num not in processed_parts:
+                                related_part.width = part.width
+                                related_part.length = part.length
+                                related_part.height = part.height
+                                related_part.save()
 
-                if (idx % 1000) == 0:
-                    self.stdout.write(F'  Items Processed: {idx}')
+                                processed_parts[related_part.part_num] = True
+                                related_attributes_set_count += 1
+
+                    if (idx % 1000) == 0:
+                        self.stdout.write(F'  Items Processed: {idx}')
 
         self.stdout.write(F'  Attributes Set on: {related_attributes_set_count} related parts')
         self.print_attribute_details()
+
+    def get_part_with_attributes_set(self, count):
+        return [part for part in Part.objects.all() if part.attribute_count == count]
 
     def print_attribute_details(self):
         self.stdout.write(F'Parts without Width:  {Part.objects.filter(width__isnull=True).count()}')

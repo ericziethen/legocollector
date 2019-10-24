@@ -19,7 +19,6 @@ class Command(BaseCommand):
         root = tree.getroot()
 
         attributes_set_count = 0
-        updated_parts_dic = {}
 
         with transaction.atomic():
             for idx, item_tag in enumerate(root.findall('ITEM')):
@@ -52,7 +51,6 @@ class Command(BaseCommand):
                             part.height = item_z
                             part.save()
 
-                            updated_parts_dic[part.part_num] = part
                             attributes_set_count += 1
 
                             if (attributes_set_count % 1000) == 0:
@@ -64,5 +62,3 @@ class Command(BaseCommand):
                     self.stdout.write(F'  Items Processed: {idx}')
 
         self.stdout.write(F'  Total Attributes Set on: {attributes_set_count} parts')
-
-        return updated_parts_dic
