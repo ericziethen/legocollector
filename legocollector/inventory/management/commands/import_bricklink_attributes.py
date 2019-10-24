@@ -13,13 +13,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         parts_xml_path = options['parts_xml_path']
 
-        # Import Attributes
-        updated_parts_dic = self._import_attributes(parts_xml_path)
-
-        # Calculate Related Attributes
-        self._calc_related_attributes(updated_parts_dic)
-
-    def _import_attributes(self, parts_xml_path):
         self.stdout.write(F'Importing Part Attributes')
         # parse the xml file
         tree = ET.parse(parts_xml_path)
@@ -73,25 +66,3 @@ class Command(BaseCommand):
         self.stdout.write(F'  Total Attributes Set on: {attributes_set_count} parts')
 
         return updated_parts_dic
-
-    def _calc_related_attributes(self, updated_parts_dic):
-        self.stdout.write(F'Calculating Related Part Attributes')
-        related_updated_dic = updated_parts_dic.copy()
-        # Only look based on the original updated dic
-        related_attributes_set_count = 0
-        with transaction.atomic():
-            for idx, part in enumerate(updated_parts_dic.values()):
-                for related_part in part.get_related_parts():
-                    if related_part.part_num not in related_updated_dic:
-                        related_part.width = part.width
-                        related_part.length = part.length
-                        related_part.height = part.height
-                        related_part.save()
-
-                        related_updated_dic[related_part.part_num] = True
-                        related_attributes_set_count += 1
-
-                if (idx % 1000) == 0:
-                    self.stdout.write(F'  Items Processed: {idx}')
-
-        self.stdout.write(F'  Attributes Set on: {related_attributes_set_count} related parts')
