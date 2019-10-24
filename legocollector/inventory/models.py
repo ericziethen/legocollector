@@ -34,6 +34,10 @@ class Part(models.Model):
     def __str__(self):
         return F'{self.name} ({self.part_num})'
 
+    @property
+    def attribute_count(self):
+        return [bool(self.width), bool(self.height), bool(self.length)].count(True)
+
     def get_children(self, recursive=True, children_processed=None):
         child_rels = PartRelationship.objects.filter(parent_part=self)
         children = []
