@@ -15,15 +15,16 @@ class Command(BaseCommand):
         related_attributes_set_count = 0
         with transaction.atomic():
             for idx, part in enumerate(Part.objects.all()):
-                for related_part in part.get_related_parts():
-                    if related_part.part_num not in processed_parts:
-                        related_part.width = part.width
-                        related_part.length = part.length
-                        related_part.height = part.height
-                        related_part.save()
+                if any(part.width, part.length, part.height):
+                    for related_part in part.get_related_parts():
+                        if related_part.part_num not in processed_parts:
+                            related_part.width = part.width
+                            related_part.length = part.length
+                            related_part.height = part.height
+                            related_part.save()
 
-                        processed_parts[related_part.part_num] = True
-                        related_attributes_set_count += 1
+                            processed_parts[related_part.part_num] = True
+                            related_attributes_set_count += 1
 
                 if (idx % 1000) == 0:
                     self.stdout.write(F'  Items Processed: {idx}')
