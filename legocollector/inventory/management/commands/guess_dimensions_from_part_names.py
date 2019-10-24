@@ -14,9 +14,10 @@ class Command(BaseCommand):
 
     def guess_dimensions(self):
         self.stdout.write(F'Guess Dimensions')
-        part_list = Part.objects.filter(width__isnull=True, length__isnull=True)
-        self.stdout.write(F'{part_list.count()} without width and length set')
 
+        # !!! TODO - Maybe combine with Initial Data Import ???, no need to run separate?
+
+        part_list = Part.objects.all()
         part_updates = 0
         with transaction.atomic():
             for part in part_list:
