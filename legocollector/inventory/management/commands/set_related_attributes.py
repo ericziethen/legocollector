@@ -18,9 +18,10 @@ class Command(BaseCommand):
         related_attributes_set_count = 0
         with transaction.atomic():
             for part in part_list:
-                if any([part.width, part.length, part.height]):
+                if part.attribute_count > 0:
                     for related_part in part.get_related_parts():
-                        if related_part.part_num not in processed_parts:
+                        if (related_part.part_num not in processed_parts) and\
+                                (part.attribute_count > related_part.attribute_count):
                             related_part.width = part.width
                             related_part.length = part.length
                             related_part.height = part.height
@@ -29,7 +30,7 @@ class Command(BaseCommand):
                             processed_parts[related_part.part_num] = True
                             related_attributes_set_count += 1
 
-                if (related_attributes_set_count % 1000) == 0:
+                if related_attributes_set_count and (related_attributes_set_count % 1000) == 0:
                     self.stdout.write(F'  Attributes Set: {related_attributes_set_count}')
 
         self.stdout.write(F'  Attributes Set on: {related_attributes_set_count} related parts')
