@@ -34,11 +34,12 @@ if %errorlevel% gtr 0 goto error
 goto end
 
 :error
-echo An Error Occured
+echo ### DATA IMPORT WITH ERRORS ###
 echo exit /B 1
 exit /B 1
 
 :end
+echo ### DATA IMPORT OK ###
 popd
 endlocal
 echo exit /B 0
