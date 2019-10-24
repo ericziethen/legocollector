@@ -8,6 +8,17 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.stdout.write(F'Calculating Related Part Attributes')
 
+
+        # !!! TODO !!!
+        # I needed to run 2 passes to get all parts, why
+        # Am I missing something in the order it sets related parts
+        # Maybe
+        # A is set, b and c not
+        # A in first go, set b (after b had no attributes)
+        # But it shouldn't be the case
+        # Double check with attribute count
+
+
         processed_parts = {}
 
         self.print_attribute_details()

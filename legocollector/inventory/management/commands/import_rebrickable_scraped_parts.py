@@ -47,7 +47,7 @@ class Command(BaseCommand):
                             # Is this better than check if exist first?
                             PartExternalId.objects.get_or_create(
                                 part=part,
-                                external_id=entry,
+                                external_id=entry.strip(),
                                 provider=provider
                             )
                             external_id_counts += 1
