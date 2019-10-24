@@ -50,12 +50,11 @@ class Command(BaseCommand):
                                 external_id=entry.strip(),
                                 provider=provider
                             )
+                            # TODO - ARE WE MISSING A SAVE HERE ???
                             external_id_counts += 1
 
                             if (external_id_counts % 1000) == 0:
                                 self.stdout.write(F'  {external_id_counts} External IDs imported')
-                else:
-                    self.stderr.write(F'  WARNING - Part not found in DB: "{part_num}"')
 
         self.stdout.write(F'Total of {external_id_counts} External IDs imported')
 

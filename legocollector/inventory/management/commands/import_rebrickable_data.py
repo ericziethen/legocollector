@@ -80,17 +80,18 @@ class Command(BaseCommand):
                 child_part_num = row['child_part_num']
                 parent_part_num = row['parent_part_num']
 
-                child_part = Part.objects.get(part_num=child_part_num)
-                parent_part = Part.objects.get(part_num=parent_part_num)
+                child_part = Part.objects.filter(part_num=child_part_num).first()
+                parent_part = Part.objects.filter(part_num=parent_part_num).first()
 
-                PartRelationship.objects.get_or_create(
-                    child_part=child_part,
-                    parent_part=parent_part,
-                    relationship_type=relation_mapping[rel_type]
-                )
+                if child_part and parent_part:
+                    PartRelationship.objects.get_or_create(
+                        child_part=child_part,
+                        parent_part=parent_part,
+                        relationship_type=relation_mapping[rel_type]
+                    )
 
-                if (idx % 1000) == 0:
-                    self.stdout.write(F'Relationships Processed: {idx}')
+                    if (idx % 1000) == 0:
+                        self.stdout.write(F'Relationships Processed: {idx}')
 
     @staticmethod
     def _validate_config_path(base_path, expected_file_list):
