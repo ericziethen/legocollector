@@ -17,7 +17,7 @@ class Command(BaseCommand):
             for count in [3, 2, 1]:
                 parts = self.get_part_with_attributes_set(count)
 
-                for idx, part in enumerate(parts):
+                for part in parts:
                     if any([part.width, part.length, part.height]):
                         for related_part in part.get_related_parts():
                             if related_part.part_num not in processed_parts:
@@ -29,8 +29,8 @@ class Command(BaseCommand):
                                 processed_parts[related_part.part_num] = True
                                 related_attributes_set_count += 1
 
-                    if (idx % 1000) == 0:
-                        self.stdout.write(F'  Items Processed: {idx}')
+                    if (related_attributes_set_count % 1000) == 0:
+                        self.stdout.write(F'  Attributes Set: {related_attributes_set_count}')
 
         self.stdout.write(F'  Attributes Set on: {related_attributes_set_count} related parts')
         self.print_attribute_details()
