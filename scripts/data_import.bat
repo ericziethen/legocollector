@@ -16,19 +16,19 @@ python manage.py import_rebrickable_data "%REBRICKABLE_CSV_FILES_DIR%"
 if %errorlevel% gtr 0 goto error
 
 rem Guess the Part Dimensions from Name
-python managee.py guess_dimensions_from_part_names
+python manage.py guess_dimensions_from_part_names
 if %errorlevel% gtr 0 goto error
 
 rem Import Rebrickable Scraped Parts Details
-python managee.py import_rebrickable_scraped_parts "%REBRICKABLE_PART_SCRAPE_FILE_PATH%"
+python manage.py import_rebrickable_scraped_parts "%REBRICKABLE_PART_SCRAPE_FILE_PATH%"
 if %errorlevel% gtr 0 goto error
 
 rem Import the Bricklink Attributes
-python managee.py import_bricklink_attributes "%BRICKLINK_PART_FILE_PATH%"
+python manage.py import_bricklink_attributes "%BRICKLINK_PART_FILE_PATH%"
 if %errorlevel% gtr 0 goto error
 
 rem Set the Related Attributes
-python managee.py set_related_attributes
+python manage.py set_related_attributes
 if %errorlevel% gtr 0 goto error
 
 goto end
