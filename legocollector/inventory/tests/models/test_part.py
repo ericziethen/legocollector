@@ -59,9 +59,20 @@ class PartTests(TestCase):
         part2of3 = Part.objects.get(part_num='part2of3')
         part3of3 = Part.objects.get(part_num='part3of3')
 
-        self.assertListEqual(part1of3.get_related_parts(), [part2of3, part3of3])
-        self.assertListEqual(part2of3.get_related_parts(), [part3of3, part1of3])
-        self.assertListEqual(part3of3.get_related_parts(), [part2of3, part1of3])
+        part1_related = part1of3.get_related_parts()
+        part2_related = part2of3.get_related_parts()
+        part3_related = part3of3.get_related_parts()
+
+        self.assertListEqual(part1_related, [part2of3, part3of3])
+        self.assertListEqual(part2_related, [part3of3, part1of3])
+        self.assertListEqual(part3_related, [part2of3, part1of3])
+
+        self.assertIn(part2of3, part1_related)
+        self.assertIn(part3of3, part1_related)
+        self.assertIn(part1of3, part2_related)
+        self.assertIn(part3of3, part2_related)
+        self.assertIn(part1of3, part3_related)
+        self.assertIn(part2of3, part3_related)
 
     def test_related_part_count(self):
         part1of3 = Part.objects.get(part_num='part1of3')
