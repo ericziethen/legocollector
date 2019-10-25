@@ -177,34 +177,31 @@ class PartTests(TestCase):
         self.assertIn(part_1, parents)
         self.assertIn(part_3, parents)
 
+    def test_all_related_parts_transitive(self):
+        part_1 = Part.objects.get(part_num='1')
+        part_2 = Part.objects.get(part_num='2')
+        part_3 = Part.objects.get(part_num='3')
+        part_a = Part.objects.get(part_num='A')
+        part_b = Part.objects.get(part_num='B')
+        part_c = Part.objects.get(part_num='C')
 
-    '''
+        part_list = [part_1, part_2, part_3, part_a, part_b, part_c]
 
-    def test_related_parts_parents_and_children(self):
+        related_parts = part_1.get_related_parts(parents=True, children=True, transitive=True)
+        self.assertEqual(
+            sorted(related_parts, key=lambda p: p.part_num),
+            sorted([part_2, part_3, part_a, part_b, part_c], key=lambda p: p.part_num))
 
-    def test_related_parts_parents_transitive(self):
+        '''
+        for part in part_list:
+            target_list = part_list.copy()
+            target_list.remove(part)
 
-    def test_related_parts_children_transitive(self):
-
-    def test_related_parts_parents_children_transitive(self):
-    '''
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            related_parts = part.get_related_parts(parents=True, children=True, transitive=True)
+            self.assertEqual(len(related_parts), 5)
+            for target in target_list:
+                self.assertIn(target, related_parts)
+        '''
 
 
 
