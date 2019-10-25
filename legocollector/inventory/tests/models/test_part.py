@@ -142,6 +142,17 @@ class PartTests(TestCase):
     def test_related_parts_no_children(self):
         part_c = Part.objects.get(part_num='C')
         self.assertListEqual(part_c.get_related_parts(parents=False, children=True, transitive=True), [])
+    '''
+    def test_related_1_child(self):
+        part_a = Part.objects.get(part_num='A')
+        part_b = Part.objects.get(part_num='B')
+        part_c = Part.objects.get(part_num='C')
+
+        self.assertListEqual(part_a.get_related_parts(parents=False, children=True, transitive=False), [part_c])
+        self.assertListEqual(part_b.get_related_parts(parents=False, children=True, transitive=False), [part_a])
+        self.assertListEqual(part_a.get_related_parts(parents=False, children=True, transitive=True), [part_c])
+    '''
+
 
     '''
 

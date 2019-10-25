@@ -83,9 +83,10 @@ class Part(models.Model):
 
 
     def get_parents(self):
-        parents = [p.parent_part for p in PartRelationship.objects.filter(child_part=self)]
+        return [r.parent_part for r in PartRelationship.objects.filter(child_part=self)]
 
-        return parents
+    def get_children(self):
+        return [r.child_part for r in PartRelationship.objects.filter(parent_part=self)]
 
     def get_related_parts(self, *, parents, children, transitive, parts_processed=None):
         related_parts = []
@@ -94,19 +95,22 @@ class Part(models.Model):
         if not parts_processed:
             parts_processed = []
 
+        parent_list = children_list = []
         if parents:
             parent_list = self.get_parents()
+        if children:
+            children_list = self.get_children()
 
-            if transitive:
-                parts_processed.append(self.part_num)
-                for parent in parent_list:
-                    if parent.part_num not in parts_processed:
-                        related_parts.append(parent)
-                        related_parts += parent.get_related_parts(
-                            parents=parents, children=children, transitive=transitive,
-                            parts_processed=parts_processed)
-            else:
-                related_parts += parent_list
+        if transitive:
+            parts_processed.append(self.part_num)
+            for parent in parent_list:
+                if parent.part_num not in parts_processed:
+                    related_parts.append(parent)
+                    related_parts += parent.get_related_parts(
+                        parents=parents, children=children, transitive=transitive,
+                        parts_processed=parts_processed)
+        else:
+            related_parts += parent_list + children_list
 
         return related_parts
 
