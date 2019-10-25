@@ -91,7 +91,6 @@ class Part(models.Model):
     def get_related_parts(self, *, parents, children, transitive, parts_processed=None):
         related_parts = []
 
-        #print(F'Parts Processed: {parts_processed}')
         if not parts_processed:
             parts_processed = []
 

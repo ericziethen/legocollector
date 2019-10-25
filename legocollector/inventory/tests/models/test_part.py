@@ -191,6 +191,7 @@ class PartTests(TestCase):
         self.assertEqual(
             sorted(related_parts, key=lambda p: p.part_num),
             sorted([part_2, part_3, part_a, part_b, part_c], key=lambda p: p.part_num))
+        self.assertEqual(part_1.related_part_count(parents=True, children=True, transitive=True), 5)
 
         for part in part_list:
             target_list = part_list.copy()
