@@ -138,11 +138,11 @@ class PartTests(TestCase):
         self.assertEqual(len(parents), 2)
         self.assertIn(part_y, parents)
         self.assertIn(part_z, parents)
-    '''
+
     def test_related_parts_no_children(self):
         part_c = Part.objects.get(part_num='C')
         self.assertListEqual(part_c.get_related_parts(parents=False, children=True, transitive=True), [])
-    '''
+
     '''
 
     def test_related_parts_children_only(self):
