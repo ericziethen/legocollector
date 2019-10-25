@@ -97,8 +97,8 @@ class Part(models.Model):
                 for parent in parent_list:
                     related_parts.append(parent)
                     related_parts += parent.get_parents()
-
-            related_parts += self.get_parents()
+            else:
+                related_parts += parent_list
 
         return related_parts
 
