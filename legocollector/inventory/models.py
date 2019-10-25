@@ -91,6 +91,13 @@ class Part(models.Model):
         related_parts = []
 
         if parents:
+            parent_list = self.get_parents()
+
+            if transitive:
+                for parent in parent_list:
+                    related_parts.append(parent)
+                    related_parts += parent.get_parents()
+
             related_parts += self.get_parents()
 
         return related_parts
