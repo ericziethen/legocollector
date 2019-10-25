@@ -95,22 +95,22 @@ class Part(models.Model):
         if not parts_processed:
             parts_processed = []
 
-        parent_list = children_list = []
+        my_related_parts = []
         if parents:
-            parent_list = self.get_parents()
+            my_related_parts += self.get_parents()
         if children:
-            children_list = self.get_children()
+            my_related_parts += self.get_children()
 
         if transitive:
             parts_processed.append(self.part_num)
-            for parent in parent_list:
-                if parent.part_num not in parts_processed:
-                    related_parts.append(parent)
-                    related_parts += parent.get_related_parts(
+            for part in my_related_parts:
+                if part.part_num not in parts_processed:
+                    related_parts.append(part)
+                    related_parts += part.get_related_parts(
                         parents=parents, children=children, transitive=transitive,
                         parts_processed=parts_processed)
         else:
-            related_parts += parent_list + children_list
+            related_parts = my_related_parts
 
         return related_parts
 
