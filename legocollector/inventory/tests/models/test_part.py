@@ -73,18 +73,30 @@ class PartTests(TestCase):
         self.assertListEqual(part_a.get_related_parts(parents=False, children=False, transitive=False), [])
         self.assertEqual(part_a.related_part_count(parents=False, children=False, transitive=False), 0)
 
+    def test_no_parents(self):
+        part_1 = Part.objects.get(part_num='1')
+        part_b = Part.objects.get(part_num='B')
+        self.assertListEqual(part_1.get_related_parts(parents=True, children=False, transitive=False), [])
+        self.assertListEqual(part_b.get_related_parts(parents=True, children=False, transitive=True), [])
+
+
     '''
-    def test_related_parts_parents_only():
+    def test_related_parts_parents_only(self):
+        part_1 = Part.objects.get(part_num='1')
+        part_3 = Part.objects.get(part_num='3')
 
-    def test_related_parts_children_only():
+        self.assertListEqual(part_a.get_related_parts(parents=False, children=False, transitive=False), [])
 
-    def test_related_parts_parents_and_children():
 
-    def test_related_parts_parents_transitive():
+    def test_related_parts_children_only(self):
 
-    def test_related_parts_children_transitive():
+    def test_related_parts_parents_and_children(self):
 
-    def test_related_parts_parents_children_transitive():
+    def test_related_parts_parents_transitive(self):
+
+    def test_related_parts_children_transitive(self):
+
+    def test_related_parts_parents_children_transitive(self):
     '''
 
 
