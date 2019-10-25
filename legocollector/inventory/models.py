@@ -37,7 +37,7 @@ class Part(models.Model):
     @property
     def attribute_count(self):
         return [bool(self.width), bool(self.height), bool(self.length)].count(True)
-
+    '''
     def get_children(self, recursive=True, children_processed=None):
         child_rels = PartRelationship.objects.filter(parent_part=self)
         children = []
@@ -78,9 +78,20 @@ class Part(models.Model):
                 related_parts.append(part)
 
         return related_parts
+    '''
+
+
+
+    def get_parents(self):
+        parents = [p.parent_part for p in PartRelationship.objects.filter(child_part=self)]
+
+        return parents
 
     def get_related_parts(self, *, parents, children, transitive):
         related_parts = []
+
+        if parents:
+            related_parts += self.get_parents()
 
         return related_parts
 
