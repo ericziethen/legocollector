@@ -60,7 +60,7 @@ class Command(BaseCommand):
         with transaction.atomic():
             for row in csv_data:
                 part_num = row['part_num']
-                if part_num not in part_list and part_num.startswith('1011A'):
+                if part_num not in part_list:
                     Part.objects.create(
                         part_num=row['part_num'],
                         name=row['name'],
