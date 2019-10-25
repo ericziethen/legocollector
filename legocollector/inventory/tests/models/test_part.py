@@ -117,6 +117,7 @@ class PartTests(TestCase):
 
         self.assertListEqual(part_a.get_related_parts(parents=True, children=False, transitive=False), [part_b])
         self.assertListEqual(part_c.get_related_parts(parents=True, children=False, transitive=False), [part_a])
+        self.assertListEqual(part_a.get_related_parts(parents=True, children=False, transitive=True), [part_b])
 
     def test_related_transitive_parent(self):
         part_a = Part.objects.get(part_num='A')
@@ -128,25 +129,21 @@ class PartTests(TestCase):
         self.assertIn(part_a, parents)
         self.assertIn(part_b, parents)
 
-    '''
     def test_related_transitive_parent_circular(self):
         part_x = Part.objects.get(part_num='X')
         part_y = Part.objects.get(part_num='Y')
         part_z = Part.objects.get(part_num='Z')
 
         parents = part_x.get_related_parts(parents=True, children=False, transitive=True)
-        #print(parents)
         self.assertEqual(len(parents), 2)
         self.assertIn(part_y, parents)
         self.assertIn(part_z, parents)
     '''
+    def test_related_parts_no_children(self):
+        part_c = Part.objects.get(part_num='C')
+        self.assertListEqual(part_c.get_related_parts(parents=False, children=True, transitive=True), [])
     '''
-    def test_related_parts_parents_only(self):
-        part_1 = Part.objects.get(part_num='1')
-        part_3 = Part.objects.get(part_num='3')
-
-        self.assertListEqual(part_a.get_related_parts(parents=False, children=False, transitive=False), [])
-
+    '''
 
     def test_related_parts_children_only(self):
 
