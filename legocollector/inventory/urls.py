@@ -5,6 +5,7 @@ from .import views
 
 urlpatterns = [
     path('', RedirectView.as_view(pattern_name='userpart_list', permanent=False), name='home'),
+    path('colors/', views.ColorListView.as_view(), name='color-list'),
     path('userparts/', views.UserPartListView.as_view(), name='userpart_list'),
     path('userparts/import/', views.import_userparts, name='userpart_import'),
     path('userparts/export/', views.export_userparts, name='userpart_export'),

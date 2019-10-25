@@ -1,5 +1,7 @@
+import colorsys
 import csv
 import io
+import math
 
 from django.db import transaction
 from django.contrib import messages
@@ -9,7 +11,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import reverse
 from django.urls import reverse_lazy
-from django.views.generic import DeleteView, DetailView, UpdateView
+from django.views.generic import DeleteView, DetailView, ListView, UpdateView
 from django.views.generic.edit import CreateView
 
 from .filters import (
@@ -93,6 +95,30 @@ def export_userparts(request):
         for inv in inventory_list:
             writer.writerow([userpart.part.part_num, inv.color.id, inv.qty])
     return response
+
+
+class ColorListView(ListView):  # pylint: disable=too-many-ancestors
+    model = Color
+    template_name = 'inventory/color_list.html'
+
+    def get_queryset(self):
+        return sorted(
+            Color.objects.all(), key=lambda c: (c.transparent, self.color_step(c.red_dec, c.green_dec, c.blue_dec, 8)))
+
+    @staticmethod
+    def color_step(red, green, blue, repetitions=1):
+        lum = math.sqrt(.241 * red + .691 * green + .068 * blue)
+
+        hue, _, value = colorsys.rgb_to_hsv(red, green, blue)
+
+        hue2 = int(hue * repetitions)
+        value2 = int(value * repetitions)
+
+        if hue2 % 2 == 1:
+            value2 = repetitions - value2
+            lum = repetitions - lum
+
+        return (hue2, lum, value2)
 
 
 class UserPartUpdateView(LoginRequiredMixin, UpdateView):  # pylint: disable=too-many-ancestors

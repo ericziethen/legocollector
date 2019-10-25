@@ -10,26 +10,21 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('parts_xml_path', type=str)
 
-    def handle(self, *args, **options):
+    def handle(self, *args, **options):  # pylint: disable=too-many-locals,too-many-branches
         parts_xml_path = options['parts_xml_path']
 
-        # Import Attributes
-        updated_parts_dic = self._import_attributes(parts_xml_path)
-
-        # Calculate Related Attributes
-        self._calc_related_attributes(updated_parts_dic)
-
-    def _import_attributes(self, parts_xml_path):
         self.stdout.write(F'Importing Part Attributes')
         # parse the xml file
         tree = ET.parse(parts_xml_path)
         root = tree.getroot()
 
         attributes_set_count = 0
-        updated_parts_dic = {}
+
+        part_list = Part.objects.values_list('part_num', flat=True)
+        external_id_list = PartExternalId.objects.values_list('external_id', flat=True)
 
         with transaction.atomic():
-            for idx, item_tag in enumerate(root.findall('ITEM')):
+            for idx, item_tag in enumerate(root.findall('ITEM')):  # pylint: disable=too-many-nested-blocks
                 item_id = item_tag.find('ITEMID').text
                 item_x = item_tag.find('ITEMDIMX').text
                 item_y = item_tag.find('ITEMDIMY').text
@@ -37,33 +32,33 @@ class Command(BaseCommand):
 
                 if item_id:
                     if any([item_x, item_y, item_z]):
-                        part_list = []
-                        part_external_ids = PartExternalId.objects.filter(
-                            provider=PartExternalId.BRICKLINK,
-                            external_id=item_id
-                        )
-                        if part_external_ids:
-                            part_list = [p.part for p in part_external_ids]
-                        else:
-                            part = Part.objects.filter(part_num=item_id).first()
-                            if part:
-                                part_list.append(part)
+                        if (item_id in external_id_list) or (item_id in part_list):
+                            part_list = []
+                            part_external_ids = PartExternalId.objects.filter(
+                                provider=PartExternalId.BRICKLINK,
+                                external_id=item_id
+                            )
+                            if part_external_ids:
+                                part_list = [p.part for p in part_external_ids]
+                            else:  # pylint: disable=too-many-nested-blocks
+                                part = Part.objects.filter(part_num=item_id).first()
+                                if part:
+                                    part_list.append(part)
 
-                        for part in part_list:
-                            if item_x and item_y and (item_y > item_x):
-                                part.length = item_y
-                                part.width = item_x
-                            else:
-                                part.length = item_x
-                                part.width = item_y
-                            part.height = item_z
-                            part.save()
+                            for part in part_list:
+                                if item_x and item_y and (item_y > item_x):
+                                    part.length = item_y
+                                    part.width = item_x
+                                else:
+                                    part.length = item_x
+                                    part.width = item_y
+                                part.height = item_z
+                                part.save()
 
-                            updated_parts_dic[part.part_num] = part
-                            attributes_set_count += 1
+                                attributes_set_count += 1
 
-                            if (attributes_set_count % 1000) == 0:
-                                self.stdout.write(F'   Attributes Set on: {attributes_set_count} parts')
+                                if (attributes_set_count % 1000) == 0:
+                                    self.stdout.write(F'   Attributes Set on: {attributes_set_count} parts')
                 else:
                     self.stdout.write(F'  Invalid item Id Found: "{item_id}"')
 
@@ -71,27 +66,3 @@ class Command(BaseCommand):
                     self.stdout.write(F'  Items Processed: {idx}')
 
         self.stdout.write(F'  Total Attributes Set on: {attributes_set_count} parts')
-
-        return updated_parts_dic
-
-    def _calc_related_attributes(self, updated_parts_dic):
-        self.stdout.write(F'Calculating Related Part Attributes')
-        related_updated_dic = updated_parts_dic.copy()
-        # Only look based on the original updated dic
-        related_attributes_set_count = 0
-        with transaction.atomic():
-            for idx, part in enumerate(updated_parts_dic.values()):
-                for related_part in part.get_related_parts():
-                    if related_part.part_num not in related_updated_dic:
-                        related_part.width = part.width
-                        related_part.length = part.length
-                        related_part.height = part.height
-                        related_part.save()
-
-                        related_updated_dic[related_part.part_num] = True
-                        related_attributes_set_count += 1
-
-                if (idx % 1000) == 0:
-                    self.stdout.write(F'  Items Processed: {idx}')
-
-        self.stdout.write(F'  Attributes Set on: {related_attributes_set_count} related parts')

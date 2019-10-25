@@ -56,6 +56,7 @@ class Command(BaseCommand):
     def _populate_parts(self, csv_data):
         self.stdout.write(F'Populate Parts')
         part_list = Part.objects.values_list('part_num', flat=True)
+        create_count = 0
         with transaction.atomic():
             for row in csv_data:
                 part_num = row['part_num']
@@ -64,6 +65,11 @@ class Command(BaseCommand):
                         part_num=row['part_num'],
                         name=row['name'],
                         category=PartCategory.objects.get(id=row['part_cat_id']))
+                    create_count += 1
+
+                    if (create_count % 1000) == 0:
+                        self.stdout.write(F'  Parts Created {create_count}')
+        self.stdout.write(F'  Total Parts Created {create_count}')
 
     def _populate_relationships(self, csv_data):
         self.stdout.write(F'Populate Relationships')
@@ -75,22 +81,26 @@ class Command(BaseCommand):
                 'T': PartRelationship.DIFFERENT_PATTERN
             }
 
+            part_list = Part.objects.values_list('part_num', flat=True)
+
             for idx, row in enumerate(csv_data, 1):
                 rel_type = row['rel_type']
                 child_part_num = row['child_part_num']
                 parent_part_num = row['parent_part_num']
 
-                child_part = Part.objects.get(part_num=child_part_num)
-                parent_part = Part.objects.get(part_num=parent_part_num)
+                if (child_part_num in part_list) and (parent_part_num in part_list):
+                    child_part = Part.objects.filter(part_num=child_part_num).first()
+                    parent_part = Part.objects.filter(part_num=parent_part_num).first()
 
-                PartRelationship.objects.get_or_create(
-                    child_part=child_part,
-                    parent_part=parent_part,
-                    relationship_type=relation_mapping[rel_type]
-                )
+                    if child_part and parent_part:
+                        PartRelationship.objects.get_or_create(
+                            child_part=child_part,
+                            parent_part=parent_part,
+                            relationship_type=relation_mapping[rel_type]
+                        )
 
-                if (idx % 1000) == 0:
-                    self.stdout.write(F'Relationships Processed: {idx}')
+                        if (idx % 1000) == 0:
+                            self.stdout.write(F'  Relationships Processed: {idx}')
 
     @staticmethod
     def _validate_config_path(base_path, expected_file_list):
