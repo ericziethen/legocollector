@@ -37,24 +37,27 @@ class Command(BaseCommand):
     def import_external_ids(self, part_dic):
         self.stdout.write(F'Importing External IDs')
         external_id_counts = 0
+        part_list = Part.objects.values_list('part_num', flat=True)
+
         with transaction.atomic():
             for part_num, external_ids in part_dic.items():
-                part = Part.objects.filter(part_num=part_num).first()
-                if part:
-                    for name, ids in external_ids['external_ids'].items():
-                        provider = self.provider_from_string(name)
-                        for entry in ids:
-                            # Is this better than check if exist first?
-                            PartExternalId.objects.get_or_create(
-                                part=part,
-                                external_id=entry.strip(),
-                                provider=provider
-                            )
-                            # TODO - ARE WE MISSING A SAVE HERE ???
-                            external_id_counts += 1
+                if part_num in part_list:
+                    part = Part.objects.filter(part_num=part_num).first()
+                    if part:
+                        for name, ids in external_ids['external_ids'].items():
+                            provider = self.provider_from_string(name)
+                            for entry in ids:
+                                # Is this better than check if exist first?
+                                PartExternalId.objects.get_or_create(
+                                    part=part,
+                                    external_id=entry.strip(),
+                                    provider=provider
+                                )
+                                # TODO - ARE WE MISSING A SAVE HERE ???
+                                external_id_counts += 1
 
-                            if (external_id_counts % 1000) == 0:
-                                self.stdout.write(F'  {external_id_counts} External IDs imported')
+                                if (external_id_counts % 1000) == 0:
+                                    self.stdout.write(F'  {external_id_counts} External IDs imported')
 
         self.stdout.write(F'Total of {external_id_counts} External IDs imported')
 
