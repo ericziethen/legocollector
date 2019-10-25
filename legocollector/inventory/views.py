@@ -101,16 +101,12 @@ class ColorListView(ListView):  # pylint: disable=too-many-ancestors
     model = Color
     template_name = 'inventory/color_list.html'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        # Color Sorting Ideas @ https://www.alanzucconi.com/2015/09/30/colour-sorting/
-        context['object_list'] = sorted(
+    def get_queryset(self):
+        return sorted(
             Color.objects.all(), key=lambda c: (c.transparent, self.color_step(c.red_dec, c.green_dec, c.blue_dec, 8)))
 
-        return context
-
-    def color_step(self, red, green, blue, repetitions=1):
+    @staticmethod
+    def color_step(red, green, blue, repetitions=1):
         lum = math.sqrt(.241 * red + .691 * green + .068 * blue)
 
         hue, _, value = colorsys.rgb_to_hsv(red, green, blue)

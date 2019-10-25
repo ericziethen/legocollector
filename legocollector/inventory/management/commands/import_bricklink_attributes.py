@@ -10,7 +10,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('parts_xml_path', type=str)
 
-    def handle(self, *args, **options):
+    def handle(self, *args, **options):  # pylint: disable=too-many-locals,too-many-branches
         parts_xml_path = options['parts_xml_path']
 
         self.stdout.write(F'Importing Part Attributes')
@@ -24,7 +24,7 @@ class Command(BaseCommand):
         external_id_list = PartExternalId.objects.values_list('external_id', flat=True)
 
         with transaction.atomic():
-            for idx, item_tag in enumerate(root.findall('ITEM')):
+            for idx, item_tag in enumerate(root.findall('ITEM')):  # pylint: disable=too-many-nested-blocks
                 item_id = item_tag.find('ITEMID').text
                 item_x = item_tag.find('ITEMDIMX').text
                 item_y = item_tag.find('ITEMDIMY').text
@@ -40,7 +40,7 @@ class Command(BaseCommand):
                             )
                             if part_external_ids:
                                 part_list = [p.part for p in part_external_ids]
-                            else:
+                            else:  # pylint: disable=too-many-nested-blocks
                                 part = Part.objects.filter(part_num=item_id).first()
                                 if part:
                                     part_list.append(part)

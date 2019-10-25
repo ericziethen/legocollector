@@ -51,7 +51,8 @@ class Command(BaseCommand):
 
         self.stdout.write(F'Scraping Complete')
 
-    def _load_scrape_data(self, json_file_path):  # pylint: disable=no-self-use
+    @staticmethod
+    def _load_scrape_data(json_file_path):
         part_dic = {}
         part_nums = []
 
@@ -67,7 +68,8 @@ class Command(BaseCommand):
 
         return (part_nums, part_dic)
 
-    def _get_scrape_list(self, part_nums, count):  # pylint: disable=no-self-use
+    @staticmethod
+    def _get_scrape_list(part_nums, count):
         scrape_list = []
         leftover_part_nums = []
 
@@ -79,7 +81,8 @@ class Command(BaseCommand):
 
         return (scrape_list, leftover_part_nums)
 
-    def _form_scrape_url(self, part_nums, api_key):  # pylint: disable=no-self-use
+    @staticmethod
+    def _form_scrape_url(part_nums, api_key):
         part_list_str = ','.join(part_nums)
         # to include part relationships, add "&inc_part_details=1" to the url
         return F'https://rebrickable.com/api/v3/lego/parts/?part_nums={part_list_str}&key={api_key}'
@@ -96,15 +99,6 @@ class Command(BaseCommand):
 
         return json_result
 
-    def _process_scrape_result(self, scrape_result, data_dic):  # pylint: disable=no-self-use
-        for result in scrape_result['results']:
-            result_dic = {}
-            part_num = result['part_num']
-            result_dic['external_ids'] = result['external_ids']
-            data_dic[part_num] = result_dic
-
-        return data_dic
-
     def _save_scrape(self, json_file_path, data_dic, unscraped_list):
         self.stdout.write(F'  Save Scrape State, Unscraped Items: {len(unscraped_list)}')
         json_dic = {}
@@ -113,3 +107,13 @@ class Command(BaseCommand):
 
         with open(json_file_path, 'w', encoding='utf-8') as file_ptr:
             json.dump(json_dic, file_ptr)
+
+    @staticmethod
+    def _process_scrape_result(scrape_result, data_dic):
+        for result in scrape_result['results']:
+            result_dic = {}
+            part_num = result['part_num']
+            result_dic['external_ids'] = result['external_ids']
+            data_dic[part_num] = result_dic
+
+        return data_dic

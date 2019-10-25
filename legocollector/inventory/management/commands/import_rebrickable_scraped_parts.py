@@ -40,7 +40,7 @@ class Command(BaseCommand):
         part_list = Part.objects.values_list('part_num', flat=True)
 
         with transaction.atomic():
-            for part_num, external_ids in part_dic.items():
+            for part_num, external_ids in part_dic.items():  # pylint: disable=too-many-nested-blocks
                 if part_num in part_list:
                     part = Part.objects.filter(part_num=part_num).first()
                     if part:
@@ -53,7 +53,6 @@ class Command(BaseCommand):
                                     external_id=entry.strip(),
                                     provider=provider
                                 )
-                                # TODO - ARE WE MISSING A SAVE HERE ???
                                 external_id_counts += 1
 
                                 if (external_id_counts % 1000) == 0:
@@ -61,5 +60,6 @@ class Command(BaseCommand):
 
         self.stdout.write(F'Total of {external_id_counts} External IDs imported')
 
-    def provider_from_string(self, text):  # pylint: disable=no-self-use
+    @staticmethod
+    def provider_from_string(text):
         return TEXT_TO_PROVIDER_DIC[text]

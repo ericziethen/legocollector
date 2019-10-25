@@ -11,7 +11,9 @@ class PartTests(TestCase):
         Part.objects.create(part_num='single_part', name='single_part',
                             category=PartCategory.objects.get(name='category1'))
 
-        ''' Relationships for Testing
+        # pylint: disable=pointless-string-statement
+        '''
+            Relationships for Testing
             |-1   B
             | |  /
             | 2 A
@@ -23,9 +25,6 @@ class PartTests(TestCase):
             | Y
             | |
             |-Z
-
-
-
         '''
 
         Part.objects.create(part_num='1', name='1',
