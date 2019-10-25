@@ -66,11 +66,6 @@ class PartTests(TestCase):
             relationship_type=PartRelationship.ALTERNATE_PART)
 
         PartRelationship.objects.create(
-            parent_part=Part.objects.get(part_num='3'),
-            child_part=Part.objects.get(part_num='1'),
-            relationship_type=PartRelationship.ALTERNATE_PART)
-
-        PartRelationship.objects.create(
             parent_part=Part.objects.get(part_num='A'),
             child_part=Part.objects.get(part_num='3'),
             relationship_type=PartRelationship.ALTERNATE_PART)
@@ -142,16 +137,16 @@ class PartTests(TestCase):
     def test_related_parts_no_children(self):
         part_c = Part.objects.get(part_num='C')
         self.assertListEqual(part_c.get_related_parts(parents=False, children=True, transitive=True), [])
-    '''
-    def test_related_1_child(self):
-        part_a = Part.objects.get(part_num='A')
-        part_b = Part.objects.get(part_num='B')
-        part_c = Part.objects.get(part_num='C')
 
-        self.assertListEqual(part_a.get_related_parts(parents=False, children=True, transitive=False), [part_c])
-        self.assertListEqual(part_b.get_related_parts(parents=False, children=True, transitive=False), [part_a])
-        self.assertListEqual(part_a.get_related_parts(parents=False, children=True, transitive=True), [part_c])
-    '''
+    def test_related_1_child(self):
+        part_1 = Part.objects.get(part_num='1')
+        part_2 = Part.objects.get(part_num='2')
+        part_3 = Part.objects.get(part_num='3')
+
+        self.assertListEqual(part_1.get_related_parts(parents=False, children=True, transitive=False), [part_2])
+        self.assertListEqual(part_2.get_related_parts(parents=False, children=True, transitive=False), [part_3])
+        self.assertListEqual(part_2.get_related_parts(parents=False, children=True, transitive=True), [part_3])
+
 
 
     '''
