@@ -37,56 +37,6 @@ class Part(models.Model):
     @property
     def attribute_count(self):
         return [bool(self.width), bool(self.height), bool(self.length)].count(True)
-    '''
-    def get_children(self, recursive=True, children_processed=None):
-        child_rels = PartRelationship.objects.filter(parent_part=self)
-        children = []
-
-        if not children_processed:
-            children_processed = []
-
-        for relationship in child_rels:
-            child = relationship.child_part
-            children.append(child)
-            if recursive and (self.part_num not in children_processed):
-                children += child.get_children(children_processed.append(self.part_num))
-
-        return children
-
-    def get_parents(self, recursive=True, parents_processed=None):
-        parent_rels = PartRelationship.objects.filter(child_part=self)
-        parents = []
-
-        if not parents_processed:
-            parents_processed = []
-
-        for relationship in parent_rels:
-            parent = relationship.parent_part
-            parents.append(parent)
-            if recursive and (self.part_num not in parents_processed):
-                parents += parent.get_parents(parents_processed.append(self.part_num))
-
-        return parents
-
-    def get_related_parts_OLD(self):
-        # Get the Children
-        related_parts = self.get_children()
-
-        # Add Parents and avoid Duplicates, e.g. if circular dependency
-        for part in self.get_parents():
-            if part not in related_parts:
-                related_parts.append(part)
-
-        return related_parts
-    '''
-
-
-
-    def get_parents(self):
-        return [r.parent_part for r in PartRelationship.objects.filter(child_part=self)]
-
-    def get_children(self):
-        return [r.child_part for r in PartRelationship.objects.filter(parent_part=self)]
 
     def get_related_parts(self, *, parents, children, transitive, parts_processed=None):
         related_parts = []
@@ -96,9 +46,9 @@ class Part(models.Model):
 
         my_related_parts = []
         if parents:
-            my_related_parts += self.get_parents()
+            my_related_parts += [r.parent_part for r in PartRelationship.objects.filter(child_part=self)]
         if children:
-            my_related_parts += self.get_children()
+            my_related_parts += [r.child_part for r in PartRelationship.objects.filter(parent_part=self)]
 
         if transitive:
             parts_processed.append(self.part_num)
