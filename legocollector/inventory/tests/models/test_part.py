@@ -17,6 +17,15 @@ class PartTests(TestCase):
             | 2 A
             | |/ \
             |-3   C
+
+            |-X
+            | |
+            | Y
+            | |
+            |-Z
+
+
+
         '''
 
         Part.objects.create(part_num='1', name='1',
@@ -35,6 +44,15 @@ class PartTests(TestCase):
                             category=PartCategory.objects.get(name='category1'))
 
         Part.objects.create(part_num='C', name='C',
+                            category=PartCategory.objects.get(name='category1'))
+
+        Part.objects.create(part_num='X', name='X',
+                            category=PartCategory.objects.get(name='category1'))
+
+        Part.objects.create(part_num='Y', name='Y',
+                            category=PartCategory.objects.get(name='category1'))
+
+        Part.objects.create(part_num='Z', name='Z',
                             category=PartCategory.objects.get(name='category1'))
 
         PartRelationship.objects.create(
@@ -67,6 +85,21 @@ class PartTests(TestCase):
             child_part=Part.objects.get(part_num='A'),
             relationship_type=PartRelationship.ALTERNATE_PART)
 
+        PartRelationship.objects.create(
+            parent_part=Part.objects.get(part_num='X'),
+            child_part=Part.objects.get(part_num='Y'),
+            relationship_type=PartRelationship.ALTERNATE_PART)
+
+        PartRelationship.objects.create(
+            parent_part=Part.objects.get(part_num='Y'),
+            child_part=Part.objects.get(part_num='Z'),
+            relationship_type=PartRelationship.ALTERNATE_PART)
+
+        PartRelationship.objects.create(
+            parent_part=Part.objects.get(part_num='Z'),
+            child_part=Part.objects.get(part_num='X'),
+            relationship_type=PartRelationship.ALTERNATE_PART)
+
     def test_related_parts_all_args_false(self):
         part_a = Part.objects.get(part_num='A')
 
@@ -94,17 +127,18 @@ class PartTests(TestCase):
         self.assertEqual(len(parents), 2)
         self.assertIn(part_a, parents)
         self.assertIn(part_b, parents)
+
     '''
     def test_related_transitive_parent_circular(self):
-        part_1 = Part.objects.get(part_num='1')
-        part_2 = Part.objects.get(part_num='2')
-        part_3 = Part.objects.get(part_num='3')
+        part_x = Part.objects.get(part_num='X')
+        part_y = Part.objects.get(part_num='Y')
+        part_z = Part.objects.get(part_num='Z')
 
-        parents = part_1.get_related_parts(parents=True, children=False, transitive=True)
-        print(parents)
+        parents = part_x.get_related_parts(parents=True, children=False, transitive=True)
+        #print(parents)
         self.assertEqual(len(parents), 2)
-        self.assertIn(part_2, parents)
-        self.assertIn(part_3, parents)
+        self.assertIn(part_y, parents)
+        self.assertIn(part_z, parents)
     '''
     '''
     def test_related_parts_parents_only(self):

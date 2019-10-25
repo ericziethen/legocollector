@@ -90,13 +90,17 @@ class Part(models.Model):
     def get_related_parts(self, *, parents, children, transitive):
         related_parts = []
 
+        print(F'\nArgs: {parents} - {children} - {transitive}')
+
         if parents:
             parent_list = self.get_parents()
+            print(F'PartNum: {self.part_num} = ({parent_list})')
 
             if transitive:
                 for parent in parent_list:
                     related_parts.append(parent)
-                    related_parts += parent.get_parents()
+                    related_parts += parent.get_related_parts(
+                        parents=parents, children=children, transitive=transitive)
             else:
                 related_parts += parent_list
 
