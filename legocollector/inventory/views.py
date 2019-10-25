@@ -1,5 +1,7 @@
+import colorsys
 import csv
 import io
+import math
 
 from django.db import transaction
 from django.contrib import messages
@@ -99,19 +101,28 @@ class ColorListView(ListView):  # pylint: disable=too-many-ancestors
     model = Color
     template_name = 'inventory/color_list.html'
 
-    '''
     def get_context_data(self, **kwargs):
-        # print('UserPartDetailView.get_context_data() - ENTER')
-        # Call the base implementation first to get a context
         context = super().get_context_data(**kwargs)
-        colors = Color.objects.all()
-        color_list1 = 
 
+        # Color Sorting Ideas @ https://www.alanzucconi.com/2015/09/30/colour-sorting/
+        context['object_list'] = sorted(
+            Color.objects.all(), key=lambda c: (c.transparent, self.color_step(c.red_dec, c.green_dec, c.blue_dec, 8)))
 
-        context['inventory_list'] = Inventory.objects.filter(userpart=self.object.id)
-        # print('UserPartDetailView.get_context_data() - EXIT')
         return context
-    '''
+
+    def color_step(self, red, green, blue, repetitions=1):
+        lum = math.sqrt(.241 * red + .691 * green + .068 * blue)
+
+        hue, _, value = colorsys.rgb_to_hsv(red, green, blue)
+
+        hue2 = int(hue * repetitions)
+        value2 = int(value * repetitions)
+
+        if hue2 % 2 == 1:
+            value2 = repetitions - value2
+            lum = repetitions - lum
+
+        return (hue2, lum, value2)
 
 
 class UserPartUpdateView(LoginRequiredMixin, UpdateView):  # pylint: disable=too-many-ancestors

@@ -11,12 +11,12 @@
             {% elif forloop.counter0|divisibleby:"14" == 1 %}
                 <tr>
             {% endif %}
-            <td><div class="color_zoom" style="background-color:#{{ color.rgb }}">{{ color.name }}</div></td>
+            <td><div class="color_box" style="background-color:#{{ color.rgb }}">{{ color.name }}</div></td>
         {% endfor %}
     </table>
 
     <style>
-        .color_zoom {
+        .color_box {
             padding: 0px;
             transition: transform .2s; /* Animation */
             width: 85px;
@@ -24,7 +24,7 @@
             margin: 0 auto;
         }
 
-        .color_zoom:hover {
+        .color_box:hover {
             -ms-transform: scale(5.0); /* IE 9 */
             -webkit-transform: scale(5.0); /* Safari 3-8 */
             transform: scale(5.0);

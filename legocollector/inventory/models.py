@@ -21,6 +21,18 @@ class Color(models.Model):
     def __str__(self):
         return self.name
 
+    @property
+    def red_dec(self):
+        return int(self.rgb[:2], 16)
+
+    @property
+    def green_dec(self):
+        return int(self.rgb[4:], 16)
+
+    @property
+    def blue_dec(self):
+        return int(self.rgb[2:4], 16)
+
 
 class Part(models.Model):
     part_num = models.CharField(unique=True, max_length=20)
