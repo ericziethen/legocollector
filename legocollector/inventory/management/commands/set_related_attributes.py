@@ -11,8 +11,6 @@ class Command(BaseCommand):
         processed_parts = {}
 
         # Build the ordered part list
-        part_list = sorted(Part.objects.all(), key=lambda p: p.attribute_count, reverse=True)
-
         self.print_attribute_details()
 
         related_attributes_set_count = 0
@@ -22,7 +20,7 @@ class Command(BaseCommand):
                     related_parts = part.get_related_parts(parents=True, children=True, transitive=True)
 
                     part_family = sorted(related_parts + [part], key=lambda p: p.attribute_count, reverse=True)
-                    highest_count_part = part_family[0] # Will always exist since we added ourselves
+                    highest_count_part = part_family[0]  # Will always exist since we added ourselves
 
                     for related_part in part_family:
                         if ((highest_count_part is not related_part) and
