@@ -79,7 +79,19 @@ class PartTests(TestCase):
         PartRelationship.objects.create(parent_part=part3of3, child_part=part1of3,
                                         relationship_type=PartRelationship.ALTERNATE_PART)
 
-        self.assertListEqual(part1of3.get_children(), [part2of3, part3of3])
-        self.assertListEqual(part1of3.get_parents(), [part3of3, part2of3])
-        self.assertListEqual(part1of3.get_related_parts(), [part2of3, part3of3])
+        children = part1of3.get_children()
+        parents = part1of3.get_parents()
+        related = part1of3.get_related_parts()
+
+        self.assertListEqual(children, [part2of3, part3of3])
+        self.assertListEqual(parents, [part3of3, part2of3])
+        self.assertListEqual(related, [part2of3, part3of3])
+
+        self.assertIn(part2of3, children)
+        self.assertIn(part3of3, children)
+        self.assertIn(part2of3, parents)
+        self.assertIn(part3of3, parents)
+        self.assertIn(part2of3, related)
+        self.assertIn(part3of3, related)
+
         self.assertEqual(part1of3.related_part_count(), 2)
