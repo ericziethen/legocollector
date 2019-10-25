@@ -11,25 +11,107 @@ class PartTests(TestCase):
         Part.objects.create(part_num='single_part', name='single_part',
                             category=PartCategory.objects.get(name='category1'))
 
-        Part.objects.create(part_num='part1of3', name='part1of3',
+        ''' Relationships for Testing
+            |-1   B
+            | |  /
+            | 2 A
+            | |/ \
+            |-3   C
+        '''
+
+        Part.objects.create(part_num='1', name='1',
                             category=PartCategory.objects.get(name='category1'))
 
-        Part.objects.create(part_num='part2of3', name='part2of3',
+        Part.objects.create(part_num='2', name='2',
                             category=PartCategory.objects.get(name='category1'))
 
-        Part.objects.create(part_num='part3of3', name='part3of3',
+        Part.objects.create(part_num='3', name='3',
+                            category=PartCategory.objects.get(name='category1'))
+
+        Part.objects.create(part_num='A', name='A',
+                            category=PartCategory.objects.get(name='category1'))
+
+        Part.objects.create(part_num='B', name='B',
+                            category=PartCategory.objects.get(name='category1'))
+
+        Part.objects.create(part_num='C', name='C',
                             category=PartCategory.objects.get(name='category1'))
 
         PartRelationship.objects.create(
-            parent_part=Part.objects.get(part_num='part1of3'),
-            child_part=Part.objects.get(part_num='part2of3'),
+            parent_part=Part.objects.get(part_num='1'),
+            child_part=Part.objects.get(part_num='2'),
             relationship_type=PartRelationship.ALTERNATE_PART)
 
         PartRelationship.objects.create(
-            parent_part=Part.objects.get(part_num='part2of3'),
-            child_part=Part.objects.get(part_num='part3of3'),
+            parent_part=Part.objects.get(part_num='2'),
+            child_part=Part.objects.get(part_num='3'),
             relationship_type=PartRelationship.ALTERNATE_PART)
 
+        PartRelationship.objects.create(
+            parent_part=Part.objects.get(part_num='3'),
+            child_part=Part.objects.get(part_num='1'),
+            relationship_type=PartRelationship.ALTERNATE_PART)
+
+        PartRelationship.objects.create(
+            parent_part=Part.objects.get(part_num='A'),
+            child_part=Part.objects.get(part_num='3'),
+            relationship_type=PartRelationship.ALTERNATE_PART)
+
+        PartRelationship.objects.create(
+            parent_part=Part.objects.get(part_num='A'),
+            child_part=Part.objects.get(part_num='C'),
+            relationship_type=PartRelationship.ALTERNATE_PART)
+
+        PartRelationship.objects.create(
+            parent_part=Part.objects.get(part_num='B'),
+            child_part=Part.objects.get(part_num='A'),
+            relationship_type=PartRelationship.ALTERNATE_PART)
+
+    def test_related_parts_all_args_false(self):
+        part_a = Part.objects.get(part_num='A')
+
+        self.assertListEqual(part_a.get_related_parts(parents=False, children=False, transitive=False), [])
+        self.assertEqual(part_a.related_part_count(parents=False, children=False, transitive=False), 0)
+
+    '''
+    def test_related_parts_parents_only():
+
+    def test_related_parts_children_only():
+
+    def test_related_parts_parents_and_children():
+
+    def test_related_parts_parents_transitive():
+
+    def test_related_parts_children_transitive():
+
+    def test_related_parts_parents_children_transitive():
+    '''
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    '''
     def test_no_related_parts(self):
         part = Part.objects.get(part_num='single_part')
 
@@ -106,3 +188,4 @@ class PartTests(TestCase):
         self.assertIn(part3of3, related)
 
         self.assertEqual(part1of3.related_part_count(), 2)
+    '''

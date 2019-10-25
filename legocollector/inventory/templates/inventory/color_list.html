@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Colors</h1>
+    <!--
+    <ul>
+    {% for color in object_list %}
+        <li>{{ color }}</li>
+    {% empty %}
+        <li>No Colors found.</li>
+    {% endfor %}
+    </ul>
+    -->
+
+    <table>
+        {% for color in object_list %}
+            {% cycle 'row' '' as row silent %}
+            {% if row %}<tr>{% endif %}
+                <td>
+                    {{ color }}
+                </td>
+            {% if not row %}</tr>{% endif %}
+        {% endfor %}
+    </table>
+{% endblock %}

@@ -68,7 +68,7 @@ class Part(models.Model):
 
         return parents
 
-    def get_related_parts(self):
+    def get_related_parts_OLD(self):
         # Get the Children
         related_parts = self.get_children()
 
@@ -79,8 +79,13 @@ class Part(models.Model):
 
         return related_parts
 
-    def related_part_count(self):
-        return len(self.get_related_parts())
+    def get_related_parts(self, *, parents=True, children=True, transitive=True):
+        related_parts = []
+
+        return related_parts
+
+    def related_part_count(self, *, parents=True, children=True, transitive=True):
+        return len(self.get_related_parts(parents=parents, children=children, transitive=transitive))
 
 
 class PartRelationship(models.Model):

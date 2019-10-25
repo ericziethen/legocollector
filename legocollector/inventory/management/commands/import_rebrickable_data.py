@@ -56,6 +56,7 @@ class Command(BaseCommand):
     def _populate_parts(self, csv_data):
         self.stdout.write(F'Populate Parts')
         part_list = Part.objects.values_list('part_num', flat=True)
+        create_count = 0
         with transaction.atomic():
             for row in csv_data:
                 part_num = row['part_num']
@@ -64,6 +65,11 @@ class Command(BaseCommand):
                         part_num=row['part_num'],
                         name=row['name'],
                         category=PartCategory.objects.get(id=row['part_cat_id']))
+                    create_count += 1
+
+                    if (create_count % 1000) == 0:
+                        self.stdout.write(F'  Parts Created {create_count}')
+        self.stdout.write(F'  Total Parts Created {create_count}')
 
     def _populate_relationships(self, csv_data):
         self.stdout.write(F'Populate Relationships')
@@ -94,7 +100,7 @@ class Command(BaseCommand):
                         )
 
                         if (idx % 1000) == 0:
-                            self.stdout.write(F'Relationships Processed: {idx}')
+                            self.stdout.write(F'  Relationships Processed: {idx}')
 
     @staticmethod
     def _validate_config_path(base_path, expected_file_list):

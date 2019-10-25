@@ -11,6 +11,12 @@ set REBRICKABLE_CSV_FILES_DIR=D:\Downloads\Finished\# Lego\rebrickable.com\Downl
 set REBRICKABLE_PART_SCRAPE_FILE_PATH=D:\Downloads\Finished\# Lego\rebrickable.com\Scraped\2019.10.22\parts_scraped.json
 set BRICKLINK_PART_FILE_PATH=D:\Downloads\Finished\# Lego\bricklink.com\2019.10.22\Parts.xml
 
+rem set REBRICKABLE_CSV_FILES_DIR=D:\temp\importTest
+rem set REBRICKABLE_PART_SCRAPE_FILE_PATH=D:\temp\importTest\parts_scraped.json
+rem set BRICKLINK_PART_FILE_PATH=D:\temp\importTest\Parts.xml
+
+echo %date% - %time%
+
 rem Import the Rebrickable Data
 python manage.py import_rebrickable_data "%REBRICKABLE_CSV_FILES_DIR%"
 if %errorlevel% gtr 0 goto error
@@ -39,6 +45,7 @@ echo exit /B 1
 exit /B 1
 
 :end
+echo %date% - %time%
 echo ### DATA IMPORT OK ###
 popd
 endlocal

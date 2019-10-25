@@ -37,7 +37,8 @@ class Command(BaseCommand):
 
     def guess_dimension_from_name(self, name):
         dim_tup = None
-        pattern_3 = '(?P<wh1>[0-9]{1,}) x (?P<wh2>[0-9]{1,}) x (?P<height>[0-9]{1,})'
+        pattern_2 = '(?P<wh1>[0-9]{1,}) *?x *?(?P<wh2>[0-9]{1,})'
+        pattern_3 = '(?P<wh1>[0-9]{1,}) *?x *?(?P<wh2>[0-9]{1,}) *?x *?(?P<height>[0-9]{1,})'
 
         width = length = height = None
 
@@ -49,7 +50,6 @@ class Command(BaseCommand):
         else:
 
             # Check if 2 Dimensions Found
-            pattern_2 = '(?P<wh1>[0-9]{1,}) x (?P<wh2>[0-9]{1,})'
             result = re.search(pattern_2, name)
 
         if result:

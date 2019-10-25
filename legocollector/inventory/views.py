@@ -9,7 +9,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import reverse
 from django.urls import reverse_lazy
-from django.views.generic import DeleteView, DetailView, UpdateView
+from django.views.generic import DeleteView, DetailView, ListView, UpdateView
 from django.views.generic.edit import CreateView
 
 from .filters import (
@@ -93,6 +93,25 @@ def export_userparts(request):
         for inv in inventory_list:
             writer.writerow([userpart.part.part_num, inv.color.id, inv.qty])
     return response
+
+
+class ColorListView(ListView):  # pylint: disable=too-many-ancestors
+    model = Color
+    template_name = 'inventory/color_list.html'
+
+    '''
+    def get_context_data(self, **kwargs):
+        # print('UserPartDetailView.get_context_data() - ENTER')
+        # Call the base implementation first to get a context
+        context = super().get_context_data(**kwargs)
+        colors = Color.objects.all()
+        color_list1 = 
+
+
+        context['inventory_list'] = Inventory.objects.filter(userpart=self.object.id)
+        # print('UserPartDetailView.get_context_data() - EXIT')
+        return context
+    '''
 
 
 class UserPartUpdateView(LoginRequiredMixin, UpdateView):  # pylint: disable=too-many-ancestors
