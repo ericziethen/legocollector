@@ -157,6 +157,15 @@ class PartTests(TestCase):
         self.assertIn(part_2, parents)
         self.assertIn(part_3, parents)
 
+    def test_related_transitive_children_circular(self):
+        part_x = Part.objects.get(part_num='X')
+        part_y = Part.objects.get(part_num='Y')
+        part_z = Part.objects.get(part_num='Z')
+
+        parents = part_x.get_related_parts(parents=False, children=True, transitive=True)
+        self.assertEqual(len(parents), 2)
+        self.assertIn(part_y, parents)
+        self.assertIn(part_z, parents)
 
     '''
 
