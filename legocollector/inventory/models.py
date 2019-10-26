@@ -18,6 +18,16 @@ class Color(models.Model):
     rgb = models.CharField(max_length=6)
     transparent = models.BooleanField()
 
+    # These fields are only here to help with sorting the queryset nicely
+    # can do the sorting in a lambda method, but some places expect a queryset
+    color_step_hue = models.IntegerField(editable=False)
+    color_step_lumination = models.DecimalField(
+        max_digits=23, decimal_places=20, editable=False, blank=True, null=True)
+    color_step_value = models.IntegerField(editable=False)
+
+    class Meta:
+        ordering = ('transparent', 'color_step_hue', 'color_step_lumination', 'color_step_value')
+
     def __str__(self):
         return self.name
 
@@ -32,6 +42,21 @@ class Color(models.Model):
     @property
     def blue_dec(self):
         return int(self.rgb[2:4], 16)
+
+    @property
+    def complimentary_color(self):
+        # https://codepen.io/WebSeed/pen/pvgqEq
+        color = 'FFFFFF'  # white
+        if self.solor_is_light(self.red_dec, self.green_dec, self.blue_dec):
+            color = '000000'  # black
+        return color
+
+    @staticmethod
+    def solor_is_light(red, green, blue):  # https://codepen.io/WebSeed/pen/pvgqEq
+        # Counting the perceptive luminance
+        # human eye favors green color
+        value = 1 - (0.299 * red + 0.587 * green + 0.114 * blue) / 255
+        return value < 0.5
 
 
 class Part(models.Model):

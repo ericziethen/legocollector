@@ -1,5 +1,6 @@
-
+import colorsys
 import csv
+import math
 import os
 
 from collections import OrderedDict
@@ -39,19 +40,27 @@ class Command(BaseCommand):
         self.stdout.write(F'Populate Colors')
         with transaction.atomic():
             for row in csv_data:
-                Color.objects.get_or_create(
-                    id=row['id'],
-                    name=row['name'],
-                    rgb=row['rgb'],
-                    transparent=row['is_trans'])
+                color, _ = Color.objects.get_or_create(id=row['id'])
+                color.rgb = row['rgb']
+                color.name = row['name']
+                color.transparent = row['is_trans']
+
+                color_step = self._color_step(
+                    int(color.rgb[:2], 16), int(color.rgb[4:], 16), int(color.rgb[2:4], 16)
+                )
+
+                color.color_step_hue = color_step[0]
+                color.color_step_lumination = color_step[1]
+                color.color_step_value = color_step[2]
+                color.save()
 
     def _populate_part_categories(self, csv_data):
         self.stdout.write(F'Populate Part Categories')
         with transaction.atomic():
             for row in csv_data:
-                PartCategory.objects.get_or_create(
-                    id=row['id'],
-                    name=row['name'])
+                category, _ = PartCategory.objects.get_or_create(id=row['id'])
+                category.name = row['name']
+                category.save()
 
     def _populate_parts(self, csv_data):
         self.stdout.write(F'Populate Parts')
@@ -93,11 +102,12 @@ class Command(BaseCommand):
                     parent_part = Part.objects.filter(part_num=parent_part_num).first()
 
                     if child_part and parent_part:
-                        PartRelationship.objects.get_or_create(
+                        relationship, _ = PartRelationship.objects.get_or_create(
                             child_part=child_part,
-                            parent_part=parent_part,
-                            relationship_type=relation_mapping[rel_type]
+                            parent_part=parent_part
                         )
+                        relationship.relationship_type = relation_mapping[rel_type]
+                        relationship.save()
 
                         if (idx % 1000) == 0:
                             self.stdout.write(F'  Relationships Processed: {idx}')
@@ -112,3 +122,18 @@ class Command(BaseCommand):
         for file_path in expected_file_list:
             if not os.path.exists(file_path):
                 raise ValueError(F'Expected file "{file_path}" not found')
+
+    @staticmethod
+    def _color_step(red, green, blue, repetitions=8):
+        lum = math.sqrt(.241 * red + .691 * green + .068 * blue)
+
+        hue, _, value = colorsys.rgb_to_hsv(red, green, blue)
+
+        hue2 = int(hue * repetitions)
+        value2 = int(value * repetitions)
+
+        if hue2 % 2 == 1:
+            value2 = repetitions - value2
+            lum = repetitions - lum
+
+        return (hue2, lum, value2)

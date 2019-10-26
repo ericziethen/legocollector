@@ -1,7 +1,5 @@
-import colorsys
 import csv
 import io
-import math
 
 from django.db import transaction
 from django.contrib import messages
@@ -35,13 +33,15 @@ def convert_color_id_to_rgb(request):
     color_id = request.GET.get('color_id', None)
 
     rgb = ''
+    complimentary_color = ''
     if color_id:
-        color = Color.objects.filter(id=color_id)
-        if color.exists():
-            rgb = color[0].rgb
-
+        color = Color.objects.filter(id=color_id).first()
+        if color:
+            rgb = color.rgb
+            complimentary_color = color.complimentary_color
     data = {
-        'rbg_val': rgb
+        'rbg_val': rgb,
+        'complimentary_color': complimentary_color
     }
     return JsonResponse(data)
 
@@ -102,23 +102,7 @@ class ColorListView(ListView):  # pylint: disable=too-many-ancestors
     template_name = 'inventory/color_list.html'
 
     def get_queryset(self):
-        return sorted(
-            Color.objects.all(), key=lambda c: (c.transparent, self.color_step(c.red_dec, c.green_dec, c.blue_dec, 8)))
-
-    @staticmethod
-    def color_step(red, green, blue, repetitions=1):
-        lum = math.sqrt(.241 * red + .691 * green + .068 * blue)
-
-        hue, _, value = colorsys.rgb_to_hsv(red, green, blue)
-
-        hue2 = int(hue * repetitions)
-        value2 = int(value * repetitions)
-
-        if hue2 % 2 == 1:
-            value2 = repetitions - value2
-            lum = repetitions - lum
-
-        return (hue2, lum, value2)
+        return Color.objects.all()
 
 
 class UserPartUpdateView(LoginRequiredMixin, UpdateView):  # pylint: disable=too-many-ancestors
