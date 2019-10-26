@@ -1,7 +1,9 @@
 from django.forms import CharField, ModelForm, ValidationError, modelformset_factory
 from django.forms.formsets import BaseFormSet
 
-from .models import Inventory, UserPart
+from .fields import PartColorChoiceField
+from .models import Color, Inventory, UserPart
+from .widgets import CustomSelectWidget
 
 
 class UserPartUpdateForm(ModelForm):
@@ -74,82 +76,16 @@ class InventoryUpdateForm(ModelForm):
         return cleaned_data
 
 
-
-
-
-
-
-
-
-
-
-from django.forms import ModelChoiceField, Select
-from .models import Color
-# https://stackoverflow.com/questions/5089396/django-form-field-choices-adding-an-attribute
-class CustomSelect(Select):
-    def __init__(self, attrs=None, choices=()):
-        self.custom_attrs = {}
-        super().__init__(attrs, choices)
-
-    def create_option(self, name, value, label, selected, index, subindex=None, attrs=None):
-        index = str(index) if subindex is None else "%s_%s" % (index, subindex)
-        if attrs is None:
-            attrs = {}
-        option_attrs = self.build_attrs(self.attrs, attrs) if self.option_inherits_attrs else {}
-        if selected:
-            option_attrs.update(self.checked_attribute)
-        if 'id' in option_attrs:
-            option_attrs['id'] = self.id_for_label(option_attrs['id'], index)
-
-        # setting the attributes here for the option
-        if len(self.custom_attrs) > 0:
-            if value in self.custom_attrs:
-                custom_attr = self.custom_attrs[value]
-                for k, v in custom_attr.items():
-                    option_attrs.update({k: v})
-
-        return {
-            'name': name,
-            'value': value,
-            'label': label,
-            'selected': selected,
-            'index': index,
-            'attrs': option_attrs,
-            'type': self.input_type,
-            'template_name': self.option_template_name,
-        }
-
-
-class MyModelChoiceField(ModelChoiceField):
-
-    # custom method to label the option field
-    def label_from_instance(self, obj):
-        # since the object is accessible here you can set the extra attributes
-        if hasattr(obj, 'rgb'):
-            self.widget.custom_attrs.update({obj.pk: {'rgb': obj.rgb}})
-            #self.widget.custom_attrs.update({obj.pk: {'style': F'background-color:#{obj.rgb}'}})
-            self.widget.custom_attrs.update({obj.pk: {'style': F'background-color:#{obj.rgb}; color:#{obj.complimentary_color}'}})
-
-        #return obj.get_display_name()
-        #return obj.name + F' style="background-color:#{obj.rgb}"'
-        return obj.name
-
-
-
-
-
-
-
 class InventoryForm(ModelForm):
     rgb = CharField(disabled=True, required=False)
 
-    field1 = MyModelChoiceField(required=True,
-                                queryset=Color.objects.all().order_by('name'),
-                                widget=CustomSelect(attrs={'class': 'chosen-select'}))
+    color = PartColorChoiceField(required=True,
+                                 queryset=Color.objects.all(),
+                                 widget=CustomSelectWidget(attrs={'class': 'chosen-select'}))
 
     class Meta:
         model = Inventory
-        fields = ['color', 'rgb', 'qty', 'field1']
+        fields = ['color', 'rgb', 'qty']
 
     def __init__(self, *args, userpart, **kwargs):
         super().__init__(*args, **kwargs)

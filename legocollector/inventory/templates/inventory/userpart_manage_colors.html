@@ -91,7 +91,12 @@
                 success: function (data) {
                     if (data.rbg_val) {
                         document.getElementById(target).value = data.rbg_val;
-                        document.getElementById(target).setAttribute("style", "background-color:#" + data.rbg_val + ";");
+                        var color_style = "background-color:#" + data.rbg_val + ";";
+                        if (data.complimentary_color) {
+                            color_style += " color:#" + data.complimentary_color + ";";
+                        }
+
+                        document.getElementById(target).setAttribute("style", color_style);
                     } else {
                         document.getElementById(target).removeAttribute("style");
                         document.getElementById(target).value = null;
