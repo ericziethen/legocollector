@@ -56,7 +56,7 @@ class Color(models.Model):
         # Counting the perceptive luminance
         # human eye favors green color
         value = 1 - (0.299 * red + 0.587 * green + 0.114 * blue) / 255
-        return (value < 0.5)
+        return value < 0.5
 
 
 class Part(models.Model):

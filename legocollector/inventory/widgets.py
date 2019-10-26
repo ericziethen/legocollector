@@ -7,7 +7,8 @@ class CustomSelectWidget(Select):
         self.custom_attrs = {}
         super().__init__(attrs, choices)
 
-    def create_option(self, name, value, label, selected, index, subindex=None, attrs=None):
+    def create_option(self, name, value, label, selected,  # pylint: disable=too-many-arguments
+                      index, subindex=None, attrs=None):
         index = str(index) if subindex is None else "%s_%s" % (index, subindex)
         if attrs is None:
             attrs = {}
@@ -21,8 +22,8 @@ class CustomSelectWidget(Select):
         if len(self.custom_attrs) > 0:
             if value in self.custom_attrs:
                 custom_attr = self.custom_attrs[value]
-                for k, v in custom_attr.items():
-                    option_attrs.update({k: v})
+                for key, val in custom_attr.items():
+                    option_attrs.update({key: val})
 
         return {
             'name': name,
