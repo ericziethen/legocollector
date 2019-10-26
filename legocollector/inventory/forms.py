@@ -77,6 +77,12 @@ class InventoryUpdateForm(ModelForm):
 
 
 
+
+
+
+
+
+
 from django.forms import ModelChoiceField, Select
 from .models import Color
 # https://stackoverflow.com/questions/5089396/django-form-field-choices-adding-an-attribute
@@ -121,10 +127,18 @@ class MyModelChoiceField(ModelChoiceField):
         # since the object is accessible here you can set the extra attributes
         if hasattr(obj, 'rgb'):
             self.widget.custom_attrs.update({obj.pk: {'rgb': obj.rgb}})
-            self.widget.custom_attrs.update({obj.pk: {'style': F'background-color:#{obj.rgb}'}})
+            #self.widget.custom_attrs.update({obj.pk: {'style': F'background-color:#{obj.rgb}'}})
+            self.widget.custom_attrs.update({obj.pk: {'style': F'background-color:#{obj.rgb}; color:#{obj.complimentary_color}'}})
+
         #return obj.get_display_name()
         #return obj.name + F' style="background-color:#{obj.rgb}"'
         return obj.name
+
+
+
+
+
+
 
 class InventoryForm(ModelForm):
     rgb = CharField(disabled=True, required=False)

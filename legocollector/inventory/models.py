@@ -33,6 +33,21 @@ class Color(models.Model):
     def blue_dec(self):
         return int(self.rgb[2:4], 16)
 
+    @property
+    def complimentary_color(self):
+        # https://codepen.io/WebSeed/pen/pvgqEq
+        color = 'FFFFFF'  # white
+        if self.colourIsLight(self.red_dec, self.green_dec, self.blue_dec):
+            color = '000000'  # black
+        return color
+
+    @staticmethod
+    def colourIsLight(red, green, blue):  # https://codepen.io/WebSeed/pen/pvgqEq
+        # Counting the perceptive luminance
+        # human eye favors green color
+        value = 1 - (0.299 * red + 0.587 * green + 0.114 * blue) / 255
+        return (value < 0.5)
+
 
 class Part(models.Model):
     part_num = models.CharField(unique=True, max_length=20)
