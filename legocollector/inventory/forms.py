@@ -126,12 +126,11 @@ class MyModelChoiceField(ModelChoiceField):
         #return obj.name + F' style="background-color:#{obj.rgb}"'
         return obj.name
 
-
 class InventoryForm(ModelForm):
     rgb = CharField(disabled=True, required=False)
 
     field1 = MyModelChoiceField(required=True,
-                                queryset=Color.objects.all(),
+                                queryset=Color.objects.all().order_by('name'),
                                 widget=CustomSelect(attrs={'class': 'chosen-select'}))
 
     class Meta:
