@@ -20,10 +20,12 @@ class Command(BaseCommand):
 
         # Supported files to import
         import_files = OrderedDict()
+        '''
         import_files[os.path.join(import_dir, 'colors.csv')] = self._populate_colors
         import_files[os.path.join(import_dir, 'part_categories.csv')] = self._populate_part_categories
         import_files[os.path.join(import_dir, 'parts.csv')] = self._populate_parts
         import_files[os.path.join(import_dir, 'part_relationships.csv')] = self._populate_relationships
+        '''
         import_files[os.path.join(import_dir, 'inventory_parts.csv')] = self._populate_set_parts
 
         try:
@@ -33,6 +35,10 @@ class Command(BaseCommand):
 
         # Process import files
         for file_path, import_func in import_files.items():
+            row_count = 0
+            with open(file_path) as csvfile:
+                row_count = sum(1 for row in csvfile)
+
             with open(file_path) as csvfile:
                 reader = csv.DictReader(csvfile)
                 import_func(reader)
@@ -117,17 +123,36 @@ class Command(BaseCommand):
 
     def _populate_set_parts(self, csv_data):
         self.stdout.write(F'Populate Set Parts')
+
+        self.stdout.write(F'Deleting all Set Parts - Start')
         with transaction.atomic():
-            for row in csv_data:
-                SetPart.objects.update_or_create(
-                    set_inventory=row['inventory_id'],
-                    part=Part.objects.get(part_num=row['part_num']),
-                    color=Color.objects.get(id=row['color_id']),
-                    defaults={
-                        'qty': row['quantity'],
-                        'is_spare': row['is_spare']
-                    }
-                )
+            SetPart.objects.all().delete()
+        self.stdout.write(F'Deleting all Set Parts - End')
+
+        batch_size = 999  # Max for Sqlite3
+        batch_list = []
+
+        csv_row_count = 0
+        for row in csv_data:
+            csv_row_count += 1
+
+            batch_list.append(SetPart(
+                set_inventory=row['inventory_id'],
+                part=Part.objects.get(part_num=row['part_num']),
+                color=Color.objects.get(id=row['color_id']),
+                qty=row['quantity'],
+                is_spare=row['is_spare'])
+            )
+
+            if (csv_row_count % batch_size) == 0:
+                SetPart.objects.bulk_create(batch_list)
+                batch_list.clear()
+                self.stdout.write(F'  SetParts Created: {csv_row_count}')
+
+        if batch_list:
+            SetPart.objects.bulk_create(batch_list)
+
+        self.stdout.write(F'  Total SetParts Processed: {csv_row_count}')
 
     @staticmethod
     def _validate_config_path(base_path, expected_file_list):
