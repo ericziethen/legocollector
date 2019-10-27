@@ -188,13 +188,13 @@ class SetPart(models.Model):
 
     # In the future that might need to be a foreign key if we ever introduce sets
     set_inventory = models.PositiveIntegerField()
-    part = models.ForeignKey(Part, on_delete=models.CASCADE, related_name='set_part_parts')
-    color = models.ForeignKey(Color, on_delete=models.CASCADE, related_name='set_part_colors')
+    part = models.ForeignKey(Part, on_delete=models.CASCADE, related_name='setparts')
+    color = models.ForeignKey(Color, on_delete=models.CASCADE, related_name='setparts')
     qty = models.PositiveIntegerField()
     is_spare = models.BooleanField()
 
     class Meta:
-        unique_together = (('set_inventory', 'part', 'color'),)
+        unique_together = (('set_inventory', 'part', 'color', 'is_spare'),)
 
     def __str__(self):
         return F'{self.part} - {self.qty} x {self.color}'

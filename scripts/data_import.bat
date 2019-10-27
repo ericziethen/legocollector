@@ -17,6 +17,8 @@ rem Import the Rebrickable Data
 python manage.py import_rebrickable_data "%REBRICKABLE_CSV_FILES_DIR%"
 if %errorlevel% gtr 0 goto error
 
+goto end
+
 rem Guess the Part Dimensions from Name
 python manage.py guess_dimensions_from_part_names
 if %errorlevel% gtr 0 goto error

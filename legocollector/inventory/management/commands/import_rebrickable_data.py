@@ -9,6 +9,9 @@ from django.db import transaction
 from django.core.management.base import BaseCommand, CommandError
 from inventory.models import Color, PartCategory, Part, PartRelationship, SetPart
 
+# TODO - Check if can increase Performance with bulk creats,
+# !!! Only for tables that can be deleted maybe, so NOT PARTS for sure
+# !!! MAYBE relationships though???
 
 class Command(BaseCommand):
 
@@ -20,12 +23,12 @@ class Command(BaseCommand):
 
         # Supported files to import
         import_files = OrderedDict()
-
+        '''
         import_files[os.path.join(import_dir, 'colors.csv')] = self._populate_colors
         import_files[os.path.join(import_dir, 'part_categories.csv')] = self._populate_part_categories
         import_files[os.path.join(import_dir, 'parts.csv')] = self._populate_parts
         import_files[os.path.join(import_dir, 'part_relationships.csv')] = self._populate_relationships
-
+        '''
         import_files[os.path.join(import_dir, 'inventory_parts.csv')] = self._populate_set_parts
 
         try:
@@ -131,26 +134,30 @@ class Command(BaseCommand):
 
         batch_size = 999  # Max for Sqlite3
         batch_list = []
-
         csv_row_count = 0
-        for row in csv_data:
-            csv_row_count += 1
 
-            batch_list.append(SetPart(
-                set_inventory=row['inventory_id'],
-                part=Part.objects.get(part_num=row['part_num']),
-                color=Color.objects.get(id=row['color_id']),
-                qty=row['quantity'],
-                is_spare=row['is_spare'])
-            )
+        # Load all Parts into memory otherwise bulk_crete gets slow
+        cached_parts = {p.part_num: p for p in Part.objects.all()}
 
-            if (csv_row_count % batch_size) == 0:
+        with transaction.atomic():
+            for row in csv_data:
+                csv_row_count += 1
+
+                batch_list.append(SetPart(
+                    set_inventory=row['inventory_id'],
+                    color_id=row['color_id'],
+                    part=cached_parts[row['part_num']],
+                    qty=row['quantity'],
+                    is_spare=row['is_spare'])
+                )
+
+                if (csv_row_count % batch_size) == 0:
+                    SetPart.objects.bulk_create(batch_list)
+                    batch_list.clear()
+                    self.stdout.write(F'  SetParts Created: {csv_row_count}')
+
+            if batch_list:
                 SetPart.objects.bulk_create(batch_list)
-                batch_list.clear()
-                self.stdout.write(F'  SetParts Created: {csv_row_count}')
-
-        if batch_list:
-            SetPart.objects.bulk_create(batch_list)
 
         self.stdout.write(F'  Total SetParts Processed: {csv_row_count}')
 
