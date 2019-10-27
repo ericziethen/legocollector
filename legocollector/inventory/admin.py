@@ -16,13 +16,14 @@ class PartAdmin(admin.ModelAdmin):
     fieldsets = [
         ('Identification', {'fields': ['part_num', 'name', 'category']}),
         ('Dimensions', {'fields': ['width', 'height', 'length']}),
+        ('Available Colors', {'fields': ['part_colors']}),
         ('Related parts', {'fields': ['related_parts']}),
     ]
     list_display = ('part_num', 'name', 'category', 'width', 'height', 'length',
                     'id', 'related_part_count')
     list_filter = ['width', 'height', 'length']
     search_fields = ['part_num', 'name', 'category__name']
-    readonly_fields = ['related_parts']
+    readonly_fields = ['related_parts', 'part_colors']
 
     def related_parts(self, obj):  # pylint:disable=no-self-use
         return ', '.join(p.part_num for p in obj.get_related_parts(
@@ -30,6 +31,9 @@ class PartAdmin(admin.ModelAdmin):
 
     def related_part_count(self, obj):  # pylint:disable=no-self-use
         return F'{obj.related_part_count(parents=True, children=True, transitive=True)}'
+
+    def part_colors(self, obj):  # pylint:disable=no-self-use
+        return ', '.join(c.name for c in obj.available_colors.order_by('name'))
 
 
 class SetPartAdmin(admin.ModelAdmin):

@@ -75,6 +75,10 @@ class Part(models.Model):
     def attribute_count(self):
         return [bool(self.width), bool(self.height), bool(self.length)].count(True)
 
+    @property
+    def available_colors(self):
+        return Color.objects.filter(setparts__part=self).distinct()
+
     def get_related_parts(self, *, parents, children, transitive, parts_processed=None):
         related_parts = []
 
