@@ -7,7 +7,7 @@ from collections import OrderedDict
 
 from django.db import transaction
 from django.core.management.base import BaseCommand, CommandError
-from inventory.models import Color, PartCategory, Part, PartRelationship
+from inventory.models import Color, PartCategory, Part, PartRelationship, SetPart
 
 
 class Command(BaseCommand):
@@ -24,6 +24,7 @@ class Command(BaseCommand):
         import_files[os.path.join(import_dir, 'part_categories.csv')] = self._populate_part_categories
         import_files[os.path.join(import_dir, 'parts.csv')] = self._populate_parts
         import_files[os.path.join(import_dir, 'part_relationships.csv')] = self._populate_relationships
+        import_files[os.path.join(import_dir, 'inventory_parts.csv')] = self._populate_set_parts
 
         try:
             self._validate_config_path(import_dir, import_files.keys())
@@ -111,6 +112,20 @@ class Command(BaseCommand):
 
                         if (idx % 1000) == 0:
                             self.stdout.write(F'  Relationships Processed: {idx}')
+
+    def _populate_set_parts(self, csv_data):
+        self.stdout.write(F'Populate Set Parts')
+        with transaction.atomic():
+            for row in csv_data:
+                set_part, _ = SetPart.objects.get_or_create(
+                    set_inventory=row['inventory_id'],
+                    part=Part.objects.get(part_num=row['part_num']),
+                    color=Color.objects.get(id=row['color_id']),
+                )
+                set_part.qty = row['quantity']
+                set_part.is_spare = row['is_spare']
+                set_part.save()
+
 
     @staticmethod
     def _validate_config_path(base_path, expected_file_list):

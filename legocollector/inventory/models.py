@@ -182,3 +182,19 @@ class Inventory(models.Model):
 
     def get_absolute_url(self):
         return reverse('inventory_detail', kwargs={'pk1': self.pk, 'pk2': self.pk})
+
+
+class SetPart(models.Model):
+
+    # In the future that might need to be a foreign key if we ever introduce sets
+    set_inventory = models.PositiveIntegerField()
+    part = models.ForeignKey(Part, on_delete=models.CASCADE, related_name='set_part_parts')
+    color = models.ForeignKey(Color, on_delete=models.CASCADE, related_name='set_part_colors')
+    qty = models.PositiveIntegerField()
+    is_spare = models.BooleanField()
+
+    class Meta:
+        unique_together = (('set_inventory', 'part', 'color'),)
+
+    def __str__(self):
+        return F'{self.part} - {self.qty} x {self.color}'

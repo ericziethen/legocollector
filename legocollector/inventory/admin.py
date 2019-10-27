@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from .models import (
     Color, Part, PartCategory, PartRelationship,
-    PartExternalId, UserPart, Inventory
+    PartExternalId, SetPart, UserPart, Inventory
 )
 
 
@@ -30,6 +30,10 @@ class PartAdmin(admin.ModelAdmin):
 
     def related_part_count(self, obj):  # pylint:disable=no-self-use
         return F'{obj.related_part_count(parents=True, children=True, transitive=True)}'
+
+
+class SetPartAdmin(admin.ModelAdmin):
+    list_display = ('set_inventory', 'part', 'color', 'qty', 'is_spare')
 
 
 class PartExternalIdpAdmin(admin.ModelAdmin):
