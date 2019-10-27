@@ -48,7 +48,7 @@ class Command(BaseCommand):
                             provider = self.provider_from_string(name)
                             for entry in ids:
                                 # Is this better than check if exist first?
-                                PartExternalId.objects.get_or_create(
+                                PartExternalId.objects.update_or_create(
                                     part=part,
                                     external_id=entry.strip(),
                                     provider=provider

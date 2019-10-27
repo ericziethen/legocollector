@@ -64,14 +64,14 @@ def import_userparts(request):
     reader = csv.DictReader(io.StringIO(csv_file.read().decode('utf-8')))
     with transaction.atomic():
         for row in reader:
-            userpart, _ = UserPart.objects.get_or_create(
+            userpart, _ = UserPart.objects.update_or_create(
                 user=request.user,
                 part=Part.objects.get(part_num=row['Part']),
             )
-            inventory, _ = Inventory.objects.get_or_create(
+            inventory, _ = Inventory.objects.update_or_create(
                 userpart=userpart,
                 color=Color.objects.get(id=row['Color']),
-                qty=row['Quantity'],
+                defaults={'qty': row['Quantity']}
             )
 
             inventory.save()
@@ -314,9 +314,11 @@ class UserPartManageColorsView(LoginRequiredMixin, UpdateView):  # pylint: disab
                         color = inventory_form.cleaned_data['color']
                         qty = inventory_form.cleaned_data['qty']
 
-                        inventory, _ = Inventory.objects.get_or_create(
-                            userpart=self.object, color=color)
-                        inventory.qty = qty
+                        inventory, _ = Inventory.objects.update_or_create(
+                            userpart=self.object,
+                            color=color,
+                            defaults={'qty': qty}
+                        )
                         # print(F'CREATE INV: {inventory}')
                         inventory.save()
 

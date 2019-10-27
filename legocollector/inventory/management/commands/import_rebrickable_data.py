@@ -41,27 +41,30 @@ class Command(BaseCommand):
         self.stdout.write(F'Populate Colors')
         with transaction.atomic():
             for row in csv_data:
-                color, _ = Color.objects.get_or_create(id=row['id'])
-                color.rgb = row['rgb']
-                color.name = row['name']
-                color.transparent = row['is_trans']
-
+                rgb = row['rgb']
                 color_step = self._color_step(
-                    int(color.rgb[:2], 16), int(color.rgb[4:], 16), int(color.rgb[2:4], 16)
+                    int(rgb[:2], 16), int(rgb[4:], 16), int(rgb[2:4], 16)
                 )
 
-                color.color_step_hue = color_step[0]
-                color.color_step_lumination = color_step[1]
-                color.color_step_value = color_step[2]
-                color.save()
+                Color.objects.update_or_create(
+                    id=row['id'],
+                    defaults={
+                        'rgb': rgb,
+                        'name': row['name'],
+                        'transparent': row['is_trans'],
+                        'color_step_hue': color_step[0],
+                        'color_step_lumination': color_step[1],
+                        'color_step_value': color_step[2]
+                    }
+                )
 
     def _populate_part_categories(self, csv_data):
         self.stdout.write(F'Populate Part Categories')
         with transaction.atomic():
             for row in csv_data:
-                category, _ = PartCategory.objects.get_or_create(id=row['id'])
-                category.name = row['name']
-                category.save()
+                PartCategory.objects.update_or_create(
+                    id=row['id'],
+                    defaults={'name': row['name']})
 
     def _populate_parts(self, csv_data):
         self.stdout.write(F'Populate Parts')
@@ -103,12 +106,11 @@ class Command(BaseCommand):
                     parent_part = Part.objects.filter(part_num=parent_part_num).first()
 
                     if child_part and parent_part:
-                        relationship, _ = PartRelationship.objects.get_or_create(
+                        PartRelationship.objects.update_or_create(
                             child_part=child_part,
-                            parent_part=parent_part
+                            parent_part=parent_part,
+                            defaults={'relationship_type': relation_mapping[rel_type]}
                         )
-                        relationship.relationship_type = relation_mapping[rel_type]
-                        relationship.save()
 
                         if (idx % 1000) == 0:
                             self.stdout.write(F'  Relationships Processed: {idx}')
@@ -117,15 +119,15 @@ class Command(BaseCommand):
         self.stdout.write(F'Populate Set Parts')
         with transaction.atomic():
             for row in csv_data:
-                set_part, _ = SetPart.objects.get_or_create(
+                SetPart.objects.update_or_create(
                     set_inventory=row['inventory_id'],
                     part=Part.objects.get(part_num=row['part_num']),
                     color=Color.objects.get(id=row['color_id']),
+                    defaults={
+                        'qty': row['quantity'],
+                        'is_spare': row['is_spare']
+                    }
                 )
-                set_part.qty = row['quantity']
-                set_part.is_spare = row['is_spare']
-                set_part.save()
-
 
     @staticmethod
     def _validate_config_path(base_path, expected_file_list):
