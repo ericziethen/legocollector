@@ -55,6 +55,7 @@ class InventoryAdmin(admin.ModelAdmin):
 # Register your models here.
 admin.site.register(Color, ColorAdmin)
 admin.site.register(Part, PartAdmin)
+admin.site.register(SetPart, SetPartAdmin)
 admin.site.register(PartCategory)
 admin.site.register(PartRelationship, PartRelationshipAdmin)
 admin.site.register(PartExternalId, PartExternalIdpAdmin)
