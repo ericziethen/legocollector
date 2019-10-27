@@ -9,9 +9,6 @@ from django.db import transaction
 from django.core.management.base import BaseCommand, CommandError
 from inventory.models import Color, PartCategory, Part, PartRelationship, SetPart
 
-# TODO - Check if can increase Performance with bulk creats,
-# !!! Only for tables that can be deleted maybe, so NOT PARTS for sure
-# !!! MAYBE relationships though???
 
 class Command(BaseCommand):
 
