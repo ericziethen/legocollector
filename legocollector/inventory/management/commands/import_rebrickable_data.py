@@ -20,12 +20,12 @@ class Command(BaseCommand):
 
         # Supported files to import
         import_files = OrderedDict()
-        '''
+
         import_files[os.path.join(import_dir, 'colors.csv')] = self._populate_colors
         import_files[os.path.join(import_dir, 'part_categories.csv')] = self._populate_part_categories
         import_files[os.path.join(import_dir, 'parts.csv')] = self._populate_parts
         import_files[os.path.join(import_dir, 'part_relationships.csv')] = self._populate_relationships
-        '''
+
         import_files[os.path.join(import_dir, 'inventory_parts.csv')] = self._populate_set_parts
 
         try:
