@@ -7,7 +7,7 @@ from collections import OrderedDict
 
 from django.db import transaction
 from django.core.management.base import BaseCommand, CommandError
-from inventory.models import Color, PartCategory, Part, PartRelationship
+from inventory.models import Color, PartCategory, Part, PartRelationship, SetPart
 
 
 class Command(BaseCommand):
@@ -20,10 +20,12 @@ class Command(BaseCommand):
 
         # Supported files to import
         import_files = OrderedDict()
+
         import_files[os.path.join(import_dir, 'colors.csv')] = self._populate_colors
         import_files[os.path.join(import_dir, 'part_categories.csv')] = self._populate_part_categories
         import_files[os.path.join(import_dir, 'parts.csv')] = self._populate_parts
         import_files[os.path.join(import_dir, 'part_relationships.csv')] = self._populate_relationships
+        import_files[os.path.join(import_dir, 'inventory_parts.csv')] = self._populate_set_parts
 
         try:
             self._validate_config_path(import_dir, import_files.keys())
@@ -32,6 +34,10 @@ class Command(BaseCommand):
 
         # Process import files
         for file_path, import_func in import_files.items():
+            row_count = 0
+            with open(file_path) as csvfile:
+                row_count = sum(1 for row in csvfile)
+
             with open(file_path) as csvfile:
                 reader = csv.DictReader(csvfile)
                 import_func(reader)
@@ -40,27 +46,30 @@ class Command(BaseCommand):
         self.stdout.write(F'Populate Colors')
         with transaction.atomic():
             for row in csv_data:
-                color, _ = Color.objects.get_or_create(id=row['id'])
-                color.rgb = row['rgb']
-                color.name = row['name']
-                color.transparent = row['is_trans']
-
+                rgb = row['rgb']
                 color_step = self._color_step(
-                    int(color.rgb[:2], 16), int(color.rgb[4:], 16), int(color.rgb[2:4], 16)
+                    int(rgb[:2], 16), int(rgb[4:], 16), int(rgb[2:4], 16)
                 )
 
-                color.color_step_hue = color_step[0]
-                color.color_step_lumination = color_step[1]
-                color.color_step_value = color_step[2]
-                color.save()
+                Color.objects.update_or_create(
+                    id=row['id'],
+                    defaults={
+                        'rgb': rgb,
+                        'name': row['name'],
+                        'transparent': row['is_trans'],
+                        'color_step_hue': color_step[0],
+                        'color_step_lumination': color_step[1],
+                        'color_step_value': color_step[2]
+                    }
+                )
 
     def _populate_part_categories(self, csv_data):
         self.stdout.write(F'Populate Part Categories')
         with transaction.atomic():
             for row in csv_data:
-                category, _ = PartCategory.objects.get_or_create(id=row['id'])
-                category.name = row['name']
-                category.save()
+                PartCategory.objects.update_or_create(
+                    id=row['id'],
+                    defaults={'name': row['name']})
 
     def _populate_parts(self, csv_data):
         self.stdout.write(F'Populate Parts')
@@ -102,15 +111,52 @@ class Command(BaseCommand):
                     parent_part = Part.objects.filter(part_num=parent_part_num).first()
 
                     if child_part and parent_part:
-                        relationship, _ = PartRelationship.objects.get_or_create(
+                        PartRelationship.objects.update_or_create(
                             child_part=child_part,
-                            parent_part=parent_part
+                            parent_part=parent_part,
+                            defaults={'relationship_type': relation_mapping[rel_type]}
                         )
-                        relationship.relationship_type = relation_mapping[rel_type]
-                        relationship.save()
 
                         if (idx % 1000) == 0:
                             self.stdout.write(F'  Relationships Processed: {idx}')
+
+    def _populate_set_parts(self, csv_data):
+        self.stdout.write(F'Populate Set Parts')
+
+        self.stdout.write(F'Deleting all Set Parts - Start')
+        with transaction.atomic():
+            SetPart.objects.all().delete()
+        self.stdout.write(F'Deleting all Set Parts - End')
+
+        batch_size = 999  # Max for Sqlite3
+        batch_list = []
+        csv_row_count = 0
+
+        # Load all Parts into memory otherwise bulk_crete gets slow
+        cached_parts = {p.part_num: p for p in Part.objects.all()}
+
+        with transaction.atomic():
+            for row in csv_data:
+                csv_row_count += 1
+
+                batch_list.append(
+                    SetPart(
+                        set_inventory=row['inventory_id'],
+                        color_id=row['color_id'],
+                        part=cached_parts[row['part_num']],
+                        qty=row['quantity'],
+                        is_spare=row['is_spare'])
+                )
+
+                if (csv_row_count % batch_size) == 0:
+                    SetPart.objects.bulk_create(batch_list)
+                    batch_list.clear()
+                    self.stdout.write(F'  SetParts Created: {csv_row_count}')
+
+            if batch_list:
+                SetPart.objects.bulk_create(batch_list)
+
+        self.stdout.write(F'  Total SetParts Processed: {csv_row_count}')
 
     @staticmethod
     def _validate_config_path(base_path, expected_file_list):

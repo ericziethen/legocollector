@@ -75,6 +75,14 @@ class Part(models.Model):
     def attribute_count(self):
         return [bool(self.width), bool(self.height), bool(self.length)].count(True)
 
+    @property
+    def available_colors(self):
+        return Color.objects.filter(setparts__part=self).distinct()
+
+    @property
+    def inventory_colors(self):
+        return Color.objects.filter(inventory_colors__userpart__part=self).distinct()
+
     def get_related_parts(self, *, parents, children, transitive, parts_processed=None):
         related_parts = []
 
@@ -171,7 +179,7 @@ class UserPart(models.Model):
 
 class Inventory(models.Model):
     userpart = models.ForeignKey(UserPart, on_delete=models.CASCADE, related_name='inventory_list')
-    color = models.ForeignKey(Color, on_delete=models.CASCADE, related_name='user_parts')
+    color = models.ForeignKey(Color, on_delete=models.CASCADE, related_name='inventory_colors')
     qty = models.PositiveIntegerField(default=0)
 
     class Meta:
@@ -182,3 +190,19 @@ class Inventory(models.Model):
 
     def get_absolute_url(self):
         return reverse('inventory_detail', kwargs={'pk1': self.pk, 'pk2': self.pk})
+
+
+class SetPart(models.Model):
+
+    # In the future that might need to be a foreign key if we ever introduce sets
+    set_inventory = models.PositiveIntegerField()
+    part = models.ForeignKey(Part, on_delete=models.CASCADE, related_name='setparts')
+    color = models.ForeignKey(Color, on_delete=models.CASCADE, related_name='setparts')
+    qty = models.PositiveIntegerField()
+    is_spare = models.BooleanField()
+
+    class Meta:
+        unique_together = (('set_inventory', 'part', 'color', 'is_spare'),)
+
+    def __str__(self):
+        return F'{self.part} - {self.qty} x {self.color}'

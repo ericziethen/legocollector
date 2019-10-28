@@ -2,7 +2,7 @@ from django.forms import CharField, ModelForm, ValidationError, modelformset_fac
 from django.forms.formsets import BaseFormSet
 
 from .fields import PartColorChoiceField
-from .models import Color, Inventory, UserPart
+from .models import Inventory, UserPart
 from .widgets import CustomSelectWidget
 
 
@@ -79,17 +79,25 @@ class InventoryUpdateForm(ModelForm):
 class InventoryForm(ModelForm):
     rgb = CharField(disabled=True, required=False)
 
-    color = PartColorChoiceField(required=True,
-                                 queryset=Color.objects.all(),
-                                 widget=CustomSelectWidget(attrs={'class': 'chosen-select'}))
-
     class Meta:
         model = Inventory
         fields = ['color', 'rgb', 'qty']
 
     def __init__(self, *args, userpart, **kwargs):
         super().__init__(*args, **kwargs)
+
+        # Exclude existing colors from New Forms
+        queryset = userpart.part.available_colors
+        if 'initial' not in kwargs:
+            queryset = userpart.part.available_colors.exclude(
+                pk__in=userpart.part.inventory_colors)
+
         self.userpart = userpart
+        self.fields['color'] = PartColorChoiceField(
+            label='Available Colors',
+            required=True,
+            queryset=queryset,
+            widget=CustomSelectWidget(attrs={'class': 'chosen-select'}))
 
     def save(self, commit=True):
         # print('InventoryForm.save() - ENTER')

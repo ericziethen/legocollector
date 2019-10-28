@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from .models import (
     Color, Part, PartCategory, PartRelationship,
-    PartExternalId, UserPart, Inventory
+    PartExternalId, SetPart, UserPart, Inventory
 )
 
 
@@ -16,13 +16,14 @@ class PartAdmin(admin.ModelAdmin):
     fieldsets = [
         ('Identification', {'fields': ['part_num', 'name', 'category']}),
         ('Dimensions', {'fields': ['width', 'height', 'length']}),
+        ('Available Colors', {'fields': ['available_colors', 'part_inventory_colors']}),
         ('Related parts', {'fields': ['related_parts']}),
     ]
     list_display = ('part_num', 'name', 'category', 'width', 'height', 'length',
                     'id', 'related_part_count')
     list_filter = ['width', 'height', 'length']
     search_fields = ['part_num', 'name', 'category__name']
-    readonly_fields = ['related_parts']
+    readonly_fields = ['related_parts', 'available_colors', 'part_inventory_colors']
 
     def related_parts(self, obj):  # pylint:disable=no-self-use
         return ', '.join(p.part_num for p in obj.get_related_parts(
@@ -30,6 +31,16 @@ class PartAdmin(admin.ModelAdmin):
 
     def related_part_count(self, obj):  # pylint:disable=no-self-use
         return F'{obj.related_part_count(parents=True, children=True, transitive=True)}'
+
+    def available_colors(self, obj):  # pylint:disable=no-self-use
+        return ', '.join(c.name for c in obj.available_colors.order_by('name'))
+
+    def part_inventory_colors(self, obj):  # pylint:disable=no-self-use
+        return ', '.join(c.name for c in obj.inventory_colors.order_by('name'))
+
+
+class SetPartAdmin(admin.ModelAdmin):
+    list_display = ('set_inventory', 'part', 'color', 'qty', 'is_spare')
 
 
 class PartExternalIdpAdmin(admin.ModelAdmin):
@@ -51,6 +62,7 @@ class InventoryAdmin(admin.ModelAdmin):
 # Register your models here.
 admin.site.register(Color, ColorAdmin)
 admin.site.register(Part, PartAdmin)
+admin.site.register(SetPart, SetPartAdmin)
 admin.site.register(PartCategory)
 admin.site.register(PartRelationship, PartRelationshipAdmin)
 admin.site.register(PartExternalId, PartExternalIdpAdmin)
