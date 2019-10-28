@@ -28,7 +28,6 @@
             },
 
             updateElementIndex = function(elem, prefix, ndx) {
-                console.log('updateElementIndex(' + elem + ', ' + prefix + ', ' + ndx + ')')
                 var idRegex = new RegExp(prefix + '-(\\d+|__prefix__)-'),
                     replacement = prefix + '-' + ndx + '-';
                 if (elem.attr("for")) elem.attr("for", elem.attr("for").replace(idRegex, replacement));
@@ -190,19 +189,16 @@
                 if (hideAddButton) addButton.hide();
             }
             addButton.click(function() {
-                console.log("addButton.click")
                 var formCount = parseInt(totalForms.val()),
                     row = options.formTemplate.clone(true).removeClass('formset-custom-template'),
                     buttonRow = $($(this).parents('tr.' + options.formCssClass + '-add').get(0) || this)
                     delCssSelector = $.trim(options.deleteCssClass).replace(/\s+/g, '.');
-                
-                console.log("formCount: " + formCount)
+
                 applyExtraClasses(row, formCount);
                 row.insertBefore(buttonRow).show();
                 row.find(childElementSelector).each(function() {
                     updateElementIndex($(this), options.prefix, formCount);
                 });
-                
                 totalForms.val(formCount + 1);
                 // Check if we're above the minimum allowed number of forms -> show all delete link(s)
                 if (showDeleteLinks()){
