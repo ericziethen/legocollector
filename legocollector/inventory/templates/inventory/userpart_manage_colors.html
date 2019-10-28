@@ -58,12 +58,22 @@
     <script type="text/javascript">
         $('.formset_row').formset({
             addText: 'add Color',
-            added: add_form,
+            // added: addedRow,
             deleteText: 'remove',
-            prefix: 'inventory_list_set'
+            /* Doesn't seem to be needed
+                The prefix determines what name is used, e.g. in our case we have (from the html source):
+                    <input type="hidden" name="form-TOTAL_FORMS" value="4" id="id_form-TOTAL_FORMS"...
+                jquery.formset.js looks for "totalForms = $('#id_' + options.prefix + '-TOTAL_FORMS'),"
+                -> form is our prefix
+            */
+            //prefix: 'form',
         });
 
-        $("[id$=-color]").on("change", function(row) {
+        /*
+            Used    "$("[id$=-color]").on("change", function(row) {"
+            before, but then dymanically added elements would not change color
+        */
+        $(document).on( 'change', '[id$=-color]', function(row) {
             var color_id = $(this).val()
             setRgbField(color_id, getRgbFieldFromChoiceField(this.id));
         });
@@ -77,10 +87,8 @@
             });
         });
 
-        // TODO - FORMS ARE NOT INCREMENTING
-        // https://github.com/elo80ka/django-dynamic-formset
-        function add_form(row) {
-            console.log("Added Row: " + row)
+        function addedRow(row) {
+            //console.log("Row Added")
         }
 
         function getRgbFieldFromChoiceField(choice_field) {
