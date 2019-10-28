@@ -58,6 +58,7 @@
     <script type="text/javascript">
         $('.formset_row').formset({
             addText: 'add Color',
+            added: add_form,
             deleteText: 'remove',
             prefix: 'inventory_list_set'
         });
@@ -75,6 +76,12 @@
                 }
             });
         });
+
+        // TODO - FORMS ARE NOT INCREMENTING
+        // https://github.com/elo80ka/django-dynamic-formset
+        function add_form(row) {
+            console.log("Added Row: " + row)
+        }
 
         function getRgbFieldFromChoiceField(choice_field) {
             var rgb_field = choice_field.replace("-color", "-rgb");

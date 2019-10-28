@@ -28,6 +28,7 @@
             },
 
             updateElementIndex = function(elem, prefix, ndx) {
+                console.log('updateElementIndex(' + elem + ', ' + prefix + ', ' + ndx + ')')
                 var idRegex = new RegExp(prefix + '-(\\d+|__prefix__)-'),
                     replacement = prefix + '-' + ndx + '-';
                 if (elem.attr("for")) elem.attr("for", elem.attr("for").replace(idRegex, replacement));
@@ -189,6 +190,7 @@
                 if (hideAddButton) addButton.hide();
             }
             addButton.click(function() {
+                console.log("addButton.click")
                 var formCount = parseInt(totalForms.val()),
                     row = options.formTemplate.clone(true).removeClass('formset-custom-template'),
                     buttonRow = $($(this).parents('tr.' + options.formCssClass + '-add').get(0) || this)
