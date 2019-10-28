@@ -288,8 +288,9 @@ class UserPartManageColorsView(LoginRequiredMixin, UpdateView):  # pylint: disab
         # Check for Form Errors
         for inventory_form in inventory_formset:
             if not inventory_form.is_valid():
-                form.add_error(None, 'Invalid Form')
-                return super().form_invalid(form)
+                if inventory_form.initial_data:
+                    form.add_error(None, 'Invalid Form')
+                    return super().form_invalid(form)
 
         # Check for Non-Form errors
         if inventory_formset.non_form_errors():
@@ -299,7 +300,8 @@ class UserPartManageColorsView(LoginRequiredMixin, UpdateView):  # pylint: disab
         for inventory_form in inventory_formset:
             # Delete any inventory that got Visually Removed or had it's color changed
             if (inventory_form in inventory_formset.deleted_forms) or ('color' in inventory_form.changed_data):
-                if 'color' in inventory_form.initial_data:
+                # Only something to Delete if there was data to begin with
+                if inventory_form.initial_data:
                     color = inventory_form.initial_data['color']
                     # At this point inventory must exist
                     Inventory.objects.filter(userpart=self.object, color=color).delete()
