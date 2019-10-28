@@ -85,10 +85,13 @@ class InventoryForm(ModelForm):
 
     def __init__(self, *args, userpart, **kwargs):
         super().__init__(*args, **kwargs)
+        self.initial_data = {}
 
         # Exclude existing colors from New Forms
         queryset = userpart.part.available_colors
-        if 'initial' not in kwargs:
+        if 'initial' in kwargs:
+            self.initial_data = kwargs['initial']
+        else:
             queryset = userpart.part.available_colors.exclude(
                 pk__in=userpart.part.inventory_colors)
 

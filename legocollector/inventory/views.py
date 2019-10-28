@@ -295,13 +295,14 @@ class UserPartManageColorsView(LoginRequiredMixin, UpdateView):  # pylint: disab
         if inventory_formset.non_form_errors():
             return super().form_invalid(form)
 
-        # Delete Removed Objects, delete all first to avoid issues with duplicates
-        for deleted_form in inventory_formset.deleted_forms:
-            if 'color' in deleted_form.cleaned_data:
-                color = deleted_form.cleaned_data['color']
-                inventory = Inventory.objects.filter(userpart=self.object, color=color)
-                # print(F'DELETE INV: {inventory}')
-                inventory.delete()
+        # Delete Inventories that changed their Color or got removed
+        for inventory_form in inventory_formset:
+            # Delete any inventory that got Visually Removed or had it's color changed
+            if (inventory_form in inventory_formset.deleted_forms) or ('color' in inventory_form.changed_data):
+                if 'color' in inventory_form.initial_data:
+                    color = inventory_form.initial_data['color']
+                    # At this point inventory must exist
+                    Inventory.objects.filter(userpart=self.object, color=color).delete()
 
         # Create new Objects
         for inventory_form in inventory_formset:
