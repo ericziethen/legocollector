@@ -79,6 +79,10 @@ class Part(models.Model):
     def available_colors(self):
         return Color.objects.filter(setparts__part=self).distinct()
 
+    @property
+    def inventory_colors(self):
+        return Color.objects.filter(inventory_colors__userpart__part=self).distinct()
+
     def get_related_parts(self, *, parents, children, transitive, parts_processed=None):
         related_parts = []
 
@@ -175,7 +179,7 @@ class UserPart(models.Model):
 
 class Inventory(models.Model):
     userpart = models.ForeignKey(UserPart, on_delete=models.CASCADE, related_name='inventory_list')
-    color = models.ForeignKey(Color, on_delete=models.CASCADE, related_name='user_parts')
+    color = models.ForeignKey(Color, on_delete=models.CASCADE, related_name='inventory_colors')
     qty = models.PositiveIntegerField(default=0)
 
     class Meta:

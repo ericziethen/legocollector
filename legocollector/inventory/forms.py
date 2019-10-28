@@ -85,11 +85,18 @@ class InventoryForm(ModelForm):
 
     def __init__(self, *args, userpart, **kwargs):
         super().__init__(*args, **kwargs)
+
+        # Exclude existing colors from New Forms
+        queryset = userpart.part.available_colors
+        if 'initial' not in kwargs:
+            queryset = userpart.part.available_colors.exclude(
+                pk__in=userpart.part.inventory_colors)
+
         self.userpart = userpart
         self.fields['color'] = PartColorChoiceField(
             label='Available Colors',
             required=True,
-            queryset=userpart.part.available_colors,
+            queryset=queryset,
             widget=CustomSelectWidget(attrs={'class': 'chosen-select'}))
 
     def save(self, commit=True):
