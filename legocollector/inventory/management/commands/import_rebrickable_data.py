@@ -139,12 +139,13 @@ class Command(BaseCommand):
             for row in csv_data:
                 csv_row_count += 1
 
-                batch_list.append(SetPart(
-                    set_inventory=row['inventory_id'],
-                    color_id=row['color_id'],
-                    part=cached_parts[row['part_num']],
-                    qty=row['quantity'],
-                    is_spare=row['is_spare'])
+                batch_list.append(
+                    SetPart(
+                        set_inventory=row['inventory_id'],
+                        color_id=row['color_id'],
+                        part=cached_parts[row['part_num']],
+                        qty=row['quantity'],
+                        is_spare=row['is_spare'])
                 )
 
                 if (csv_row_count % batch_size) == 0:
