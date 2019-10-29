@@ -16,14 +16,14 @@ class Color(models.Model):
     id = models.IntegerField(primary_key=True, editable=False)
     name = models.CharField(max_length=200, unique=True)
     rgb = models.CharField(max_length=6)
-    transparent = models.BooleanField()
+    transparent = models.BooleanField(default=False)
 
     # These fields are only here to help with sorting the queryset nicely
     # can do the sorting in a lambda method, but some places expect a queryset
-    color_step_hue = models.IntegerField(editable=False)
+    color_step_hue = models.IntegerField(editable=False, default=0)
     color_step_lumination = models.DecimalField(
-        max_digits=23, decimal_places=20, editable=False, blank=True, null=True)
-    color_step_value = models.IntegerField(editable=False)
+        max_digits=23, decimal_places=20, editable=False, default=0)
+    color_step_value = models.IntegerField(editable=False, default=0)
 
     class Meta:
         ordering = ('transparent', 'color_step_hue', 'color_step_lumination', 'color_step_value')
@@ -78,10 +78,6 @@ class Part(models.Model):
     @property
     def available_colors(self):
         return Color.objects.filter(setparts__part=self).distinct()
-
-    @property
-    def inventory_colors(self):
-        return Color.objects.filter(inventory_colors__userpart__part=self).distinct()
 
     def get_related_parts(self, *, parents, children, transitive, parts_processed=None):
         related_parts = []
@@ -169,6 +165,14 @@ class UserPart(models.Model):
 
     class Meta:
         unique_together = (('user', 'part'),)
+
+    @property
+    def used_colors(self):
+        return Color.objects.filter(inventory_colors__userpart=self).distinct()
+
+    @property
+    def unused_colors(self):
+        return self.part.available_colors.exclude(pk__in=self.used_colors)
 
     def __str__(self):
         return F'{self.part.name} ({self.part.part_num})'

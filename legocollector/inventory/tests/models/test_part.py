@@ -1,9 +1,9 @@
 from django.test import TestCase
 
-from inventory.models import Part, PartCategory, PartRelationship
+from inventory.models import Color, Part, PartCategory, PartRelationship, SetPart
 
 
-class PartTests(TestCase):
+class TestGetRelatedParts(TestCase):
 
     def setUp(self):
         PartCategory.objects.create(name='category1')
@@ -200,3 +200,27 @@ class PartTests(TestCase):
             self.assertEqual(len(related_parts), 5)
             for target in target_list:
                 self.assertIn(target, related_parts)
+
+
+class TestAvailableColors(TestCase):
+
+    def setUp(self):
+        self.part_category1 = PartCategory.objects.create(id=1, name='category1')
+
+        self.color1 = Color.objects.create(id='1', name='Red', rgb='AAAAAA')
+        self.color2 = Color.objects.create(id='2', name='Blue', rgb='BBBBBB')
+        self.color3 = Color.objects.create(id='3', name='Green', rgb='CCCCCC')
+
+        self.part1 = Part.objects.create(
+            part_num='PartA', name='A Part', category=self.part_category1)
+
+        self.set_part1 = SetPart.objects.create(
+            set_inventory=1, part=self.part1, color=self.color1, qty=1, is_spare=False)
+        self.set_part2 = SetPart.objects.create(
+            set_inventory=1, part=self.part1, color=self.color2, qty=1, is_spare=False)
+
+    def test_available_colors(self):
+        result = self.part1.available_colors
+        self.assertEqual(result.count(), 2)
+        self.assertTrue(result.filter(name=self.color1.name).exists())
+        self.assertTrue(result.filter(name=self.color2.name).exists())

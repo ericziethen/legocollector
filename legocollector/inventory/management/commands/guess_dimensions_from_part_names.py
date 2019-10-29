@@ -2,11 +2,9 @@ import re
 
 from decimal import Decimal
 
-# pylint: disable=R0801
 from django.db import transaction
 from django.core.management.base import BaseCommand
 from inventory.models import Part
-# pylint: enable=R0801
 
 
 class Command(BaseCommand):
