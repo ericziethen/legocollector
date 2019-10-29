@@ -61,6 +61,7 @@ class UserPartAdmin(admin.ModelAdmin):
     def unused_colors(self, obj):  # pylint:disable=no-self-use
         return ', '.join(c.name for c in obj.unused_colors.order_by('name'))
 
+
 class InventoryAdmin(admin.ModelAdmin):
     list_display = ('userpart', 'color', 'qty')
 

@@ -4,13 +4,13 @@ from django.test import TestCase
 from inventory.models import Color, Inventory, Part, PartCategory, SetPart, UserPart
 
 
-class TestInventoryColors(TestCase):
+class TestInventoryColors(TestCase):  # pylint: disable=too-many-instance-attributes
 
     def setUp(self):
         print('run')
-        self.user1 = User.objects.create_user(
+        self.user1 = User.objects.create_user(  # nosec
             username='User1', email='jacob@…', password='top_secret')
-        self.user2 = User.objects.create_user(
+        self.user2 = User.objects.create_user(  # nosec
             username='User2', email='jacob2@…', password='top_secret')
 
         self.part_category1 = PartCategory.objects.create(id=1, name='category1')
