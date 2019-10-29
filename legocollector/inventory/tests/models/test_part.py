@@ -3,7 +3,7 @@ from django.test import TestCase
 from inventory.models import Part, PartCategory, PartRelationship
 
 
-class GetRelatedPartsTests(TestCase):
+class TestGetRelatedParts(TestCase):
 
     def setUp(self):
         PartCategory.objects.create(name='category1')
