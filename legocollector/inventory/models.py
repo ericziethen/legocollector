@@ -79,6 +79,8 @@ class Part(models.Model):
     def available_colors(self):
         return Color.objects.filter(setparts__part=self).distinct()
 
+
+    # TODO - Replace
     @property
     def inventory_colors(self):
         return Color.objects.filter(inventory_colors__userpart__part=self).distinct()
@@ -171,8 +173,12 @@ class UserPart(models.Model):
         unique_together = (('user', 'part'),)
 
     @property
-    def inventory_colors(self):
-        return Color.objects.filter(inventory_colors__userpart__part=self.part).distinct()
+    def used_colors(self):
+        return Color.objects.filter(inventory_colors__userpart=self).distinct()
+
+    @property
+    def unused_colors(self):
+        return self.part.available_colors.exclude(pk__in=self.used_colors)
 
     def __str__(self):
         return F'{self.part.name} ({self.part.part_num})'
