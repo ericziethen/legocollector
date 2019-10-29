@@ -79,12 +79,6 @@ class Part(models.Model):
     def available_colors(self):
         return Color.objects.filter(setparts__part=self).distinct()
 
-
-    # TODO - Replace
-    @property
-    def inventory_colors(self):
-        return Color.objects.filter(inventory_colors__userpart__part=self).distinct()
-
     def get_related_parts(self, *, parents, children, transitive, parts_processed=None):
         related_parts = []
 

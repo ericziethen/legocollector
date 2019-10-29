@@ -92,8 +92,7 @@ class InventoryForm(ModelForm):
         if 'initial' in kwargs:
             self.initial_data = kwargs['initial']
         else:
-            queryset = userpart.part.available_colors.exclude(
-                pk__in=userpart.part.inventory_colors)
+            queryset = userpart.unused_colors
 
         self.userpart = userpart
         self.fields['color'] = PartColorChoiceField(

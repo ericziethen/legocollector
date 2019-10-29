@@ -16,14 +16,14 @@ class PartAdmin(admin.ModelAdmin):
     fieldsets = [
         ('Identification', {'fields': ['part_num', 'name', 'category']}),
         ('Dimensions', {'fields': ['width', 'height', 'length']}),
-        ('Available Colors', {'fields': ['available_colors', 'part_inventory_colors']}),
+        ('Available Colors', {'fields': ['available_colors']}),
         ('Related parts', {'fields': ['related_parts']}),
     ]
     list_display = ('part_num', 'name', 'category', 'width', 'height', 'length',
                     'id', 'related_part_count')
     list_filter = ['width', 'height', 'length']
     search_fields = ['part_num', 'name', 'category__name']
-    readonly_fields = ['related_parts', 'available_colors', 'part_inventory_colors']
+    readonly_fields = ['related_parts', 'available_colors']
 
     def related_parts(self, obj):  # pylint:disable=no-self-use
         return ', '.join(p.part_num for p in obj.get_related_parts(
@@ -34,9 +34,6 @@ class PartAdmin(admin.ModelAdmin):
 
     def available_colors(self, obj):  # pylint:disable=no-self-use
         return ', '.join(c.name for c in obj.available_colors.order_by('name'))
-
-    def part_inventory_colors(self, obj):  # pylint:disable=no-self-use
-        return ', '.join(c.name for c in obj.inventory_colors.order_by('name'))
 
 
 class SetPartAdmin(admin.ModelAdmin):
@@ -52,8 +49,17 @@ class PartRelationshipAdmin(admin.ModelAdmin):
 
 
 class UserPartAdmin(admin.ModelAdmin):
-    list_display = ('user', 'part')
+    fieldsets = [
+        ('Colors', {'fields': ['used_colors', 'unused_colors']}),
+    ]
+    list_display = ('user', 'part', 'used_colors', 'unused_colors')
+    readonly_fields = ['used_colors', 'unused_colors']
 
+    def used_colors(self, obj):  # pylint:disable=no-self-use
+        return ', '.join(c.name for c in obj.used_colors.order_by('name'))
+
+    def unused_colors(self, obj):  # pylint:disable=no-self-use
+        return ', '.join(c.name for c in obj.unused_colors.order_by('name'))
 
 class InventoryAdmin(admin.ModelAdmin):
     list_display = ('userpart', 'color', 'qty')
