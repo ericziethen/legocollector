@@ -5,7 +5,7 @@ from inventory.forms import InventoryForm
 from inventory.models import Color, Part, PartCategory, SetPart, UserPart
 
 
-class TestFormValidity(TestCase):
+class TestFormProcessing(TestCase):
 
     def setUp(self):
         self.initian_data = {'initial_data': True}
@@ -22,14 +22,19 @@ class TestFormValidity(TestCase):
         self.user_part = UserPart.objects.create(user=self.user, part=self.part)
 
         self.color_red = Color.objects.create(id='4', name='Red', rgb='C91A09')
+        self.color_black = Color.objects.create(id='20', name='Black', rgb='000000')
 
         self.set_part1 = SetPart.objects.create(
             set_inventory=1, part=self.part, color=self.color_red, qty=1, is_spare=False)
 
-    def run_form(self, *, color=None, qty=None, removed=None, initial=None):
+    def run_form(self, *, color=None, qty=None, removed=None, initial=None,
+                 new_color=None, initial_color=None, initial_qty=10):
         form_data = {}
         if color:
-            form_data['color'] = self.color_red.pk
+            if new_color:
+                form_data['color'] = new_color.pk
+            else:
+                form_data['color'] = self.color_red.pk
         if qty:
             form_data['qty'] = '15'
 
@@ -37,12 +42,18 @@ class TestFormValidity(TestCase):
         form.full_clean()
 
         if initial:
-            form.initial_data = {'color': self.color_red, 'qty': 0}
+            if initial_color:
+                form.initial_data = {'color': initial_color, 'qty': initial_qty}
+            else:
+                form.initial_data = {'color': self.color_black, 'qty': initial_qty}
         if removed:
             form.cleaned_data['DELETE'] = True
 
         return form
 
+    #########################################
+    ###### Start of Form Validity Tests #####
+    #########################################
     def run_form_is_valid_test(self, expected_value, *, color=None, qty=None, removed=None, initial=None):
         form = self.run_form(color=color, qty=qty, removed=removed, initial=initial)
         if expected_value:
@@ -87,3 +98,9 @@ class TestFormValidity(TestCase):
     def test_form_incomplete_after_edit(self):
         self.run_form_is_valid_test(False, initial=True, qty=True)
         self.run_form_is_valid_test(False, initial=True, color=True)
+
+    ###########################################
+    ###### Start of Form Processing Tests #####
+    ###########################################
+    
+    #print(F'Changed Data: {form.changed_data}')
