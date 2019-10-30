@@ -61,50 +61,29 @@ class TestFormValidity(TestCase):
     def test_empty_form(self):
         self.run_form_is_valid_test(True)
 
-    def test_removed_empty_form(self):
+    def test_remove_form_always_valid(self):
         self.run_form_is_valid_test(True, removed=True)
-
-    def test_form_only_qty(self):
-        self.run_form_is_valid_test(False, qty=True)
-
-    def test_form_only_initial_data(self):
-        self.run_form_is_valid_test(True, initial=True)
-
-    def test_form_only_color(self):
-        self.run_form_is_valid_test(False, color=True)
-
-    def test_form_color_qty(self):
-        self.run_form_is_valid_test(True, color=True, qty=True)
-
-    def test_form_initial_qty(self):
-        self.run_form_is_valid_test(False, initial=True, qty=True)
-
-    def test_form_removed_qty(self):
+        self.run_form_is_valid_test(True, removed=True, color=True)
+        self.run_form_is_valid_test(True, removed=True, color=True, qty=True)
+        self.run_form_is_valid_test(True, removed=True, initial=True)
+        self.run_form_is_valid_test(True, removed=True, initial=True, color=True)
+        self.run_form_is_valid_test(True, removed=True, initial=True, color=True, qty=True)
+        self.run_form_is_valid_test(True, removed=True, initial=True, qty=True)
         self.run_form_is_valid_test(True, removed=True, qty=True)
 
-    def test_form_initial_color(self):
-        self.run_form_is_valid_test(False, initial=True, color=True)
+    def test_form_values_removed_for_deletion(self):
+        self.run_form_is_valid_test(True, initial=True)
 
-    def test_form_removed_initial(self):
-        self.run_form_is_valid_test(True, removed=True, initial=True)
+    def test_form_newly_populated_form(self):
+        self.run_form_is_valid_test(True, color=True, qty=True)
 
-    def test_form_initial_color_qty(self):
+    def test_form_unchanged(self):
         self.run_form_is_valid_test(True, initial=True, color=True, qty=True)
 
-    def test_form_full(self):
-        self.run_form_is_valid_test(True, removed=True, initial=True, color=True, qty=True)
+    def test_form_new_form_incomplete(self):
+        self.run_form_is_valid_test(False, qty=True)
+        self.run_form_is_valid_test(False, color=True)
 
-    def test_form_removed_initial_qty(self):
-        self.run_form_is_valid_test(True, removed=True, initial=True, qty=True)
-
-'''
-'color', 'qty', 'DELETE', 'initial_data'
-
-
-class MyTests(TestCase):
-    def test_forms(self):
-        form_data = {'something': 'something'}
-        form = MyForm(data=form_data)
-        self.assertTrue(form.is_valid())
-ng self.assertTrue(form.isVald(), form.errors)
-'''
+    def test_form_incomplete_after_edit(self):
+        self.run_form_is_valid_test(False, initial=True, qty=True)
+        self.run_form_is_valid_test(False, initial=True, color=True)
