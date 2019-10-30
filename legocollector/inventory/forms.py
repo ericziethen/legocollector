@@ -101,6 +101,42 @@ class InventoryForm(ModelForm):
             queryset=queryset,
             widget=CustomSelectWidget(attrs={'class': 'chosen-select'}))
 
+    def is_valid(self):
+        has_color = 'color' in self.cleaned_data
+        has_qty = 'qty' in self.cleaned_data
+
+        if has_color or has_qty:
+            return super().is_valid()
+        else:
+            return True
+
+
+
+    '''
+    def is_valid(self):
+        #print('  CALL: Form.is_valid() - Start')
+        #print(F'    Cleaned Data: {self.cleaned_data}, {"DELETE" in self.cleaned_data}')
+        if (not self.initial_data or
+            ('DELETE' in self.cleaned_data and self.cleaned_data['DELETE'])):
+            #print('DELETE FORM FOUND')
+            return True
+        else:
+            return super().is_valid()
+    '''
+
+    '''
+    def clean(self):
+        #print(F'Before Clean Super: self._validate_unique: {self._validate_unique}')
+        super().clean()
+        #print(F'After Clean Super: self._validate_unique: {self._validate_unique}')
+        print(F'    Cleaned Data: {self.cleaned_data}')
+        #print(F'    Has Color:  {"color" in self.cleaned_data}')
+        #print(F'    Has Qty:    {"qty" in self.cleaned_data}')
+        #self.add_error('qty', 'Eric Error')
+
+        #print(F'FORM CLEAN: {self.__dict__}')
+    '''
+
     def save(self, commit=True):
         # print('InventoryForm.save() - ENTER')
         instance = super().save(commit=False)
@@ -143,8 +179,14 @@ class BaseInventoryFormset(BaseFormSet):
 
         for form in self.forms:
             # Ignore Forms that are meant for deletion
+            #''' Old Style, we probably don't need, leep for commented out because not yet sure
             if self.can_delete and self._should_delete_form(form):  # pylint: disable=no-member
                 continue
+            '''
+            print(F'  CHeck Form in Deleted Form: {form in self.deleted_forms}, {self.can_delete}, {self._should_delete_form(form)}')
+            if form in self.deleted_forms:
+                continue
+            '''
 
             color = form.cleaned_data.get('color')
             if color:
@@ -159,6 +201,6 @@ class BaseInventoryFormset(BaseFormSet):
 
 
 InventoryFormset = modelformset_factory(
-    Inventory, form=InventoryForm, formset=BaseInventoryFormset, extra=2,
+    Inventory, form=InventoryForm, formset=BaseInventoryFormset, extra=1, # TODO 2
     can_delete=True
 )

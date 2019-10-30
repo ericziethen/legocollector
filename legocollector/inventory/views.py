@@ -285,16 +285,35 @@ class UserPartManageColorsView(LoginRequiredMixin, UpdateView):  # pylint: disab
         context = self.get_context_data()
         inventory_formset = context['inventory_list']
 
+        print('\n\n#####################################')
+        print(F'_errors:            "{inventory_formset._errors}"')
+        print(F'Non Form Errors:    "{inventory_formset.non_form_errors()}"')
+        print(F'deleted_forms:      "{inventory_formset.deleted_forms}"')
+
+        for idx, inventory_form in enumerate(inventory_formset, 1):
+            if inventory_form.is_valid():
+                print(F'Form {idx} Valid:')
+            else:
+                print(F'Form {idx} INVALID:')
+
+        print('>>> AAA <<<')
         # Check for Form Errors
         for inventory_form in inventory_formset:
             if not inventory_form.is_valid():
-                if inventory_form.initial_data:
+                '''
+                if inventory_form.initial_data:  # TODO - Why did we do this check here???
                     form.add_error(None, 'Invalid Form')
                     return super().form_invalid(form)
+                '''
+                form.add_error(None, 'Invalid Form')
+                return super().form_invalid(form)
+                #'''
+        print('>>> BBB <<<')
 
         # Check for Non-Form errors
         if inventory_formset.non_form_errors():
             return super().form_invalid(form)
+        print('>>> CCC <<<')
 
         # Delete Inventories that changed their Color or got removed
         for inventory_form in inventory_formset:
