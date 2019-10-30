@@ -12,8 +12,8 @@ class ColorAdmin(admin.ModelAdmin):
         ('Color', {'fields': ['rgb', 'complimentary_color']}),
         ('HLV', {'fields': ['color_step_hue', 'color_step_lumination', 'color_step_value']})
     ]
-    readonly_fields = ['complimentary_color', 'color_step_hue', 'color_step_lumination', 'color_step_value']
-    list_display = ('name', 'rgb', 'transparent')
+    readonly_fields = ['complimentary_color', 'color_step_hue', 'color_step_lumination', 'color_step_value', 'rgb_ints']
+    list_display = ('name', 'transparent', 'rgb', 'complimentary_color', 'color_step_hue', 'color_step_lumination', 'color_step_value', 'rgb_ints')
     search_fields = ['name']
 
 
