@@ -106,42 +106,10 @@ class InventoryForm(ModelForm):
         has_qty = 'qty' in self.cleaned_data
         removed = ('DELETE' in self.cleaned_data) and self.cleaned_data['DELETE']
 
-        if removed:
-            #print('  ### CONDITION A')
-            return True
-        elif has_color or has_qty:
-            #print('  ### CONDITION B')
+        if (has_color or has_qty) and not removed:
             return super().is_valid()
         else:
-            #print('  ### CONDITION C')
             return True
-
-
-
-    '''
-    def is_valid(self):
-        #print('  CALL: Form.is_valid() - Start')
-        #print(F'    Cleaned Data: {self.cleaned_data}, {"DELETE" in self.cleaned_data}')
-        if (not self.initial_data or
-            ('DELETE' in self.cleaned_data and self.cleaned_data['DELETE'])):
-            #print('DELETE FORM FOUND')
-            return True
-        else:
-            return super().is_valid()
-    '''
-
-    '''
-    def clean(self):
-        #print(F'Before Clean Super: self._validate_unique: {self._validate_unique}')
-        super().clean()
-        #print(F'After Clean Super: self._validate_unique: {self._validate_unique}')
-        print(F'    Cleaned Data: {self.cleaned_data}')
-        #print(F'    Has Color:  {"color" in self.cleaned_data}')
-        #print(F'    Has Qty:    {"qty" in self.cleaned_data}')
-        #self.add_error('qty', 'Eric Error')
-
-        #print(F'FORM CLEAN: {self.__dict__}')
-    '''
 
     def save(self, commit=True):
         # print('InventoryForm.save() - ENTER')
