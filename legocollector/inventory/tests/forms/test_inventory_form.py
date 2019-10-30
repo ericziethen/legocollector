@@ -35,7 +35,7 @@ class TestFormValidity(TestCase):
 
         form = InventoryForm(userpart=self.user_part, data=form_data)
         form.full_clean()
-        
+
         if initial:
             form.initial_data = {'color': self.color_red, 'qty': 0}
         if removed:
