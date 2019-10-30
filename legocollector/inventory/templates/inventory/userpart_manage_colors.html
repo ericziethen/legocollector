@@ -58,7 +58,7 @@
     <script type="text/javascript">
         $('.formset_row').formset({
             addText: 'add Color',
-            // added: addedRow,
+            added: addedRow,
             deleteText: 'remove',
             /* Doesn't seem to be needed
                 The prefix determines what name is used, e.g. in our case we have (from the html source):
@@ -88,7 +88,10 @@
         });
 
         function addedRow(row) {
-            //console.log("Row Added")
+            row.find("[id$=-qty]").each(function() {
+                var elem = $(this);
+                elem.val(0)
+            });
         }
 
         function getRgbFieldFromChoiceField(choice_field) {
