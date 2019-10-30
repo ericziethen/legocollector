@@ -1,6 +1,4 @@
-import colorsys
 import csv
-import math
 import os
 
 from collections import OrderedDict
@@ -47,19 +45,13 @@ class Command(BaseCommand):
         with transaction.atomic():
             for row in csv_data:
                 rgb = row['rgb']
-                color_step = self._color_step(
-                    int(rgb[:2], 16), int(rgb[4:], 16), int(rgb[2:4], 16)
-                )
 
                 Color.objects.update_or_create(
                     id=row['id'],
                     defaults={
                         'rgb': rgb,
                         'name': row['name'],
-                        'transparent': row['is_trans'],
-                        'color_step_hue': color_step[0],
-                        'color_step_lumination': color_step[1],
-                        'color_step_value': color_step[2]
+                        'transparent': row['is_trans']
                     }
                 )
 
@@ -168,18 +160,3 @@ class Command(BaseCommand):
         for file_path in expected_file_list:
             if not os.path.exists(file_path):
                 raise ValueError(F'Expected file "{file_path}" not found')
-
-    @staticmethod
-    def _color_step(red, green, blue, repetitions=8):
-        lum = math.sqrt(.241 * red + .691 * green + .068 * blue)
-
-        hue, _, value = colorsys.rgb_to_hsv(red, green, blue)
-
-        hue2 = int(hue * repetitions)
-        value2 = int(value * repetitions)
-
-        if hue2 % 2 == 1:
-            value2 = repetitions - value2
-            lum = repetitions - lum
-
-        return (hue2, lum, value2)

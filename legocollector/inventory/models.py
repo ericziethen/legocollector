@@ -1,3 +1,5 @@
+import colorsys
+import math
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -28,35 +30,47 @@ class Color(models.Model):
     class Meta:
         ordering = ('transparent', 'color_step_hue', 'color_step_lumination', 'color_step_value')
 
-    def __str__(self):
-        return self.name
-
     @property
-    def red_dec(self):
-        return int(self.rgb[:2], 16)
-
-    @property
-    def green_dec(self):
-        return int(self.rgb[4:], 16)
-
-    @property
-    def blue_dec(self):
-        return int(self.rgb[2:4], 16)
+    def rgb_ints(self):
+        return (int(self.rgb[:2], 16), int(self.rgb[2:4], 16), int(self.rgb[4:], 16))
 
     @property
     def complimentary_color(self):
         # https://codepen.io/WebSeed/pen/pvgqEq
         color = 'FFFFFF'  # white
-        if self.solor_is_light(self.red_dec, self.green_dec, self.blue_dec):
+        if self.solor_is_light(self.rgb_ints[0], self.rgb_ints[1], self.rgb_ints[2]):
             color = '000000'  # black
         return color
 
     @staticmethod
     def solor_is_light(red, green, blue):  # https://codepen.io/WebSeed/pen/pvgqEq
-        # Counting the perceptive luminance
-        # human eye favors green color
         value = 1 - (0.299 * red + 0.587 * green + 0.114 * blue) / 255
         return value < 0.5
+
+    @staticmethod
+    def color_step(red, green, blue, repetitions=8):
+        lum = math.sqrt(.241 * red + .691 * green + .068 * blue)
+
+        hue, _, value = colorsys.rgb_to_hsv(red, green, blue)
+
+        hue2 = int(hue * repetitions)
+        value2 = int(value * repetitions)
+
+        if hue2 % 2 == 1:
+            value2 = repetitions - value2
+            lum = repetitions - lum
+
+        return (hue2, lum, value2)
+
+    def save(self, *args, **kwargs):  # pylint: disable=arguments-differ
+        hlv = self.color_step(self.rgb_ints[0], self.rgb_ints[1], self.rgb_ints[2])
+        self.color_step_hue = hlv[0]
+        self.color_step_lumination = hlv[1]
+        self.color_step_value = hlv[2]
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name
 
 
 class Part(models.Model):
