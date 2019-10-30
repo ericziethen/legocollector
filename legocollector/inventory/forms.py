@@ -104,10 +104,16 @@ class InventoryForm(ModelForm):
     def is_valid(self):
         has_color = 'color' in self.cleaned_data
         has_qty = 'qty' in self.cleaned_data
+        removed = ('DELETE' in self.cleaned_data) and self.cleaned_data['DELETE']
 
-        if has_color or has_qty:
+        if removed:
+            #print('  ### CONDITION A')
+            return True
+        elif has_color or has_qty:
+            #print('  ### CONDITION B')
             return super().is_valid()
         else:
+            #print('  ### CONDITION C')
             return True
 
 
