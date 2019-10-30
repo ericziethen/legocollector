@@ -29,8 +29,9 @@ class TestFormProcessing(TestCase):
         self.set_part2 = SetPart.objects.create(
             set_inventory=2, part=self.part, color=self.color_black, qty=1, is_spare=False)
 
-    def run_form(self, *, new_color=None, new_qty=None, removed=None, initial=None,
+    def run_form(self, *, new_color=None, new_qty=None, removed=None,
                  initial_color=None, initial_qty=20):
+
         form_data = {}
         if new_color:
             form_data['color'] = new_color.pk
@@ -39,11 +40,9 @@ class TestFormProcessing(TestCase):
 
         form = InventoryForm(userpart=self.user_part, data=form_data)
 
-        if initial:
-            if initial_color:
-                form.initial_data = {'color': initial_color, 'qty': initial_qty}
-            else:
-                form.initial_data = {'color': self.color_black, 'qty': initial_qty}
+        if initial_color:
+            self.assertIsNotNone(initial_qty)
+            form.initial_data = {'color': initial_color, 'qty': initial_qty}
 
         form.full_clean()
 
@@ -55,8 +54,8 @@ class TestFormProcessing(TestCase):
     #########################################
     ###### Start of Form Validity Tests #####
     #########################################
-    def run_form_is_valid_test(self, expected_value, *, new_color=None, new_qty=None, removed=None, initial=None):
-        form = self.run_form(new_color=new_color, new_qty=new_qty, removed=removed, initial=initial)
+    def run_form_is_valid_test(self, expected_value, *, new_color=None, new_qty=None, removed=None, initial_color=None):
+        form = self.run_form(new_color=new_color, new_qty=new_qty, removed=removed, initial_color=initial_color)
         
         #print(F'\nCleaned Data: {form.cleaned_data}')
         #print(F'  Initial Data: {form.initial_data}')
@@ -67,7 +66,7 @@ class TestFormProcessing(TestCase):
             self.assertFalse(form.is_valid(), str(form.errors) + F'\n\nCleaned Data: {form.cleaned_data}')
 
     def test_cleaned_data_populated(self):
-        form = self.run_form(new_color=self.color_red, new_qty=10, removed=True, initial=True)
+        form = self.run_form(new_color=self.color_red, new_qty=10, removed=True, initial_color=True)
 
         self.assertIn('color', form.cleaned_data)
         self.assertIn('qty', form.cleaned_data)
@@ -81,28 +80,28 @@ class TestFormProcessing(TestCase):
         self.run_form_is_valid_test(True, removed=True)
         self.run_form_is_valid_test(True, removed=True, new_color=self.color_red)
         self.run_form_is_valid_test(True, removed=True, new_color=self.color_red, new_qty=10)
-        self.run_form_is_valid_test(True, removed=True, initial=True)
-        self.run_form_is_valid_test(True, removed=True, initial=True, new_color=self.color_red)
-        self.run_form_is_valid_test(True, removed=True, initial=True, new_color=self.color_red, new_qty=10)
-        self.run_form_is_valid_test(True, removed=True, initial=True, new_qty=10)
+        self.run_form_is_valid_test(True, removed=True, initial_color=self.color_black)
+        self.run_form_is_valid_test(True, removed=True, initial_color=self.color_black, new_color=self.color_red)
+        self.run_form_is_valid_test(True, removed=True, initial_color=self.color_black, new_color=self.color_red, new_qty=10)
+        self.run_form_is_valid_test(True, removed=True, initial_color=self.color_black, new_qty=10)
         self.run_form_is_valid_test(True, removed=True, new_qty=10)
 
     def test_form_values_removed_for_deletion(self):
-        self.run_form_is_valid_test(True, initial=True)
+        self.run_form_is_valid_test(True, initial_color=self.color_black)
 
     def test_form_newly_populated_form(self):
         self.run_form_is_valid_test(True, new_color=self.color_red, new_qty=10)
 
     def test_form_unchanged(self):
-        self.run_form_is_valid_test(True, initial=True, new_color=self.color_red, new_qty=10)
+        self.run_form_is_valid_test(True, initial_color=self.color_black, new_color=self.color_red, new_qty=10)
 
     def test_form_new_form_incomplete(self):
         self.run_form_is_valid_test(False, new_qty=10)
         self.run_form_is_valid_test(False, new_color=self.color_red)
 
     def test_form_incomplete_after_edit(self):
-        self.run_form_is_valid_test(False, initial=True, new_qty=10)
-        self.run_form_is_valid_test(False, initial=True, new_color=self.color_red)
+        self.run_form_is_valid_test(False, initial_color=self.color_black, new_qty=10)
+        self.run_form_is_valid_test(False, initial_color=self.color_black, new_color=self.color_red)
 
     ###########################################
     ###### Start of Form Processing Tests #####
