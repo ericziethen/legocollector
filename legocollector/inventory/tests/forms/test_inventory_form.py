@@ -26,6 +26,8 @@ class TestFormProcessing(TestCase):
 
         self.set_part1 = SetPart.objects.create(
             set_inventory=1, part=self.part, color=self.color_red, qty=1, is_spare=False)
+        self.set_part2 = SetPart.objects.create(
+            set_inventory=2, part=self.part, color=self.color_black, qty=1, is_spare=False)
 
     def run_form(self, *, color=None, qty=None, removed=None, initial=None,
                  new_color=None, initial_color=None, initial_qty=10):
