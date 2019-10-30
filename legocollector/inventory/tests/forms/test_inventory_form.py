@@ -79,10 +79,15 @@ class TestFormValidity(TestCase):
     def test_form_initial_qty(self):
         self.run_form_is_valid_test(False, initial=True, qty=True)
 
-    '''
     def test_form_removed_qty(self):
         self.run_form_is_valid_test(True, removed=True, qty=True)
-    '''
+
+    def test_form_initial_color(self):
+        self.run_form_is_valid_test(False, initial=True, color=True)
+
+    def test_form_removed_initial(self):
+        self.run_form_is_valid_test(True, removed=True, initial=True)
+
 
 '''
 'color', 'qty', 'DELETE', 'initial_data'
