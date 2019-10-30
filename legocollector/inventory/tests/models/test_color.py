@@ -18,5 +18,3 @@ class TestColorCreation(TestCase):  # pylint: disable=too-many-instance-attribut
         self.assertEqual(self.color_red.color_step_hue, 0)
         self.assertAlmostEqual(self.color_red.color_step_lumination, 8.18651329932347, places=14, msg=None, delta=None)
         self.assertEqual(self.color_red.color_step_value, 1608)
-
-

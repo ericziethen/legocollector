@@ -62,7 +62,7 @@ class Color(models.Model):
 
         return (hue2, lum, value2)
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs):  # pylint: disable=arguments-differ
         hlv = self.color_step(self.rgb_ints[0], self.rgb_ints[1], self.rgb_ints[2])
         self.color_step_hue = hlv[0]
         self.color_step_lumination = hlv[1]
