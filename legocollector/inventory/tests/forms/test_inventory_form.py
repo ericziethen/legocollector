@@ -54,7 +54,7 @@ class TestFormProcessing(TestCase):
     #########################################
     ###### Start of Form Validity Tests #####
     #########################################
-    def run_form_is_valid_test(self, expected_value, *, new_color=None, new_qty=None, removed=None, initial_color=None):
+    def run_form_is_valid_test(self, expected_value, *, new_color=None, new_qty=0, removed=None, initial_color=None):
         form = self.run_form(new_color=new_color, new_qty=new_qty, removed=removed, initial_color=initial_color)
         
         #print(F'\nCleaned Data: {form.cleaned_data}')
@@ -107,7 +107,7 @@ class TestFormProcessing(TestCase):
     ###### Start of Form Action Tests #####
     #######################################
     def run_form_action_test(self, *, expected_create=None, expected_update=None, expected_delete=None,
-                             new_color=None, new_qty=None, removed=None, initial_color=None, initial_qty=None):
+                             new_color=None, new_qty=0, removed=None, initial_color=None, initial_qty=0):
         form = self.run_form(new_color=new_color, new_qty=new_qty, removed=removed, initial_color=initial_color, initial_qty=initial_qty)
 
         form_action = form.get_form_actions()
@@ -123,20 +123,13 @@ class TestFormProcessing(TestCase):
 
     def test_new_form_blank(self):
         self.run_form_action_test()
- 
+
     def test_new_form_new_inventory(self):
         self.run_form_action_test(expected_create=(self.color_red, 10),
                                   new_color=self.color_red, new_qty=10)
- 
-    
-    '''
+
     def test_invalid_forms_no_actions(self):
-        self.run_form_is_valid_test(expected_create=(), expected_update=(), expected_delete=None,
-                                    new_qty=10)
-        self.run_form_is_valid_test(expected_create=(), expected_update=(), expected_delete=None,
-                                    new_color=self.color_red)
-        self.run_form_is_valid_test(expected_create=(), expected_update=(), expected_delete=None,
-                                    initial_color=self.color_black, new_qty=10)
-        self.run_form_is_valid_test(expected_create=(), expected_update=(), expected_delete=None,
-                                    initial_color=self.color_black, new_color=self.color_red)
-    '''
+        self.run_form_action_test(new_qty=10)
+        self.run_form_action_test(new_color=self.color_red)
+        self.run_form_action_test(initial_color=self.color_black, new_qty=10)
+        #self.run_form_action_test(initial_color=self.color_black, new_color=self.color_red)
