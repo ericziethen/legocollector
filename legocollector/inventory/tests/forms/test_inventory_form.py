@@ -139,10 +139,10 @@ class TestFormProcessing(TestCase):
                                   removed=True, initial_color=self.color_black, new_qty=10)
 
     def test_removed_no_initial_data_no_action(self):
-        self.run_form_is_valid_test(True, removed=True)
-        self.run_form_is_valid_test(True, removed=True, new_color=self.color_red)
-        self.run_form_is_valid_test(True, removed=True, new_color=self.color_red, new_qty=10)
-        self.run_form_is_valid_test(True, removed=True, new_qty=10)
+        self.run_form_action_test(removed=True)
+        self.run_form_action_test(removed=True, new_color=self.color_red)
+        self.run_form_action_test(removed=True, new_color=self.color_red, new_qty=10)
+        self.run_form_action_test(removed=True, new_qty=10)
 
     def test_cleared_data_delete(self):
         self.run_form_action_test(expected_delete=self.color_black,
