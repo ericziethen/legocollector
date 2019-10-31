@@ -5,7 +5,7 @@ from inventory.forms import InventoryForm
 from inventory.models import Color, Part, PartCategory, SetPart, UserPart
 
 
-class TestFormProcessing(TestCase):
+class TestFormProcessing(TestCase):  # pylint: disable=too-many-instance-attributes,too-many-public-methods
 
     def setUp(self):
         self.initian_data = {'initial_data': True}
