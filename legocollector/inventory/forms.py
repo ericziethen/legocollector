@@ -103,12 +103,14 @@ class InventoryForm(ModelForm):
             queryset=queryset,
             widget=CustomSelectWidget(attrs={'class': 'chosen-select'}))
 
+    def marked_for_deletion(self):
+        return ('DELETE' in self.cleaned_data) and self.cleaned_data['DELETE']
+
     def is_valid(self):
         has_color = 'color' in self.cleaned_data
         has_qty = 'qty' in self.cleaned_data
-        removed = ('DELETE' in self.cleaned_data) and self.cleaned_data['DELETE']
 
-        if (has_color or has_qty) and not removed:
+        if (has_color or has_qty) and not self.marked_for_deletion():
             return super().is_valid()
         else:
             return True
@@ -116,15 +118,20 @@ class InventoryForm(ModelForm):
     def get_form_actions(self):
         FormActions = namedtuple('FormActions', 'create update delete')
 
-        create_action = ()
+        create_color = ()
+        update_color = ()
+        delete_color = None
 
         if self.is_valid():
-            if 'color' in self.cleaned_data:
+            if self.marked_for_deletion():
+                if self.initial_data:
+                    delete_color = self.initial_data['color']
+            elif 'color' in self.cleaned_data:
                 new_color = self.cleaned_data['color']
                 new_qty = self.cleaned_data['qty']
-                create_action = (new_color, new_qty)
+                create_color = (new_color, new_qty)
 
-        return FormActions(create_action, None, None)
+        return FormActions(create_color, update_color, delete_color)
 
     def save(self, commit=True):
         # print('InventoryForm.save() - ENTER')

@@ -106,25 +106,22 @@ class TestFormProcessing(TestCase):
     #######################################
     ###### Start of Form Action Tests #####
     #######################################
-    def run_form_action_test(self, *, expected_create=None, expected_update=None, expected_delete=None,
+    def run_form_action_test(self, *, expected_create=(), expected_update=(), expected_delete=None,
                              new_color=None, new_qty=0, removed=None, initial_color=None, initial_qty=0):
         form = self.run_form(new_color=new_color, new_qty=new_qty, removed=removed, initial_color=initial_color, initial_qty=initial_qty)
 
+        #print(F'FORM CLEANDED: {form.cleaned_data}')
+
         form_action = form.get_form_actions()
 
-        if expected_create:
-            self.assertTupleEqual(form_action.create, expected_create)
+        self.assertTupleEqual(form_action.create, expected_create)
+        self.assertTupleEqual(form_action.update, expected_update)
+        self.assertEqual(form_action.delete, expected_delete)
 
-        if expected_update:
-            self.assertTupleEqual(form_action.update, expected_update)
-
-        if expected_delete:
-            self.assertEqual(form_action.delete, expected_delete)
-
-    def test_new_form_blank(self):
+    def test_new_form_blank_no_action(self):
         self.run_form_action_test()
 
-    def test_new_form_new_inventory(self):
+    def test_new_form_new_inventory_create(self):
         self.run_form_action_test(expected_create=(self.color_red, 10),
                                   new_color=self.color_red, new_qty=10)
 
@@ -133,3 +130,23 @@ class TestFormProcessing(TestCase):
         self.run_form_action_test(new_color=self.color_red)
         self.run_form_action_test(initial_color=self.color_black, new_qty=10)
         self.run_form_action_test(initial_color=self.color_black, new_color=self.color_red)
+
+    def test_removed_initial_data_delete(self):
+        self.run_form_action_test(expected_delete=self.color_black,
+                                  removed=True, initial_color=self.color_black)
+        self.run_form_action_test(expected_delete=self.color_black,
+                                  removed=True, initial_color=self.color_black, new_color=self.color_red)
+        self.run_form_action_test(expected_delete=self.color_black,
+                                  removed=True, initial_color=self.color_black, new_color=self.color_red, new_qty=10)
+        self.run_form_action_test(expected_delete=self.color_black,
+                                  removed=True, initial_color=self.color_black, new_qty=10)
+
+
+    '''
+    def test_removed_no_initial_data_no_action(self):
+        self.run_form_is_valid_test(True, removed=True)
+        self.run_form_is_valid_test(True, removed=True, new_color=self.color_red)
+        self.run_form_is_valid_test(True, removed=True, new_color=self.color_red, new_qty=10)
+        self.run_form_is_valid_test(True, removed=True, new_qty=10)
+    '''
+
