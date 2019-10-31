@@ -105,21 +105,27 @@ class InventoryForm(ModelForm):
 
     @property
     def old_color(self):
-        if 'color' in self.initial_data:
-            return self.initial_data['color']
-        return None
+        return self.initial_data['color'] if 'color' in self.initial_data else None
 
     @property
     def new_color(self):
-        if 'color' in self.cleaned_data:
-            return self.cleaned_data['color']
-        return None
+        return self.cleaned_data['color'] if 'color' in self.cleaned_data else None
+
+    @property
+    def color_changed(self):
+        return self.old_color != self.new_color
+
+    @property
+    def old_qty(self):
+        return self.cleaned_data['qty'] if 'qty' in self.cleaned_data else None
 
     @property
     def new_qty(self):
-        if 'qty' in self.cleaned_data:
-            return self.cleaned_data['qty']
-        return None
+            return self.cleaned_data['qty'] if 'qty' in self.cleaned_data else None
+
+    @property
+    def qty_changed(self):
+        return self.old_qty != self.new_qty
 
     @property
     def marked_for_deletion(self):
@@ -128,10 +134,6 @@ class InventoryForm(ModelForm):
     @property
     def initial_values_cleared(self):
         return self.initial_data and ('color' not in self.cleaned_data) and ('qty' not in self.cleaned_data)
-
-    @property
-    def color_changed(self):
-        return self.new_color and (self.old_color != self.new_color)
 
     def is_valid(self):
         has_color = 'color' in self.cleaned_data
@@ -157,8 +159,12 @@ class InventoryForm(ModelForm):
                     delete_color = self.initial_data['color']
 
             # Create if not marked for deletion and have a new color
-            if not self.marked_for_deletion and self.new_color and self.color_changed:
-                create_color = (self.new_color, self.new_qty)
+            if not self.marked_for_deletion:
+                if self.new_color:
+                    if self.color_changed:
+                        create_color = (self.new_color, self.new_qty)
+                    elif self.qty_changed:
+                        update_color = (self.new_color, self.new_qty)
 
         return FormActions(create_color, update_color, delete_color)
 
