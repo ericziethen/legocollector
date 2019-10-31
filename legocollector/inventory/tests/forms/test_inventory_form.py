@@ -110,9 +110,6 @@ class TestFormProcessing(TestCase):
                              new_color=None, new_qty=0, removed=None, initial_color=None, initial_qty=0):
         form = self.run_form(new_color=new_color, new_qty=new_qty, removed=removed, initial_color=initial_color, initial_qty=initial_qty)
 
-        #print(F'FORM CLEANDED: {form.cleaned_data}')
-        print(F'FORM {form.__dict__}')
-
         form_action = form.get_form_actions()
 
         self.assertTupleEqual(form_action.create, expected_create)

@@ -117,7 +117,7 @@ class InventoryForm(ModelForm):
 
     @property
     def initial_qty(self):
-        return self.cleaned_data['qty'] if 'qty' in self.cleaned_data else None
+        return self.initial_data['qty'] if 'qty' in self.initial_data else None
 
     @property
     def submitted_qty(self):
