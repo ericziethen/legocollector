@@ -115,8 +115,17 @@ class InventoryForm(ModelForm):
 
     def get_form_actions(self):
         FormActions = namedtuple('FormActions', 'create update delete')
+        '''
+        create_action = ()
 
-        return FormActions((), (), None)
+        new_color = new_qty = None
+
+        new_color = self.cleaned_data['color']
+        new_qty = self.cleaned_data['qty']
+        '''
+
+
+        return FormActions(None, None, None)
 
     def save(self, commit=True):
         # print('InventoryForm.save() - ENTER')
