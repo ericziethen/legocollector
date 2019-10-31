@@ -104,28 +104,28 @@ class InventoryForm(ModelForm):
             widget=CustomSelectWidget(attrs={'class': 'chosen-select'}))
 
     @property
-    def old_color(self):
+    def initial_color(self):
         return self.initial_data['color'] if 'color' in self.initial_data else None
 
     @property
-    def new_color(self):
+    def submitted_color(self):
         return self.cleaned_data['color'] if 'color' in self.cleaned_data else None
 
     @property
     def color_changed(self):
-        return self.old_color != self.new_color
+        return self.initial_color != self.submitted_color
 
     @property
-    def old_qty(self):
+    def initial_qty(self):
         return self.cleaned_data['qty'] if 'qty' in self.cleaned_data else None
 
     @property
-    def new_qty(self):
-            return self.cleaned_data['qty'] if 'qty' in self.cleaned_data else None
+    def submitted_qty(self):
+        return self.cleaned_data['qty'] if 'qty' in self.cleaned_data else None
 
     @property
     def qty_changed(self):
-        return self.old_qty != self.new_qty
+        return self.initial_qty != self.submitted_qty
 
     @property
     def marked_for_deletion(self):
@@ -154,17 +154,17 @@ class InventoryForm(ModelForm):
         if self.is_valid():
             # Delete if marked, cleared or replace
             if (self.marked_for_deletion or self.initial_values_cleared or
-                (self.old_color and self.color_changed)):
+                (self.initial_color and self.color_changed)):
                 if self.initial_data:
                     delete_color = self.initial_data['color']
 
             # Create if not marked for deletion and have a new color
             if not self.marked_for_deletion:
-                if self.new_color:
+                if self.submitted_color:
                     if self.color_changed:
-                        create_color = (self.new_color, self.new_qty)
+                        create_color = (self.submitted_color, self.submitted_qty)
                     elif self.qty_changed:
-                        update_color = (self.new_color, self.new_qty)
+                        update_color = (self.submitted_color, self.submitted_qty)
 
         return FormActions(create_color, update_color, delete_color)
 

@@ -163,9 +163,7 @@ class TestFormProcessing(TestCase):
         self.run_form_action_test(initial_color=self.color_black, initial_qty=10,
                                   new_color=self.color_black, new_qty=10)
 
-    '''
     def test_populated_form_change_qty_update(self):
         self.run_form_action_test(expected_update=(self.color_black, 20),
                                   initial_color=self.color_black, initial_qty=10,
                                   new_color=self.color_black, new_qty=20)
-    '''
