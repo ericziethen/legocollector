@@ -132,4 +132,4 @@ class TestFormProcessing(TestCase):
         self.run_form_action_test(new_qty=10)
         self.run_form_action_test(new_color=self.color_red)
         self.run_form_action_test(initial_color=self.color_black, new_qty=10)
-        #self.run_form_action_test(initial_color=self.color_black, new_color=self.color_red)
+        self.run_form_action_test(initial_color=self.color_black, new_color=self.color_red)
