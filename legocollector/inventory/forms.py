@@ -106,6 +106,9 @@ class InventoryForm(ModelForm):
     def marked_for_deletion(self):
         return ('DELETE' in self.cleaned_data) and self.cleaned_data['DELETE']
 
+    def initial_values_cleared(self):
+        return self.initial_data and ('color' not in self.cleaned_data) and ('qty' not in self.cleaned_data)
+
     def is_valid(self):
         has_color = 'color' in self.cleaned_data
         has_qty = 'qty' in self.cleaned_data
@@ -123,7 +126,8 @@ class InventoryForm(ModelForm):
         delete_color = None
 
         if self.is_valid():
-            if self.marked_for_deletion():
+            # Only delete if something was there to begin with
+            if self.marked_for_deletion() or self.initial_values_cleared():
                 if self.initial_data:
                     delete_color = self.initial_data['color']
             elif 'color' in self.cleaned_data:
