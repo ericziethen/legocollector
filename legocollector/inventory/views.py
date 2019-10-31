@@ -285,6 +285,7 @@ class UserPartManageColorsView(LoginRequiredMixin, UpdateView):  # pylint: disab
         context = self.get_context_data()
         inventory_formset = context['inventory_list']
 
+        '''
         print('\n\n#####################################')
         print(F'_errors:            "{inventory_formset._errors}"')
         print(F'Non Form Errors:    "{inventory_formset.non_form_errors()}"')
@@ -295,11 +296,15 @@ class UserPartManageColorsView(LoginRequiredMixin, UpdateView):  # pylint: disab
                 print(F'Form {idx} Valid:')
             else:
                 print(F'Form {idx} INVALID:')
+        '''
 
-        print('>>> AAA <<<')
+        #print('>>> AAA <<<')
         # Check for Form Errors
         for inventory_form in inventory_formset:
             if not inventory_form.is_valid():
+                print('FORM INVALID')
+                print(F'  FORM CLEANED DATA: {inventory_form.cleaned_data}')
+                print(F'  FORM INITIAL DATA: {inventory_form.initial_data}')
                 '''
                 if inventory_form.initial_data:  # TODO - Why did we do this check here???
                     form.add_error(None, 'Invalid Form')
@@ -308,14 +313,56 @@ class UserPartManageColorsView(LoginRequiredMixin, UpdateView):  # pylint: disab
                 form.add_error(None, 'Invalid Form')
                 return super().form_invalid(form)
                 #'''
-        print('>>> BBB <<<')
+            else:
+                print('FORM VALID')
+                print(F'  FORM CLEANED DATA: {inventory_form.cleaned_data}')
+                print(F'  FORM INITIAL DATA: {inventory_form.initial_data}')
+        #print('>>> BBB <<<')
 
         # Check for Non-Form errors
         if inventory_formset.non_form_errors():
             return super().form_invalid(form)
-        print('>>> CCC <<<')
+        #print('>>> CCC <<<')
+
+        create_or_update_dic = {}
+        delete_dic = {}
+        # Collect all form actions
+        for inventory_form in inventory_formset:
+            form_actions = inventory_form.get_form_actions()
+
+            if form_actions.create:
+                create_or_update_dic[form_actions.create[0].pk] = form_actions.create
+            if form_actions.update:
+                create_or_update_dic[form_actions.update[0].pk] = form_actions.update
+            if form_actions.delete:
+                delete_dic[form_actions.delete.pk] = form_actions.delete
+
+        # TODO
+        delete_count = 0
+        update_create_count = 0
+
+        # Delete all items that need deleting
+        for color_pk, color in delete_dic.items():
+            # If the Item is in the the Update or Create list we don't need to actually delete it first
+            if color_pk not in create_or_update_dic:
+                Inventory.objects.filter(userpart=self.object, color=color).delete()
+                delete_count += 1
+
+        # Create/Update Items
+        for _, inventory_tuple in create_or_update_dic.items():
+            Inventory.objects.update_or_create(
+                userpart=self.object,
+                color=inventory_tuple[0],
+                defaults={'qty': inventory_tuple[1]}
+            )
+            update_create_count += 1
 
 
+        print(F'Deletes: {delete_count} - Updates/Creates: {update_create_count}')
+
+
+
+        '''
         # TODO
         # Once we start using form.get_form_actions we might want to do some processing afterwards
         # e.g. If color delete + create  -> update, so save deletion and creation, so a swap can just happen without db activity
@@ -349,5 +396,6 @@ class UserPartManageColorsView(LoginRequiredMixin, UpdateView):  # pylint: disab
                         )
                         # print(F'CREATE INV: {inventory}')
                         inventory.save()
+        '''
 
         return super().form_valid(form)
