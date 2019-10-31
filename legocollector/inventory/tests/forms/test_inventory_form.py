@@ -52,14 +52,11 @@ class TestFormProcessing(TestCase):
         return form
 
     #########################################
-    ###### Start of Form Validity Tests #####
+    # ##### Start of Form Validity Tests ####
     #########################################
     def run_form_is_valid_test(self, expected_value, *, new_color=None, new_qty=0, removed=None, initial_color=None):
         form = self.run_form(new_color=new_color, new_qty=new_qty, removed=removed, initial_color=initial_color)
-        
-        #print(F'\nCleaned Data: {form.cleaned_data}')
-        #print(F'  Initial Data: {form.initial_data}')
-        #print(F'  Changed Data: {form.changed_data}')
+
         if expected_value:
             self.assertTrue(form.is_valid(), str(form.errors) + F'\n\nCleaned Data: {form.cleaned_data}')
         else:
@@ -82,7 +79,8 @@ class TestFormProcessing(TestCase):
         self.run_form_is_valid_test(True, removed=True, new_color=self.color_red, new_qty=10)
         self.run_form_is_valid_test(True, removed=True, initial_color=self.color_black)
         self.run_form_is_valid_test(True, removed=True, initial_color=self.color_black, new_color=self.color_red)
-        self.run_form_is_valid_test(True, removed=True, initial_color=self.color_black, new_color=self.color_red, new_qty=10)
+        self.run_form_is_valid_test(True, removed=True, initial_color=self.color_black,
+                                    new_color=self.color_red, new_qty=10)
         self.run_form_is_valid_test(True, removed=True, initial_color=self.color_black, new_qty=10)
         self.run_form_is_valid_test(True, removed=True, new_qty=10)
 
@@ -104,11 +102,12 @@ class TestFormProcessing(TestCase):
         self.run_form_is_valid_test(False, initial_color=self.color_black, new_color=self.color_red)
 
     #######################################
-    ###### Start of Form Action Tests #####
+    # ##### Start of Form Action Tests ####
     #######################################
     def run_form_action_test(self, *, expected_create=(), expected_update=(), expected_delete=None,
                              new_color=None, new_qty=0, removed=None, initial_color=None, initial_qty=0):
-        form = self.run_form(new_color=new_color, new_qty=new_qty, removed=removed, initial_color=initial_color, initial_qty=initial_qty)
+        form = self.run_form(new_color=new_color, new_qty=new_qty, removed=removed,
+                             initial_color=initial_color, initial_qty=initial_qty)
 
         form_action = form.get_form_actions()
 

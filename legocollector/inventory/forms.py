@@ -154,7 +154,7 @@ class InventoryForm(ModelForm):
         if self.is_valid():
             # Delete if marked, cleared or replace
             if (self.marked_for_deletion or self.initial_values_cleared or
-                (self.initial_color and self.color_changed)):
+                    (self.initial_color and self.color_changed)):
                 if self.initial_data:
                     delete_color = self.initial_data['color']
 
@@ -210,14 +210,8 @@ class BaseInventoryFormset(BaseFormSet):
 
         for form in self.forms:
             # Ignore Forms that are meant for deletion
-            #''' Old Style, we probably don't need, leep for commented out because not yet sure
             if self.can_delete and self._should_delete_form(form):  # pylint: disable=no-member
                 continue
-            '''
-            print(F'  CHeck Form in Deleted Form: {form in self.deleted_forms}, {self.can_delete}, {self._should_delete_form(form)}')
-            if form in self.deleted_forms:
-                continue
-            '''
 
             color = form.cleaned_data.get('color')
             if color:
