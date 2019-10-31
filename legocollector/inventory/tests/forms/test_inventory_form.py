@@ -21,8 +21,8 @@ class TestFormProcessing(TestCase):
 
         self.user_part = UserPart.objects.create(user=self.user, part=self.part)
 
-        self.color_red = Color.objects.create(id='4', name='Red', rgb='C91A09')
-        self.color_black = Color.objects.create(id='20', name='Black', rgb='000000')
+        self.color_red = Color.objects.create(id=4, name='Red', rgb='C91A09')
+        self.color_black = Color.objects.create(id=20, name='Black', rgb='000000')
 
         self.set_part1 = SetPart.objects.create(
             set_inventory=1, part=self.part, color=self.color_red, qty=1, is_spare=False)
@@ -123,12 +123,11 @@ class TestFormProcessing(TestCase):
 
     def test_new_form_blank(self):
         self.run_form_action_test()
-
-    '''
+ 
     def test_new_form_new_inventory(self):
-        self.run_form_action_test(expected_create=(self.color_red, 10), expected_update=(), expected_delete=None,
+        self.run_form_action_test(expected_create=(self.color_red, 10),
                                   new_color=self.color_red, new_qty=10)
-    '''
+ 
     
     '''
     def test_invalid_forms_no_actions(self):
