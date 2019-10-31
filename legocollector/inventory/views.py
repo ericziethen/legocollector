@@ -315,6 +315,12 @@ class UserPartManageColorsView(LoginRequiredMixin, UpdateView):  # pylint: disab
             return super().form_invalid(form)
         print('>>> CCC <<<')
 
+
+        # TODO
+        # Once we start using form.get_form_actions we might want to do some processing afterwards
+        # e.g. If color delete + create  -> update, so save deletion and creation, so a swap can just happen without db activity
+        #   test case, swap without db create, delete
+
         # Delete Inventories that changed their Color or got removed
         for inventory_form in inventory_formset:
             # Delete any inventory that got Visually Removed or had it's color changed

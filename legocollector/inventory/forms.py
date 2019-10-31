@@ -103,17 +103,41 @@ class InventoryForm(ModelForm):
             queryset=queryset,
             widget=CustomSelectWidget(attrs={'class': 'chosen-select'}))
 
+    @property
+    def old_color(self):
+        if 'color' in self.initial_data:
+            return self.initial_data['color']
+        return None
+
+    @property
+    def new_color(self):
+        if 'color' in self.cleaned_data:
+            return self.cleaned_data['color']
+        return None
+
+    @property
+    def new_qty(self):
+        if 'qty' in self.cleaned_data:
+            return self.cleaned_data['qty']
+        return None
+
+    @property
     def marked_for_deletion(self):
         return ('DELETE' in self.cleaned_data) and self.cleaned_data['DELETE']
 
+    @property
     def initial_values_cleared(self):
         return self.initial_data and ('color' not in self.cleaned_data) and ('qty' not in self.cleaned_data)
+
+    @property
+    def color_changed(self):
+        return self.old_color and self.new_color and (self.old_color != self.new_color)
 
     def is_valid(self):
         has_color = 'color' in self.cleaned_data
         has_qty = 'qty' in self.cleaned_data
 
-        if (has_color or has_qty) and not self.marked_for_deletion():
+        if (has_color or has_qty) and not self.marked_for_deletion:
             return super().is_valid()
         else:
             return True
@@ -126,14 +150,14 @@ class InventoryForm(ModelForm):
         delete_color = None
 
         if self.is_valid():
-            # Only delete if something was there to begin with
-            if self.marked_for_deletion() or self.initial_values_cleared():
+            # Delete if marked, cleared or replace
+            if self.marked_for_deletion or self.initial_values_cleared or self.color_changed:
                 if self.initial_data:
                     delete_color = self.initial_data['color']
-            elif 'color' in self.cleaned_data:
-                new_color = self.cleaned_data['color']
-                new_qty = self.cleaned_data['qty']
-                create_color = (new_color, new_qty)
+
+            # Create if not marked for deletion and have a new color
+            if not self.marked_for_deletion and self.new_color:
+                create_color = (self.new_color, self.new_qty)
 
         return FormActions(create_color, update_color, delete_color)
 
