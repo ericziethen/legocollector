@@ -136,13 +136,10 @@ class InventoryForm(ModelForm):
         return self.initial_data and ('color' not in self.cleaned_data) and ('qty' not in self.cleaned_data)
 
     def is_valid(self):
-        has_color = 'color' in self.cleaned_data
-        has_qty = 'qty' in self.cleaned_data
-
-        if (has_color or has_qty) and not self.marked_for_deletion:
+        if (self.submitted_color or self.submitted_qty) and not self.marked_for_deletion:
             return super().is_valid()
-        else:
-            return True
+
+        return True
 
     def get_form_actions(self):
         FormActions = namedtuple('FormActions', 'create update delete')
@@ -156,7 +153,7 @@ class InventoryForm(ModelForm):
             if (self.marked_for_deletion or self.initial_values_cleared or
                     (self.initial_color and self.color_changed)):
                 if self.initial_data:
-                    delete_color = self.initial_data['color']
+                    delete_color = self.initial_color
 
             # Create if not marked for deletion and have a new color
             if not self.marked_for_deletion:
