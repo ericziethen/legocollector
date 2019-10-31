@@ -153,8 +153,12 @@ class TestFormProcessing(TestCase):
 
     def test_replace_old_color(self):
         self.run_form_action_test(expected_create=(self.color_red, 10), expected_delete=self.color_black,
-                                  initial_color=self.color_black, initial_qty=20, new_color=self.color_red, new_qty=10)
+                                  initial_color=self.color_black, initial_qty=20,
+                                  new_color=self.color_red, new_qty=10)
         self.run_form_action_test(expected_create=(self.color_red, 10), expected_delete=self.color_black,
-                                  initial_color=self.color_black, initial_qty=10, new_color=self.color_red, new_qty=10)
+                                  initial_color=self.color_black, initial_qty=10,
+                                  new_color=self.color_red, new_qty=10)
 
-
+    def test_populated_form_no_changes_no_action(self):
+        self.run_form_action_test(initial_color=self.color_black, initial_qty=10,
+                                  new_color=self.color_black, new_qty=10)
