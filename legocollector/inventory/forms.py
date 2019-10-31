@@ -168,31 +168,20 @@ class InventoryForm(ModelForm):
         return FormActions(create_color, update_color, delete_color)
 
     def save(self, commit=True):
-        # print('InventoryForm.save() - ENTER')
         instance = super().save(commit=False)
         if commit:
-            # print('InventoryForm.save() - commit')
             instance.save()
-        # print('InventoryForm.save() - EXIT')
         return instance
 
 
 class BaseInventoryFormset(BaseFormSet):
 
     def __init__(self, *args, **kwargs):
-        # print('BaseInventoryFormset.__init__() - ENTER')
         super().__init__(*args, **kwargs)
-
-        # print(F'kwargs::: {kwargs}')
-        # create filtering here whatever that suits you needs
-        # print('userpart', kwargs.get('userpart'))
-        # print('userpart2', kwargs.get('form_kwargs').get('userpart'))
 
         userpart = kwargs.get('form_kwargs').get('userpart')
 
         self.queryset = Inventory.objects.filter(userpart=userpart)
-        # print('queryset', self.queryset)
-        # print('BaseInventoryFormset.__init__() - EXIT')
 
     # See https://whoisnicoleharris.com/2015/01/06/implementing-django-formsets.html
     def clean(self):
@@ -225,6 +214,6 @@ class BaseInventoryFormset(BaseFormSet):
 
 
 InventoryFormset = modelformset_factory(
-    Inventory, form=InventoryForm, formset=BaseInventoryFormset, extra=1, # TODO 2
+    Inventory, form=InventoryForm, formset=BaseInventoryFormset, extra=2,
     can_delete=True
 )

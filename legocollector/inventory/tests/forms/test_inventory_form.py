@@ -60,9 +60,6 @@ class TestFormProcessing(TestCase):
     def run_form_is_valid_test(self, expected_value, *, new_color=None, new_qty=None, removed=None, initial_color=None):
         form = self.run_form(new_color=new_color, new_qty=new_qty, removed=removed, initial_color=initial_color)
 
-        print(F'  FORM CLEANED DATA: {form.cleaned_data}')
-        print(F'  FORM INITIAL DATA: {form.initial_data}')
-
         if expected_value:
             self.assertTrue(form.is_valid(), str(form.errors) + F'\n\nCleaned Data: {form.cleaned_data}')
         else:
@@ -108,11 +105,9 @@ class TestFormProcessing(TestCase):
         self.run_form_is_valid_test(False, initial_color=self.color_black, new_color=self.color_red)
 
     def test_form_incomplete_color_removed_qty_0(self):
-        print('\ntest_form_incomplete_color_removed') # TODO
         self.run_form_is_valid_test(False, initial_color=self.color_black, new_qty=0)
 
     def test_form_incomplete_qty_removed(self):
-        print('\ntest_form_incomplete_qty_removed') # TODO
         self.run_form_is_valid_test(False, initial_color=self.color_black, new_color=self.color_black)
 
     #######################################
@@ -123,10 +118,7 @@ class TestFormProcessing(TestCase):
         form = self.run_form(new_color=new_color, new_qty=new_qty, removed=removed,
                              initial_color=initial_color, initial_qty=initial_qty)
 
-        #print(F'  FORM CLEANED DATA: {form.cleaned_data}')
-
         form_action = form.get_form_actions()
-        #print(F'  FORM ACTIONS: {form_action}\n')
 
         self.assertTupleEqual(form_action.create, expected_create)
         self.assertTupleEqual(form_action.update, expected_update)
@@ -166,12 +158,10 @@ class TestFormProcessing(TestCase):
                                   initial_color=self.color_black)
 
     def test_clear_qty_only_no_action(self):
-        #print('\ntest_clear_qty_only_no_action') # TODO
         self.run_form_action_test(initial_color=self.color_black, initial_qty=20,
                                   new_color=self.color_black)
 
     def test_clear_color_only_no_action(self):
-        #print('\ntest_clear_color_only_no_action') # TODO
         self.run_form_action_test(initial_color=self.color_black, initial_qty=20,
                                   new_qty=20)
 
