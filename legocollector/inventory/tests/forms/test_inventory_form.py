@@ -66,7 +66,7 @@ class TestFormProcessing(TestCase):
             self.assertFalse(form.is_valid(), str(form.errors) + F'\n\nCleaned Data: {form.cleaned_data}')
 
     def test_cleaned_data_populated(self):
-        form = self.run_form(new_color=self.color_red, new_qty=10, removed=True, initial_color=True)
+        form = self.run_form(new_color=self.color_red, new_qty=10, removed=True, initial_color=self.color_black)
 
         self.assertIn('color', form.cleaned_data)
         self.assertIn('qty', form.cleaned_data)
@@ -103,9 +103,23 @@ class TestFormProcessing(TestCase):
         self.run_form_is_valid_test(False, initial_color=self.color_black, new_qty=10)
         self.run_form_is_valid_test(False, initial_color=self.color_black, new_color=self.color_red)
 
-    ###########################################
-    ###### Start of Form Processing Tests #####
-    ###########################################
-    
+    #######################################
+    ###### Start of Form Action Tests #####
+    #######################################
+    def run_form_action_test(self, *, expected_create, expected_update, expected_delete,
+                             new_color=None, new_qty=None, removed=None, initial_color=None, initial_qty=None):
+        form = self.run_form(new_color=new_color, new_qty=new_qty, removed=removed, initial_color=initial_color, initial_qty=initial_qty)
 
+        form_action = form.get_form_actions()
 
+        if expected_create:
+            self.assertTupleEqual(form_action.create, expected_create)
+
+        if expected_update:
+            self.assertTupleEqual(form_action.update, expected_update)
+
+        if expected_delete:
+            self.assertEqual(form_action.delete, expected_delete)
+
+    def test_new_form_blank(self):
+        self.run_form_action_test(expected_create=(), expected_update=(), expected_delete=None)

@@ -1,3 +1,5 @@
+from collections import namedtuple
+
 from django.forms import CharField, ModelForm, ValidationError, modelformset_factory
 from django.forms.formsets import BaseFormSet
 
@@ -110,6 +112,11 @@ class InventoryForm(ModelForm):
             return super().is_valid()
         else:
             return True
+
+    def get_form_actions(self):
+        FormActions = namedtuple('FormActions', 'create update delete')
+
+        return FormActions((), (), None)
 
     def save(self, commit=True):
         # print('InventoryForm.save() - ENTER')
