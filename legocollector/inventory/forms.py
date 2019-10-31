@@ -133,7 +133,7 @@ class InventoryForm(ModelForm):
 
     @property
     def initial_values_cleared(self):
-        return self.initial_data and ('color' not in self.cleaned_data) and ('qty' not in self.cleaned_data)
+        return self.initial_color and not self.submitted_color and not self.submitted_qty
 
     def is_valid(self):
         if (self.submitted_color or self.submitted_qty) and not self.marked_for_deletion:
@@ -152,7 +152,7 @@ class InventoryForm(ModelForm):
             # Delete if marked, cleared or replace
             if (self.marked_for_deletion or self.initial_values_cleared or
                     (self.initial_color and self.color_changed)):
-                if self.initial_data:
+                if self.initial_color:
                     delete_color = self.initial_color
 
             # Create if not marked for deletion and have a new color
