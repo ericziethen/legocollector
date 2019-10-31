@@ -1,3 +1,5 @@
+from collections import namedtuple
+
 from django.forms import CharField, ModelForm, ValidationError, modelformset_factory
 from django.forms.formsets import BaseFormSet
 
@@ -101,32 +103,85 @@ class InventoryForm(ModelForm):
             queryset=queryset,
             widget=CustomSelectWidget(attrs={'class': 'chosen-select'}))
 
+    @property
+    def initial_color(self):
+        return self.initial_data['color'] if 'color' in self.initial_data else None
+
+    @property
+    def submitted_color(self):
+        return self.cleaned_data['color'] if 'color' in self.cleaned_data else None
+
+    @property
+    def color_changed(self):
+        return self.initial_color != self.submitted_color
+
+    @property
+    def initial_qty(self):
+        return self.initial_data['qty'] if 'qty' in self.initial_data else None
+
+    @property
+    def submitted_qty(self):
+        return self.cleaned_data['qty'] if 'qty' in self.cleaned_data else None
+
+    @property
+    def qty_changed(self):
+        return self.initial_qty != self.submitted_qty
+
+    @property
+    def marked_for_deletion(self):
+        return ('DELETE' in self.cleaned_data) and self.cleaned_data['DELETE']
+
+    @property
+    def initial_values_cleared(self):
+        return self.initial_color and not self.submitted_color and (self.submitted_qty is None)
+
+    def is_valid(self):
+        valid = super().is_valid()  # This will set cleaned_data
+
+        if (self.submitted_color or (self.submitted_qty is not None)) and not self.marked_for_deletion:
+            return valid
+
+        return True
+
+    def get_form_actions(self):
+        FormActions = namedtuple('FormActions', 'create update delete')
+
+        create_color = ()
+        update_color = ()
+        delete_color = None
+
+        if self.is_valid():
+            # Delete if marked, cleared or replace
+            if (self.marked_for_deletion or self.initial_values_cleared or
+                    (self.initial_color and self.color_changed)):
+                if self.initial_color:
+                    delete_color = self.initial_color
+
+            # Create if not marked for deletion and have a new color
+            if not self.marked_for_deletion:
+                if self.submitted_color:
+                    if self.color_changed:
+                        create_color = (self.submitted_color, self.submitted_qty)
+                    elif self.qty_changed:
+                        update_color = (self.submitted_color, self.submitted_qty)
+
+        return FormActions(create_color, update_color, delete_color)
+
     def save(self, commit=True):
-        # print('InventoryForm.save() - ENTER')
         instance = super().save(commit=False)
         if commit:
-            # print('InventoryForm.save() - commit')
             instance.save()
-        # print('InventoryForm.save() - EXIT')
         return instance
 
 
 class BaseInventoryFormset(BaseFormSet):
 
     def __init__(self, *args, **kwargs):
-        # print('BaseInventoryFormset.__init__() - ENTER')
         super().__init__(*args, **kwargs)
-
-        # print(F'kwargs::: {kwargs}')
-        # create filtering here whatever that suits you needs
-        # print('userpart', kwargs.get('userpart'))
-        # print('userpart2', kwargs.get('form_kwargs').get('userpart'))
 
         userpart = kwargs.get('form_kwargs').get('userpart')
 
         self.queryset = Inventory.objects.filter(userpart=userpart)
-        # print('queryset', self.queryset)
-        # print('BaseInventoryFormset.__init__() - EXIT')
 
     # See https://whoisnicoleharris.com/2015/01/06/implementing-django-formsets.html
     def clean(self):

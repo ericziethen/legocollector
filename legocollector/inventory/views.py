@@ -142,11 +142,9 @@ class UserPartDetailView(LoginRequiredMixin, SingleTableMixin, DetailView):  # p
     template_name = 'inventory/userpart_detail.html'
 
     def get_context_data(self, **kwargs):
-        # print('UserPartDetailView.get_context_data() - ENTER')
         # Call the base implementation first to get a context
         context = super().get_context_data(**kwargs)
         context['inventory_list'] = Inventory.objects.filter(userpart=self.object.id)
-        # print('UserPartDetailView.get_context_data() - EXIT')
         return context
 
 
@@ -288,41 +286,38 @@ class UserPartManageColorsView(LoginRequiredMixin, UpdateView):  # pylint: disab
         # Check for Form Errors
         for inventory_form in inventory_formset:
             if not inventory_form.is_valid():
-                if inventory_form.initial_data:
-                    form.add_error(None, 'Invalid Form')
-                    return super().form_invalid(form)
+                form.add_error(None, 'Invalid Form')
+                return super().form_invalid(form)
 
         # Check for Non-Form errors
         if inventory_formset.non_form_errors():
             return super().form_invalid(form)
 
-        # Delete Inventories that changed their Color or got removed
+        create_or_update_dic = {}
+        delete_dic = {}
+        # Collect all form actions
         for inventory_form in inventory_formset:
-            # Delete any inventory that got Visually Removed or had it's color changed
-            if (inventory_form in inventory_formset.deleted_forms) or ('color' in inventory_form.changed_data):
-                # Only something to Delete if there was data to begin with
-                if inventory_form.initial_data:
-                    color = inventory_form.initial_data['color']
-                    # At this point inventory must exist
-                    Inventory.objects.filter(userpart=self.object, color=color).delete()
+            form_actions = inventory_form.get_form_actions()
 
-        # Create new Objects
-        for inventory_form in inventory_formset:
-            if inventory_form.is_valid():
-                # Check that it's not a blank unchanged form
-                # Don't check fo unchanged or we might delete an object which forms hasn't been changed and
-                # another one with the same color got removed
-                if inventory_form not in inventory_formset.deleted_forms:
-                    if (('color' in inventory_form.cleaned_data) and ('qty' in inventory_form.cleaned_data)):
-                        color = inventory_form.cleaned_data['color']
-                        qty = inventory_form.cleaned_data['qty']
+            if form_actions.create:
+                create_or_update_dic[form_actions.create[0].pk] = form_actions.create
+            if form_actions.update:
+                create_or_update_dic[form_actions.update[0].pk] = form_actions.update
+            if form_actions.delete:
+                delete_dic[form_actions.delete.pk] = form_actions.delete
 
-                        inventory, _ = Inventory.objects.update_or_create(
-                            userpart=self.object,
-                            color=color,
-                            defaults={'qty': qty}
-                        )
-                        # print(F'CREATE INV: {inventory}')
-                        inventory.save()
+        # Delete all items that need deleting
+        for color_pk, color in delete_dic.items():
+            # If the Item is in the the Update or Create list we don't need to actually delete it first
+            if color_pk not in create_or_update_dic:
+                Inventory.objects.filter(userpart=self.object, color=color).delete()
+
+        # Create/Update Items
+        for _, inventory_tuple in create_or_update_dic.items():
+            Inventory.objects.update_or_create(
+                userpart=self.object,
+                color=inventory_tuple[0],
+                defaults={'qty': inventory_tuple[1]}
+            )
 
         return super().form_valid(form)
