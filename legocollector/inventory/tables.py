@@ -46,8 +46,12 @@ class PartTable(Table):
 class UserPartTable(Table):
     part = LinkColumn(None, accessor='part.name', args=[Accessor('pk1')])
 
+    width = DecimalColumn(accessor='part.width')
+    height = DecimalColumn(accessor='part.height')
+    length = DecimalColumn(accessor='part.length')
+
     class Meta:  # pylint: disable=too-few-public-methods
         model = UserPart
-        fields = ['part', 'part.part_num', 'part.category', 'part.width', 'part.height', 'part.length']
+        fields = ['part', 'part.part_num', 'part.category', 'width', 'height', 'length']
         attrs = {"class": "table-striped table-bordered"}
         empty_text = "No Parts Found"
