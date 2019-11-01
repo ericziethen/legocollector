@@ -172,13 +172,20 @@ class PartExternalId(models.Model):
     class Meta:
         unique_together = (('part', 'provider', 'external_id'),)
 
-
+from django.db.models import Sum
 class UserPart(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_parts')
     part = models.ForeignKey(Part, on_delete=models.CASCADE, related_name='user_parts')
 
     class Meta:
         unique_together = (('user', 'part'),)
+
+    @property
+    def inventory_count(self):
+        inv_count = Inventory.objects.filter(
+            userpart__user=self.user, userpart=self).aggregate(Sum('qty'))
+        # Query could return "{'qty__sum': None}"
+        return inv_count['qty__sum'] or 0
 
     @property
     def used_colors(self):

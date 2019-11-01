@@ -52,6 +52,6 @@ class UserPartTable(Table):
 
     class Meta:  # pylint: disable=too-few-public-methods
         model = UserPart
-        fields = ['part', 'part.part_num', 'part.category', 'width', 'height', 'length']
+        fields = ['part', 'part.part_num', 'part.category', 'width', 'height', 'length', 'inventory_count']
         attrs = {"class": "table-striped table-bordered"}
         empty_text = "No Parts Found"
