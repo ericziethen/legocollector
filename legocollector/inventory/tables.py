@@ -52,7 +52,8 @@ class UserPartTable(Table):
 
     # TODO - Decide if leave disabled or order some way - https://django-tables2.readthedocs.io/en/latest/pages/ordering.html#table-order-foo-methods
     # Cannot order directly by property
-    part_count = Column(verbose_name='count', orderable=False, accessor=Accessor('inventory_count'))
+    part_count = Column(verbose_name='qty', orderable=False, accessor=Accessor('inventory_count'))
+    colors_used = Column(verbose_name='colors', orderable=False, accessor=Accessor('used_colors_str'))
 
     class Meta:  # pylint: disable=too-few-public-methods
         model = UserPart

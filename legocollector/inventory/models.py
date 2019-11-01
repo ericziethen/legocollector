@@ -192,6 +192,10 @@ class UserPart(models.Model):
         return Color.objects.filter(inventory_colors__userpart=self).distinct()
 
     @property
+    def used_colors_str(self):
+        return ', '.join(c.name for c in self.used_colors)
+
+    @property
     def unused_colors(self):
         return self.part.available_colors.exclude(pk__in=self.used_colors)
 
