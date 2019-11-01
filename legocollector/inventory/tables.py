@@ -23,9 +23,18 @@ class PartImage(Column):
         return format_html(F'<img src="{pic_url}" alt="Part Picture" class="{img_class}" height="50" width="50">')
 
 
+class DecimalColumn(Column):
+    def render(self, value):
+        return '%g' % (value)
+
+
 class PartTable(Table):
     box_selection = CheckBoxColumn(accessor='id')
     image = PartImage(accessor='part_num', verbose_name='Image')
+
+    width = DecimalColumn(accessor='width')
+    height = DecimalColumn(accessor='height')
+    length = DecimalColumn(accessor='length')
 
     class Meta:  # pylint: disable=too-few-public-methods
         model = Part
