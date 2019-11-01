@@ -50,8 +50,12 @@ class UserPartTable(Table):
     height = DecimalColumn(accessor='part.height')
     length = DecimalColumn(accessor='part.length')
 
+    # TODO - Decide if leave disabled or order some way - https://django-tables2.readthedocs.io/en/latest/pages/ordering.html#table-order-foo-methods
+    # Cannot order directly by property
+    part_count = Column(verbose_name='count', orderable=False, accessor=Accessor('inventory_count'))
+
     class Meta:  # pylint: disable=too-few-public-methods
         model = UserPart
-        fields = ['part', 'part.part_num', 'part.category', 'width', 'height', 'length', 'inventory_count']
+        fields = ['part', 'part.part_num', 'part.category', 'width', 'height', 'length', 'part_count']
         attrs = {"class": "table-striped table-bordered"}
         empty_text = "No Parts Found"
