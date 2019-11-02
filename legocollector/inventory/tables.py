@@ -52,14 +52,13 @@ class UserPartTable(Table):
 
     image = PartImage(accessor='part.part_num', verbose_name='Image')
 
-    # TODO - Decide if leave disabled or order some way - https://django-tables2.readthedocs.io/en/latest/pages/ordering.html#table-order-foo-methods
     # Cannot order directly by property
-    part_count = Column(verbose_name='qty', orderable=False, accessor=Accessor('inventory_count'))
-    colors_used = Column(verbose_name='colors', orderable=False, accessor=Accessor('used_colors_str'))
+    qty = Column(verbose_name='qty', orderable=False, accessor=Accessor('inventory_count'))
+    colors = Column(verbose_name='colors', orderable=False, accessor=Accessor('used_colors_str'))
 
     class Meta:  # pylint: disable=too-few-public-methods
         model = UserPart
         fields = ['part', 'image', 'part.part_num', 'part.category', 'width', 'height',
-                  'length', 'part_count', 'colors_used']
+                  'length', 'qty', 'colors']
         attrs = {"class": "table-striped table-bordered"}
         empty_text = "No Parts Found"

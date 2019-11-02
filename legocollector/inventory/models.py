@@ -2,6 +2,7 @@ import colorsys
 import math
 
 from django.db import models
+from django.db.models import Sum
 from django.contrib.auth.models import User
 from django.urls import reverse
 
@@ -172,7 +173,7 @@ class PartExternalId(models.Model):
     class Meta:
         unique_together = (('part', 'provider', 'external_id'),)
 
-from django.db.models import Sum
+
 class UserPart(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_parts')
     part = models.ForeignKey(Part, on_delete=models.CASCADE, related_name='user_parts')

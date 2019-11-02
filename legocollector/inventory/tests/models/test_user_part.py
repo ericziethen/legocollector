@@ -64,7 +64,8 @@ class TestInventoryColors(TestCase):  # pylint: disable=too-many-instance-attrib
         self.assertEqual(result.count(), 1)
         self.assertTrue(result.filter(name=self.color2.name).exists())
 
-class TestInventoryQty(TestCase):
+
+class TestInventoryQty(TestCase):  # pylint: disable=too-many-instance-attributes
 
     def setUp(self):
         self.user = User.objects.create_user(  # nosec
@@ -74,8 +75,11 @@ class TestInventoryQty(TestCase):
 
         self.part = Part.objects.create(
             part_num='Part', name='A Part', category=self.part_category)
+        self.part2 = Part.objects.create(
+            part_num='PartB', name='B Part', category=self.part_category)
 
         self.user_part = UserPart.objects.create(user=self.user, part=self.part)
+        self.user_part2 = UserPart.objects.create(user=self.user, part=self.part2)
 
         self.color_red = Color.objects.create(id=4, name='Red', rgb='C91A09')
         self.color_black = Color.objects.create(id=20, name='Black', rgb='000000')
@@ -108,10 +112,6 @@ class TestInventoryQty(TestCase):
         self.assertEqual(self.user_part.inventory_count, 10)
 
     def test_multiple_userpart_same_color(self):
-        self.part2 = Part.objects.create(
-            part_num='PartB', name='B Part', category=self.part_category)
-        self.user_part2 = UserPart.objects.create(user=self.user, part=self.part2)
-
         Inventory.objects.create(userpart=self.user_part, color=self.color_red, qty=2)
         Inventory.objects.create(userpart=self.user_part2, color=self.color_red, qty=4)
 
