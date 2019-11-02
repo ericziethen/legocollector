@@ -96,11 +96,11 @@ class Part(models.Model):
 
     @property
     def available_colors_count(self):
-        return self.available_colors().count()
+        return self.available_colors.count()
 
     @property
     def available_colors_str(self):
-        return Color.objects.filter(setparts__part=self).distinct()
+        return ', '.join(c.name for c in self.available_colors.order_by('name'))
 
     def get_related_parts(self, *, parents, children, transitive, parts_processed=None):
         related_parts = []

@@ -36,9 +36,12 @@ class PartTable(Table):
     height = DecimalColumn(accessor='height')
     length = DecimalColumn(accessor='length')
 
+    color_count = Column(verbose_name='color count', orderable=False, accessor=Accessor('available_colors_count'))
+    colors = Column(verbose_name='colors', orderable=False, accessor=Accessor('available_colors_str'))
+
     class Meta:  # pylint: disable=too-few-public-methods
         model = Part
-        fields = ('part_num', 'name', 'width', 'height', 'length', 'category')
+        fields = ('part_num', 'name', 'width', 'height', 'length', 'category', 'color_count', 'colors')
         attrs = {"class": "table-striped table-bordered"}
         empty_text = "No Parts Found"
 
