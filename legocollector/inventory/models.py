@@ -2,6 +2,7 @@ import colorsys
 import math
 
 from django.db import models
+from django.db.models import Sum
 from django.contrib.auth.models import User
 from django.urls import reverse
 
@@ -181,8 +182,19 @@ class UserPart(models.Model):
         unique_together = (('user', 'part'),)
 
     @property
+    def inventory_count(self):
+        inv_count = Inventory.objects.filter(
+            userpart__user=self.user, userpart=self).aggregate(Sum('qty'))
+        # Query could return "{'qty__sum': None}"
+        return inv_count['qty__sum'] or 0
+
+    @property
     def used_colors(self):
         return Color.objects.filter(inventory_colors__userpart=self).distinct()
+
+    @property
+    def used_colors_str(self):
+        return ', '.join(c.name for c in self.used_colors)
 
     @property
     def unused_colors(self):

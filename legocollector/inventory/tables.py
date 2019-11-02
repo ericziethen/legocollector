@@ -46,8 +46,19 @@ class PartTable(Table):
 class UserPartTable(Table):
     part = LinkColumn(None, accessor='part.name', args=[Accessor('pk1')])
 
+    width = DecimalColumn(accessor='part.width')
+    height = DecimalColumn(accessor='part.height')
+    length = DecimalColumn(accessor='part.length')
+
+    image = PartImage(accessor='part.part_num', verbose_name='Image')
+
+    # Cannot order directly by property
+    qty = Column(verbose_name='qty', orderable=False, accessor=Accessor('inventory_count'))
+    colors = Column(verbose_name='colors', orderable=False, accessor=Accessor('used_colors_str'))
+
     class Meta:  # pylint: disable=too-few-public-methods
         model = UserPart
-        fields = ['part', 'part.part_num', 'part.category', 'part.width', 'part.height', 'part.length']
+        fields = ['part', 'image', 'part.part_num', 'part.category', 'width', 'height',
+                  'length', 'qty', 'colors']
         attrs = {"class": "table-striped table-bordered"}
         empty_text = "No Parts Found"
