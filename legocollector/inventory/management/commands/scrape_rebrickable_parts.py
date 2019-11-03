@@ -85,7 +85,7 @@ class Command(BaseCommand):
     def _form_scrape_url(part_nums, api_key):
         part_list_str = ','.join(part_nums)
         # to include part relationships, add "&inc_part_details=1" to the url
-        return F'https://rebrickable.com/api/v3/lego/parts/?part_nums={part_list_str}&key={api_key}'
+        return F'https://rebrickable.com/api/v3/lego/parts/?part_nums={part_list_str}&key={api_key}&inc_part_details=1'
 
     def _scrape(self, url):
         self.stdout.write(F'  Scraping Url: {url}')
