@@ -29,6 +29,8 @@ from .tables import (
     SingleTableMixin
 )
 
+from common.util import url_helper
+
 
 def convert_color_id_to_rgb(request):
     color_id = request.GET.get('color_id', None)
@@ -168,35 +170,46 @@ class FilteredPartListUserPartCreateView(LoginRequiredMixin, SingleTableMixin, F
 
     def post(self, request, **kwargs):
         try:
-            part_id = self.get_part_id_from_post()
+            part_id_list = self.get_part_ids_from_post()
         except ValidationError as error:
             messages.error(self.request, str(error))
-            return HttpResponseRedirect(reverse_lazy('userpart_create'))
+            # Inspired by https://stackoverflow.com/questions/9585491/how-do-i-pass-get-parameters-using-django-urlresolvers-reverse
+            response = HttpResponseRedirect(reverse_lazy('userpart_create'))
+            get_params_dic = {param: request.GET.get(param) for param in request.GET.keys() if request.GET.get(param)}
+            url = url_helper.build_url(response.url, get_params_dic)
+            response['Location'] = url
+            return response
         else:
-            userpart = UserPart.objects.create(
-                user=self.request.user,
-                part_id=part_id)
-            userpart.save()
-            return HttpResponseRedirect(reverse_lazy('userpart_detail', kwargs={'pk1': userpart.pk}))
+            for part_id in part_id_list:
+                userpart = UserPart.objects.create(
+                    user=self.request.user,
+                    part_id=part_id)
+                userpart.save()
+
+                if len(part_id_list) == 1:
+                    return HttpResponseRedirect(reverse_lazy('userpart_detail', kwargs={'pk1': userpart.pk}))
+
+            return HttpResponseRedirect(reverse_lazy('userpart_list'))
 
     # Don't use form_valid as name since we are not inheriting a Form
     # Not the best name but ok for now
-    def get_part_id_from_post(self):
+    def get_part_ids_from_post(self):
         # Get all Selected Checkboxes
         ids = self.request.POST.getlist('box_selection')
 
-        # Ensure exactly 1 Checkbox has been selected
-        ids_count = len(ids)
-        if ids_count != 1:
-            raise ValidationError(F'Select exactly 1 part to add, you selected {ids_count}')
+        # Ensure at least 1 Checkbox has been selected
+        if not ids:
+            raise ValidationError(F'Select at least 1 part to add, you selected none')
 
-        part_id = ids[0]
-        # Ensure we don't already have this part
-        if UserPart.objects.filter(user=self.request.user, part=part_id).exists():
-            raise ValidationError(F'You already have this part in your list')
+        part_id_list = []
+        for part_id in ids:
+            # Ensure we don't already have this part
+            if UserPart.objects.filter(user=self.request.user, part=part_id).exists():
+                raise ValidationError(F'You already have this part in your list')
+            part_id_list.append(part_id)
 
         # Return the Primary Key
-        return part_id
+        return part_id_list
 
     def get_queryset(self):
         """Only parts we don't have already."""
