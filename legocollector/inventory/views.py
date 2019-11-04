@@ -13,6 +13,8 @@ from django.urls import reverse_lazy
 from django.views.generic import DeleteView, DetailView, ListView, UpdateView
 from django.views.generic.edit import CreateView
 
+from common.util import url_helper
+
 from .filters import (
     UserPartFilter, PartFilter,
     FilterView
@@ -28,8 +30,6 @@ from .tables import (
     PartTable, UserPartTable,
     SingleTableMixin
 )
-
-from common.util import url_helper
 
 
 def convert_color_id_to_rgb(request):
@@ -173,7 +173,8 @@ class FilteredPartListUserPartCreateView(LoginRequiredMixin, SingleTableMixin, F
             part_id_list = self.get_part_ids_from_post()
         except ValidationError as error:
             messages.error(self.request, str(error))
-            # Inspired by https://stackoverflow.com/questions/9585491/how-do-i-pass-get-parameters-using-django-urlresolvers-reverse
+            # Inspired by
+            # https://stackoverflow.com/questions/9585491/how-do-i-pass-get-parameters-using-django-urlresolvers-reverse
             response = HttpResponseRedirect(reverse_lazy('userpart_create'))
             get_params_dic = {param: request.GET.get(param) for param in request.GET.keys() if request.GET.get(param)}
             url = url_helper.build_url(response.url, get_params_dic)
