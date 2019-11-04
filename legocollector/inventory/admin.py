@@ -20,7 +20,7 @@ class ColorAdmin(admin.ModelAdmin):
 
 class PartAdmin(admin.ModelAdmin):
     fieldsets = [
-        ('Identification', {'fields': ['part_num', 'name', 'category']}),
+        ('Identification', {'fields': ['part_num', 'name', 'category', 'image_url']}),
         ('Dimensions', {'fields': ['width', 'height', 'length']}),
         ('Available Colors', {'fields': ['available_colors']}),
         ('Related parts', {'fields': ['related_parts']}),

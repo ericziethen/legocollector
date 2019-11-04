@@ -32,19 +32,28 @@ class Command(BaseCommand):
         else:
             self.stderr.write(F'ERROR - Json file "{json_file_path}" does not exist')
 
-        self.import_external_ids(json_dic['parts'])
+        self.import_scraped_data(json_dic['parts'])
 
-    def import_external_ids(self, part_dic):
-        self.stdout.write(F'Importing External IDs')
+    def import_scraped_data(self, data_dic):
+        self.stdout.write(F'Importing Scraped Data')
         external_id_counts = 0
+        parts_processed_counts = 0
         part_list = Part.objects.values_list('part_num', flat=True)
 
         with transaction.atomic():
-            for part_num, external_ids in part_dic.items():  # pylint: disable=too-many-nested-blocks
+            for part_num, part_dic in data_dic.items():  # pylint: disable=too-many-nested-blocks
                 if part_num in part_list:
                     part = Part.objects.filter(part_num=part_num).first()
                     if part:
-                        for name, ids in external_ids['external_ids'].items():
+
+                        # Import image url
+                        part_img_url = part_dic['part_img_url']
+                        if part_img_url:
+                            part.image_url = part_img_url
+                            part.save()
+
+                        # Import External IDs
+                        for name, ids in part_dic['external_ids'].items():
                             provider = self.provider_from_string(name)
                             for entry in ids:
                                 # Is this better than check if exist first?
@@ -56,8 +65,13 @@ class Command(BaseCommand):
                                 external_id_counts += 1
 
                                 if (external_id_counts % 1000) == 0:
-                                    self.stdout.write(F'  {external_id_counts} External IDs imported')
+                                    self.stdout.write(F'    {external_id_counts} External IDs imported')
 
+                        parts_processed_counts += 1
+                        if (parts_processed_counts % 1000) == 0:
+                            self.stdout.write(F'  {parts_processed_counts} Parts Processed')
+
+        self.stdout.write(F'Total of {parts_processed_counts} DB Parts Processed')
         self.stdout.write(F'Total of {external_id_counts} External IDs imported')
 
     @staticmethod

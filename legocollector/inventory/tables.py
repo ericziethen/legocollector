@@ -9,15 +9,23 @@ from django_tables2.views import SingleTableMixin  # (for import in views.py)  p
 from .models import Part, UserPart
 
 
-class PartImage(Column):
+class PartImageColumn(Column):
     def render(self, value):
         rel_pic_path = F'inventory/PartColours/parts_-1/{value}.png'
-        pic_url = static(rel_pic_path)
         abs_pic_path = finders.find(rel_pic_path)
+        pic_url = None
 
         if abs_pic_path:
+            pic_url = static(rel_pic_path)
+        else:
+            part = Part.objects.filter(part_num=value).first()  # Must exist in here
+            if part.image_url:
+                pic_url = part.image_url
+
+        if pic_url:
             img_class = 'part_image_zoom'
         else:
+            pic_url = ''
             img_class = 'image_not_found'
 
         return format_html(F'<img src="{pic_url}" alt="Part Picture" class="{img_class}" height="50" width="50">')
@@ -30,7 +38,7 @@ class DecimalColumn(Column):
 
 class PartTable(Table):
     box_selection = CheckBoxColumn(accessor='id')
-    image = PartImage(accessor='part_num', verbose_name='Image')
+    image = PartImageColumn(accessor='part_num', verbose_name='Image')
 
     width = DecimalColumn(accessor='width')
     height = DecimalColumn(accessor='height')
@@ -53,7 +61,7 @@ class UserPartTable(Table):
     height = DecimalColumn(accessor='part.height')
     length = DecimalColumn(accessor='part.length')
 
-    image = PartImage(accessor='part.part_num', verbose_name='Image')
+    image = PartImageColumn(accessor='part.part_num', verbose_name='Image')
 
     # Cannot order directly by property
     qty = Column(verbose_name='qty', orderable=False, accessor=Accessor('inventory_count'))
