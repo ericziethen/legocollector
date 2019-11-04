@@ -2,6 +2,7 @@ import csv
 import io
 
 from django.db import transaction
+from django.db.models import Q
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -196,6 +197,10 @@ class FilteredPartListUserPartCreateView(LoginRequiredMixin, SingleTableMixin, F
 
         # Return the Primary Key
         return part_id
+
+    def get_queryset(self):
+        """Only parts we don't have already."""
+        return Part.objects.filter(~Q(user_parts__user=self.request.user))
 
 
 class InventoryCreateView(LoginRequiredMixin, CreateView):  # pylint: disable=too-many-ancestors
