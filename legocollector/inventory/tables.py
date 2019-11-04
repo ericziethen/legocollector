@@ -27,7 +27,6 @@ class PartImageColumn(Column):
         else:
             pic_url = ''
             img_class = 'image_not_found'
-        
 
         return format_html(F'<img src="{pic_url}" alt="Part Picture" class="{img_class}" height="50" width="50">')
 
