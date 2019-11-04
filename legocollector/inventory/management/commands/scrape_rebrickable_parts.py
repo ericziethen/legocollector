@@ -3,7 +3,7 @@ import json
 import os
 import time
 
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 from ezscrape.scraping import scraper
 from ezscrape.scraping.core import ScrapeConfig
 from ezscrape.scraping.core import ScrapeStatus
@@ -94,6 +94,10 @@ class Command(BaseCommand):
 
                 part_nums = json_dic['unscraped_parts']
                 part_dic = json_dic['parts']
+
+                # Don't process a file if all parts are scraped
+                if not part_nums:
+                    raise CommandError(F'"{json_file_path}" has no unscraped parts. Select a different file')
 
         # Resume of previously scraped and not finished instead of starting new
         if part_csv_path:
