@@ -1,3 +1,4 @@
+import csv
 import json
 import os
 import time
@@ -14,23 +15,25 @@ class Command(BaseCommand):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.parts_per_scrape = 100
+        self.parts_per_scrape = 10
 
     def add_arguments(self, parser):
         parser.add_argument('rebrickabe_api_key', type=str)
         parser.add_argument('json_file_path', type=str)
+        parser.add_argument('-p', '--parts_from_csv', type=str, help='Loads the Parts from a csv instead of the DB', )
 
     def handle(self, *args, **options):
         rebrickabe_api_key = options['rebrickabe_api_key']
         json_file_path = options['json_file_path']
+        parts_csv_path = options['parts_from_csv']
 
-        self.scrape_rebrickable_parts(rebrickabe_api_key, json_file_path)
+        self.scrape_rebrickable_parts(rebrickabe_api_key, json_file_path, parts_csv_path)
 
-    def scrape_rebrickable_parts(self, api_key, json_file_path):
+    def scrape_rebrickable_parts(self, api_key, json_file_path, part_csv_path):
         self.stdout.write(F'Scraping Rebrickable Parts')
 
         # Get the data to scrape
-        part_nums, data_dic = self._load_scrape_data(json_file_path)
+        part_nums, data_dic = self._load_scrape_data(json_file_path, part_csv_path)
 
         # Get the list to scrape next
         scrape_list, part_nums = self._get_scrape_list(part_nums, self.parts_per_scrape)
@@ -52,21 +55,14 @@ class Command(BaseCommand):
         self.stdout.write(F'Scraping Complete')
 
     @staticmethod
-    def _load_scrape_data(json_file_path):
-        part_dic = {}
-        part_nums = []
+    def _get_part_nums_from_rebrickable_csv(part_csv_path):
+        part_num_list = []
+        with open(part_csv_path) as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                part_num_list.append(row['part_num'])
 
-        if os.path.exists(json_file_path):
-            with open(json_file_path, 'r', encoding='utf-8') as file_ptr:
-                json_dic = json.load(file_ptr)
-
-                part_nums = json_dic['unscraped_parts']
-                part_dic = json_dic['parts']
-
-        if not part_nums:
-            part_nums = [x.part_num for x in Part.objects.all()]
-
-        return (part_nums, part_dic)
+        return part_num_list
 
     @staticmethod
     def _get_scrape_list(part_nums, count):
@@ -86,6 +82,31 @@ class Command(BaseCommand):
         part_list_str = ','.join(part_nums)
         # to include part relationships, add "&inc_part_details=1" to the url
         return F'https://rebrickable.com/api/v3/lego/parts/?part_nums={part_list_str}&key={api_key}&inc_part_details=1'
+
+    def _load_scrape_data(self, json_file_path, part_csv_path):
+        part_dic = {}
+        part_nums = []
+
+        # Read the scrape data from the existing json file
+        if os.path.exists(json_file_path):
+            with open(json_file_path, 'r', encoding='utf-8') as file_ptr:
+                json_dic = json.load(file_ptr)
+
+                part_nums = json_dic['unscraped_parts']
+                part_dic = json_dic['parts']
+
+        # Resume of previously scraped and not finished instead of starting new
+        if part_csv_path:
+            if not part_nums:
+                part_nums = Command._get_part_nums_from_rebrickable_csv(part_csv_path)
+            else:
+                self.stdout.write(F'Parts CSV specified but need to complete unscraped parts first')
+
+        # Backup, start scraping from the DB
+        if not part_nums:
+            part_nums = [x.part_num for x in Part.objects.all()]
+
+        return (part_nums, part_dic)
 
     def _scrape(self, url):
         self.stdout.write(F'  Scraping Url: {url}')
@@ -113,7 +134,6 @@ class Command(BaseCommand):
         for result in scrape_result['results']:
             result_dic = {}
             part_num = result['part_num']
-            result_dic['external_ids'] = result['external_ids']
+            result_dic = result
             data_dic[part_num] = result_dic
-
         return data_dic

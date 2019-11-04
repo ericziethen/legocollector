@@ -18,9 +18,7 @@ echo %date% - %time%
 rem Check our Files Exists
 if not exist "%REBRICKABLE_CSV_FILES_DIR%" echo Cannot find "%REBRICKABLE_CSV_FILES_DIR%" & goto error
 if not exist "%REBRICKABLE_PART_SCRAPE_FILE_PATH%" echo Cannot find "%REBRICKABLE_PART_SCRAPE_FILE_PATH%" & goto error
-
 if not exist "%BRICKLINK_PART_FILE_PATH%" echo Cannot find "%BRICKLINK_PART_FILE_PATH%" & goto error
-
 
 rem Import the Rebrickable Data
 python manage.py import_rebrickable_data "%REBRICKABLE_CSV_FILES_DIR%"
