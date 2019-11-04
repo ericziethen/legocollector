@@ -32,10 +32,6 @@ class Command(BaseCommand):
 
         # Process import files
         for file_path, import_func in import_files.items():
-            row_count = 0
-            with open(file_path) as csvfile:
-                row_count = sum(1 for row in csvfile)
-
             with open(file_path) as csvfile:
                 reader = csv.DictReader(csvfile)
                 import_func(reader)
