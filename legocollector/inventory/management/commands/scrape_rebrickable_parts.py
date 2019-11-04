@@ -15,7 +15,7 @@ class Command(BaseCommand):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.parts_per_scrape = 10
+        self.parts_per_scrape = 100
 
     def add_arguments(self, parser):
         parser.add_argument('rebrickabe_api_key', type=str)
