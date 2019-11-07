@@ -20,7 +20,8 @@ class Command(BaseCommand):
 
         attributes_set_count = 0
 
-        bricklink_external_ids = [e.external_id for e in PartExternalId.objects.filter(provider=PartExternalId.BRICKLINK)]
+        bricklink_external_ids = [
+            e.external_id for e in PartExternalId.objects.filter(provider=PartExternalId.BRICKLINK)]
 
         with transaction.atomic():
             for idx, item_tag in enumerate(root.findall('ITEM')):  # pylint: disable=too-many-nested-blocks
