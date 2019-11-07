@@ -20,8 +20,8 @@ class Command(BaseCommand):
 
         attributes_set_count = 0
 
-        part_list = Part.objects.values_list('part_num', flat=True)
-        external_id_list = PartExternalId.objects.values_list('external_id', flat=True)
+        bricklink_external_ids = [
+            e.external_id for e in PartExternalId.objects.filter(provider=PartExternalId.BRICKLINK)]
 
         with transaction.atomic():
             for idx, item_tag in enumerate(root.findall('ITEM')):  # pylint: disable=too-many-nested-blocks
@@ -30,35 +30,34 @@ class Command(BaseCommand):
                 item_y = item_tag.find('ITEMDIMY').text
                 item_z = item_tag.find('ITEMDIMZ').text
 
-                if item_id:
-                    if any([item_x, item_y, item_z]):
-                        if (item_id in external_id_list) or (item_id in part_list):
-                            part_list = []
-                            part_external_ids = PartExternalId.objects.filter(
-                                provider=PartExternalId.BRICKLINK,
-                                external_id=item_id
-                            )
-                            if part_external_ids:
-                                part_list = [p.part for p in part_external_ids]
-                            else:  # pylint: disable=too-many-nested-blocks
-                                part = Part.objects.filter(part_num=item_id).first()
-                                if part:
-                                    part_list.append(part)
+                if item_id and any([item_x, item_y, item_z]):
+                    part_list = []
 
-                            for part in part_list:
-                                if item_x and item_y and (item_y > item_x):
-                                    part.length = item_y
-                                    part.width = item_x
-                                else:
-                                    part.length = item_x
-                                    part.width = item_y
-                                part.height = item_z
-                                part.save()
+                    # First check for Bricklink ID and part_nums as backup
+                    if item_id in bricklink_external_ids:
+                        # Allow for different bricklink IDs to point to the same part
+                        part_list = [e.part for e in PartExternalId.objects.filter(
+                            provider=PartExternalId.BRICKLINK, external_id=item_id)]
+                    else:
+                        part = Part.objects.filter(part_num=item_id).first()
+                        if part:
+                            part_list.append(part)
 
-                                attributes_set_count += 1
+                    # Update related parts
+                    for part in part_list:
+                        if item_x and item_y and (item_y > item_x):
+                            part.length = item_y
+                            part.width = item_x
+                        else:
+                            part.length = item_x
+                            part.width = item_y
+                        part.height = item_z
+                        part.save()
 
-                                if (attributes_set_count % 1000) == 0:
-                                    self.stdout.write(F'   Attributes Set on: {attributes_set_count} parts')
+                        attributes_set_count += 1
+
+                        if (attributes_set_count % 1000) == 0:
+                            self.stdout.write(F'   Attributes Set on: {attributes_set_count} parts')
                 else:
                     self.stdout.write(F'  Invalid item Id Found: "{item_id}"')
 
