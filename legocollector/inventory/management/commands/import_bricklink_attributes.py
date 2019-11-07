@@ -29,10 +29,12 @@ class Command(BaseCommand):
                 item_y = item_tag.find('ITEMDIMY').text
                 item_z = item_tag.find('ITEMDIMZ').text
 
-                # TODO - THis code is complex, simplify
                 if item_id and any([item_x, item_y, item_z]):
                     part_list = []
+
+                    # First check for Bricklink ID and part_nums as backup
                     if item_id in bricklink_external_ids:
+                        # Allow for different bricklink IDs to point to the same part
                         part_list = [e.part for e in PartExternalId.objects.filter(
                             provider=PartExternalId.BRICKLINK, external_id=item_id)]
                     else:
@@ -40,6 +42,7 @@ class Command(BaseCommand):
                         if part:
                             part_list.append(part)
 
+                    # Update related parts
                     for part in part_list:
                         if item_x and item_y and (item_y > item_x):
                             part.length = item_y
