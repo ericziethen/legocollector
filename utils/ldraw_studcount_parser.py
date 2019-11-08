@@ -35,7 +35,8 @@ class FileListDic():
             self._parse_dir(import_dir)
 
     def _parse_dir(self, file_dir):
-        for file_name in os.listdir(file_dir):
+        file_list = [f for f in os.listdir(file_dir) if os.path.isfile(os.path.join(file_dir, f))]
+        for file_name in file_list:
             if file_name in self:
                 raise ValueError(F'Error: Cannot handle multiple Part Locations, Duplicate File: {file_name}')
             self[file_name] = os.path.join(file_dir, file_name)
