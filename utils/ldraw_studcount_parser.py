@@ -43,7 +43,8 @@ class FileListDic():
 
     @staticmethod
     def _keytransform(key) -> str:
-        return str(key.lower())
+        # TODO - Check if we're fine with flattening the key, s\file.dat becomes file.dat
+        return str(os.path.basename(key.lower()))
 
     def __setitem__(self, key, value: str) -> None:
         self._files[self._keytransform(key)] = value
