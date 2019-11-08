@@ -66,13 +66,15 @@ class LdrawFile():
 
     def __init__(self, file_path):
         self.file_path = file_path
+        self.sup_part_files = []
 
+        self._parse(self.file_path)
 
-
-
-
-
-
+    def _parse(self, file_path):
+        with open(file_path) as fp:
+            for line in fp:
+                if line_type_from_line(line) == LineType.PART:
+                    self.sup_part_files.append(get_file_from_part_line(line))
 
 
 def line_type_from_line(line):
