@@ -124,8 +124,12 @@ def get_top_stud_count_for_file(file_name):
     single_top_stud_file_types = [FileType.TOP_STUD]
     if get_ldraw_file_type(file_name) in single_top_stud_file_types:
         return 1
-
     return 0
+
+
+def calc_stud_count_for_part_file(file_path, file_dic):
+    return get_top_stud_count_for_file(os.path.basename(file_path))
+
 
 
 
@@ -144,7 +148,7 @@ scan file(file)
 
     return count
 
-    '''
+'''
 
 
 

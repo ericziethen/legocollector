@@ -94,6 +94,29 @@ def test_unknown_file(file_name):
     assert ldraw_parser.get_ldraw_file_type(file_name) == FileType.UNKNOWN
 
 
+@pytest.mark.parametrize('file_name', TOP_STAT_FILES)
+def test_build_dir_finds_top_stud_files(file_name):
+    file_dic = FileDic(PRIMITIVED_LDRAW_FILE_DIR, PARTS_LDRAW_FILE_DIR)
+    assert file_name in file_dic
+    assert os.path.join(PRIMITIVED_LDRAW_FILE_DIR, file_name) == file_dic[file_name]
+
+
+def test_get_sub_files_from_file():
+    file_name = '3070bs01.dat'
+
+    file_dic = FileDic(PRIMITIVED_LDRAW_FILE_DIR, PARTS_LDRAW_FILE_DIR)
+    assert file_name in file_dic
+
+    file_path = file_dic[file_name]
+    ldraw_file = ldraw_parser.LdrawFile(file_path)
+
+    sup_part_files = ldraw_file.sup_part_files
+
+    assert len(sup_part_files) == 3
+    assert sup_part_files.count('box4.dat') == 2
+    assert sup_part_files.count('box5.dat') == 1
+
+
 def test_get_stud_count_for_unknown_file():
     assert ldraw_parser.get_top_stud_count_for_file('UnknownFile.dat') == 0
 
@@ -118,11 +141,14 @@ STUD_COUNT_PARTS = [
 '''
 @pytest.mark.parametrize('stud_count, part_num', STUD_COUNT_PARTS)
 def test_get_stud_count(stud_count, part_num):
-    assert stud_count == ldraw_parser.get_top_stud_count_for_file(F'{part_num}.dat')
+    file_name = F'{part_num}.dat'
+    file_dic = FileDic(PRIMITIVED_LDRAW_FILE_DIR, PARTS_LDRAW_FILE_DIR)
+    assert file_name in file_dic
+    file_path = file_dic[file_name]
+    assert stud_count == ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic)
 
 
-
-''' 
+'''
 files with top stud
     ('stud.dat'),
     ('studa.dat'),
@@ -155,28 +181,6 @@ files with top stud
     ('stud21a.dat'),
     ('stud22a.dat'),
 '''
-
-@pytest.mark.parametrize('file_name', TOP_STAT_FILES)
-def test_build_dir_finds_top_stud_files(file_name):
-    file_dic = FileDic(PRIMITIVED_LDRAW_FILE_DIR, PARTS_LDRAW_FILE_DIR)
-    assert file_name in file_dic
-    assert os.path.join(PRIMITIVED_LDRAW_FILE_DIR, file_name) == file_dic[file_name]
-
-
-def test_get_sub_files_from_file():
-    file_name = '3070bs01.dat'
-
-    file_dic = FileDic(PRIMITIVED_LDRAW_FILE_DIR, PARTS_LDRAW_FILE_DIR)
-    assert file_name in file_dic
-
-    file_path = file_dic[file_name]
-    ldraw_file = ldraw_parser.LdrawFile(file_path)
-
-    sup_part_files = ldraw_file.sup_part_files
-
-    assert len(sup_part_files) == 3
-    assert sup_part_files.count('box4.dat') == 2
-    assert sup_part_files.count('box5.dat') == 1
 
 # TODO - Find files in part dir
 
