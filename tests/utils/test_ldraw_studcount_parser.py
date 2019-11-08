@@ -1,7 +1,7 @@
 import pytest
 
 from utils import ldraw_studcount_parser as ldraw_parser
-from utils.ldraw_studcount_parser import LineType
+from utils.ldraw_studcount_parser import LineType, FileType
 
 
 def test_invalid_parts_line():
@@ -9,7 +9,7 @@ def test_invalid_parts_line():
     assert ldraw_parser.line_type_from_line(line) == LineType.UNKNOWN
 
 
-INVALID_PART_LINES = [
+LINE_TYPES = [
     (LineType.COMMENT, '0 ~Plate  1 x  3 without Front Face'),
     (LineType.PART, '1 16 0 0 0 1 0 0 0 1 0 0 0 1 10a.dat'),
     (LineType.LINE, '2 24 1 0 0 0.9239 0 0.3827'),
@@ -17,9 +17,17 @@ INVALID_PART_LINES = [
     (LineType.QUAD, '4 5 0 -0.25 -32.37 -11.6 -0.25 -14.15 -14.93 -0.25 -15.68 -8.76 -0.25 -24.57'),
     (LineType.OPTIONAL, '5 24 100.05 -.25 -16.79 100.05 0 -16.79 99.79 -.25 -19.84 100.95 -.25 -14.08')
 ]
-@pytest.mark.parametrize('line_type, line', INVALID_PART_LINES)
+@pytest.mark.parametrize('line_type, line', LINE_TYPES)
 def test_identify_line_type(line_type, line):
     assert ldraw_parser.line_type_from_line(line) == line_type
+
+
+UNKNOWN_PART_LINES = [
+    ('Unknown Line'),
+]
+@pytest.mark.parametrize('line', UNKNOWN_PART_LINES)
+def test_identify_unknown_line_type(line):
+    assert ldraw_parser.line_type_from_line(line) == LineType.UNKNOWN
 
 
 def test_get_part_file_from_part_line():
@@ -45,35 +53,38 @@ TOP_STAT_FILES = [
 ]
 @pytest.mark.parametrize('file_name', TOP_STAT_FILES)
 def test_file_is_top_stud_file(file_name):
-    assert ldraw_parser.is_top_stud_file(file_name)
+    assert ldraw_parser.get_ldraw_file_type(file_name) == FileType.TOP_STUD
 
 
-'''
 UNDERSIDE_STAT_FILES = [
-
-stud3a.dat
-studx.dat
-stud12.dat
-stud4.dat
-stud4a.dat
-stud4s.dat
-stud4s2.dat
-stud4o.dat
-stud4od.dat
-stud4h.dat
-stud4fns.dat
-stud16.dat
-stud21a.dat
-stud22a.dat
-
-
+    ('stud3a.dat'),
+    ('studx.dat'),
+    ('stud12.dat'),
+    ('stud4.dat'),
+    ('stud4a.dat'),
+    ('stud4s.dat'),
+    ('stud4s2.dat'),
+    ('stud4o.dat'),
+    ('stud4od.dat'),
+    ('stud4h.dat'),
+    ('stud4fns.dat'),
+    ('stud16.dat'),
+    ('stud21a.dat'),
+    ('stud22a.dat'),
 ]
-'''
+@pytest.mark.parametrize('file_name', UNDERSIDE_STAT_FILES)
+def test_file_is_underside_stud_file(file_name):
+    assert ldraw_parser.get_ldraw_file_type(file_name) == FileType.UNDERSIDE_STUD
 
-#def test_file_is_not_top_stud_file():
-# identify bottom level top stud files
 
-# identify 
+UNKNOWN_FILES = [
+    ('UnknownFile.dat'),
+]
+@pytest.mark.parametrize('file_name', UNKNOWN_FILES)
+def test_unknown_file(file_name):
+    assert ldraw_parser.get_ldraw_file_type(file_name) == FileType.UNKNOWN
+
+
 
 # ...
 
