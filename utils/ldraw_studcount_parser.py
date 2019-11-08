@@ -65,14 +65,6 @@ def get_ldraw_file_type(file_name):
     return file_type
 
 
-def get_top_stud_count_for_file(file_name):
-    single_top_stud_file_types = [FileType.TOP_STUD]
-    if get_ldraw_file_type(file_name) in single_top_stud_file_types:
-        return 1
-
-    return 0
-
-
 def key_from_file_name(file_name):
     return file_name.lower()
 
@@ -89,3 +81,11 @@ def build_file_path_list(primitives_dir, parts_dir):
             file_dic[file_key] = os.path.join(file_dir, file_name)
 
     return file_dic
+
+
+def get_top_stud_count_for_file(file_name):
+    single_top_stud_file_types = [FileType.TOP_STUD]
+    if get_ldraw_file_type(file_name) in single_top_stud_file_types:
+        return 1
+
+    return 0
