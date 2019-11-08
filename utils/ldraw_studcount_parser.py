@@ -131,7 +131,8 @@ def get_top_stud_count_for_file(file_name):
 
 
 # TODO - Count how often each file is being processed
-def calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic=None):
+def calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic=None, rec_level=0):
+    print(F'{rec_level * "  "} Processing: {file_path}')
     file_name = os.path.basename(file_path)
     count = get_top_stud_count_for_file(file_name)
     ldraw_file = LdrawFile(file_path)
@@ -139,7 +140,7 @@ def calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic=None)
         if processed_files_dic and sub_file in processed_files_dic:
             count += processed_files_dic[sub_file]['top_stud_count']
         else:
-            calc_stud_count_for_part_file(file_dic[sub_file], file_dic, processed_files_dic)
+            calc_stud_count_for_part_file(file_dic[sub_file], file_dic, processed_files_dic, rec_level + 1)
 
     if not processed_files_dic:
         processed_files_dic = {}
