@@ -1,4 +1,5 @@
 import enum
+import os
 
 @enum.unique
 class LineType(enum.Enum):
@@ -48,7 +49,7 @@ def get_ldraw_file_type(file_name):
     file_type = FileType.UNKNOWN
     top_stud_file_names = [
         'stud.dat', 'studa.dat', 'studp01.dat', 'studel.dat', 'stud10.dat',
-        'stud15.dat', 'stud2.dat', 'stud2a.dat', 'stud2s.dat', 'stud17a.da',
+        'stud15.dat', 'stud2.dat', 'stud2a.dat', 'stud2s.dat', 'stud17a.dat',
         'stud9.dat', 'stud6.dat', 'stud6a.dat', 'stud3.dat']
     underside_stud_file_names = [
         'stud3a.dat', 'studx.dat', 'stud12.dat', 'stud4.dat', 'stud4a.dat',
@@ -70,3 +71,21 @@ def get_top_stud_count_for_file(file_name):
         return 1
 
     return 0
+
+
+def key_from_file_name(file_name):
+    return file_name.lower()
+
+
+def build_file_path_list(primitives_dir, parts_dir):
+    file_dic = {}
+    file_dirs = [primitives_dir, parts_dir]
+
+    for file_dir in file_dirs:
+        for file_name in os.listdir(file_dir):
+            file_key = key_from_file_name(file_name)
+            if file_key in file_dic:
+                raise ValueError('Error: Cannot handle multiple Part Locations')
+            file_dic[file_key] = os.path.join(file_dir, file_name)
+
+    return file_dic
