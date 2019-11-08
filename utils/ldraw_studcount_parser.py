@@ -34,3 +34,11 @@ def line_type_from_line(line):
 
 def get_file_from_part_line(line):
     return line.split()[-1]
+
+
+def is_top_stud_file(file_name):
+    top_stud_file_names = [
+        'stud.dat', 'studa.dat', 'studp01.dat', 'studel.dat', 'stud10.dat',
+        'stud15.dat', 'stud2.dat', 'stud2a.dat', 'stud2s.dat', 'stud17a.da',
+        'stud9.dat', 'stud6.dat', 'stud6a.dat', 'stud3.dat']
+    return file_name.lower() in top_stud_file_names

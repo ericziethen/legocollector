@@ -26,11 +26,57 @@ def test_get_part_file_from_part_line():
     part_line = '1 16 0 0 0 1 0 0 0 1 0 0 0 1 10a.dat'
     assert ldraw_parser.get_file_from_part_line(part_line) == '10a.dat'
 
-# test getting dat file from line
 
+TOP_STAT_FILES = [
+    ('stud.dat'),
+    ('studa.dat'),
+    ('studp01.dat'),
+    ('studel.dat'),
+    ('stud10.dat'),
+    ('stud15.dat'),
+    ('stud2.dat'),
+    ('stud2a.dat'),
+    ('stud2s.dat'),
+    ('stud17a.da'),
+    ('stud9.dat'),
+    ('stud6.dat'),
+    ('stud6a.dat'),
+    ('stud3.dat'),
+]
+@pytest.mark.parametrize('file_name', TOP_STAT_FILES)
+def test_file_is_top_stud_file(file_name):
+    assert ldraw_parser.is_top_stud_file(file_name)
+
+
+'''
+UNDERSIDE_STAT_FILES = [
+
+stud3a.dat
+studx.dat
+stud12.dat
+stud4.dat
+stud4a.dat
+stud4s.dat
+stud4s2.dat
+stud4o.dat
+stud4od.dat
+stud4h.dat
+stud4fns.dat
+stud16.dat
+stud21a.dat
+stud22a.dat
+
+
+]
+'''
+
+#def test_file_is_not_top_stud_file():
 # identify bottom level top stud files
 
 # identify 
 
 # ...
 
+# Identify Stud Count !!! 
+#TODO - At least 1 file including each top stud file to test against visual confirmation
+#At least 1 file including each Underside stud
