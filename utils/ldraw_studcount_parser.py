@@ -127,11 +127,8 @@ def get_top_stud_count_for_file(file_name):
     return 0
 
 
-def calc_stud_count_for_part_file(file_path, file_dic):
+def calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic=None):
     return get_top_stud_count_for_file(os.path.basename(file_path))
-
-
-
 
 '''
 
