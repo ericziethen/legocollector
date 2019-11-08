@@ -3,7 +3,7 @@ import os
 import pytest
 
 from utils import ldraw_studcount_parser as ldraw_parser
-from utils.ldraw_studcount_parser import FileDic, FileType, LineType
+from utils.ldraw_studcount_parser import FileListDic, FileType, LineType
 
 REL_THIS_FILE_DIR = os.path.dirname(os.path.abspath(__file__))
 ABS_PARENT_DIR = os.path.abspath(os.path.join(REL_THIS_FILE_DIR, os.pardir))
@@ -11,6 +11,11 @@ LDRAW_TEST_FILE_DIR = os.path.join(ABS_PARENT_DIR, R'test_files\ldraw_files')
 
 PRIMITIVED_LDRAW_FILE_DIR = os.path.join(LDRAW_TEST_FILE_DIR, 'primitives')
 PARTS_LDRAW_FILE_DIR = os.path.join(LDRAW_TEST_FILE_DIR, 'part_files')
+SUBPARTS_LDRAW_FILE_DIR = os.path.join(PARTS_LDRAW_FILE_DIR, 's')
+
+IMPORT_FILE_LIST = [
+    PRIMITIVED_LDRAW_FILE_DIR, PARTS_LDRAW_FILE_DIR, SUBPARTS_LDRAW_FILE_DIR
+]
 
 
 def test_invalid_parts_line():
@@ -96,7 +101,7 @@ def test_unknown_file(file_name):
 
 @pytest.mark.parametrize('file_name', TOP_STAT_FILES)
 def test_build_dir_finds_top_stud_files(file_name):
-    file_dic = FileDic(PRIMITIVED_LDRAW_FILE_DIR, PARTS_LDRAW_FILE_DIR)
+    file_dic = FileListDic(IMPORT_FILE_LIST)
     assert file_name in file_dic
     assert os.path.join(PRIMITIVED_LDRAW_FILE_DIR, file_name) == file_dic[file_name]
 
@@ -104,7 +109,7 @@ def test_build_dir_finds_top_stud_files(file_name):
 def test_get_sub_files_from_file():
     file_name = '3070bs01.dat'
 
-    file_dic = FileDic(PRIMITIVED_LDRAW_FILE_DIR, PARTS_LDRAW_FILE_DIR)
+    file_dic = FileListDic(IMPORT_FILE_LIST)
     assert file_name in file_dic
 
     file_path = file_dic[file_name]
@@ -142,7 +147,7 @@ STUD_COUNT_PARTS = [
 @pytest.mark.parametrize('stud_count, part_num', STUD_COUNT_PARTS)
 def test_get_stud_count(stud_count, part_num):
     file_name = F'{part_num}.dat'
-    file_dic = FileDic(PRIMITIVED_LDRAW_FILE_DIR, PARTS_LDRAW_FILE_DIR)
+    file_dic = FileListDic(IMPORT_FILE_LIST)
     assert file_name in file_dic
     file_path = file_dic[file_name]
     assert stud_count == ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic)

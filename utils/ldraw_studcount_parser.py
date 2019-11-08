@@ -24,19 +24,20 @@ class FileType(enum.Enum):
     UNDERSIDE_STUD = 'Underside Stud'
 
 
-class FileDic():
+class FileListDic():
 
-    def __init__(self, primitive_dir, parts_dir):
+    def __init__(self, import_dir_list):
 
-        self._files = defaultdict(str)
+        #self._files = defaultdict(str)
+        self._files = {}
 
-        self._parse_dir(primitive_dir)
-        self._parse_dir(parts_dir)
+        for import_dir in import_dir_list:
+            self._parse_dir(import_dir)
 
     def _parse_dir(self, file_dir):
         for file_name in os.listdir(file_dir):
             if file_name in self:
-                raise ValueError('Error: Cannot handle multiple Part Locations')
+                raise ValueError(F'Error: Cannot handle multiple Part Locations, Duplicate File: {file_name}')
             self[file_name] = os.path.join(file_dir, file_name)
 
     @staticmethod
@@ -127,8 +128,22 @@ def get_top_stud_count_for_file(file_name):
     return 0
 
 
+# TODO - Count how often each file is being processed
 def calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic=None):
-    return get_top_stud_count_for_file(os.path.basename(file_path))
+    file_name = os.path.basename(file_path)
+    count = get_top_stud_count_for_file(file_name)
+    ldraw_file = LdrawFile(file_path)
+    for sub_file in ldraw_file.sup_part_files:
+        if processed_files_dic and sub_file in processed_files_dic:
+            count += processed_files_dic[sub_file]['top_stud_count']
+        else:
+            calc_stud_count_for_part_file(file_dic[sub_file], file_dic, processed_files_dic)
+
+    if not processed_files_dic:
+        processed_files_dic = {}
+    processed_files_dic[file_name] = {'top_stud_count': count}
+
+    return count
 
 '''
 
