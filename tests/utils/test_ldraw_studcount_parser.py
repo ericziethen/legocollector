@@ -86,12 +86,12 @@ def test_unknown_file(file_name):
 
 
 def test_get_stud_count_for_unknown_file():
-    assert ldraw_parser.get_stud_count_for_file('UnknownFile.dat') == 0
+    assert ldraw_parser.get_top_stud_count_for_file('UnknownFile.dat') == 0
 
 
-@pytest.mark.parametrize('file_name', TOP_STAT_FILES + UNDERSIDE_STAT_FILES)
+@pytest.mark.parametrize('file_name', TOP_STAT_FILES)
 def test_get_stud_count_for_stud_files(file_name):
-    assert ldraw_parser.get_stud_count_for_file(file_name) == 1
+    assert ldraw_parser.get_top_stud_count_for_file(file_name) == 1
 
 # ...
 

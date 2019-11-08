@@ -64,9 +64,9 @@ def get_ldraw_file_type(file_name):
     return file_type
 
 
-def get_stud_count_for_file(file_name):
-    single_stud_file_types = [FileType.TOP_STUD, FileType.UNDERSIDE_STUD]
-    if get_ldraw_file_type(file_name) in single_stud_file_types:
+def get_top_stud_count_for_file(file_name):
+    single_top_stud_file_types = [FileType.TOP_STUD]
+    if get_ldraw_file_type(file_name) in single_top_stud_file_types:
         return 1
 
     return 0
