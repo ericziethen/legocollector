@@ -3,24 +3,14 @@ import os
 import pytest
 
 from utils import ldraw_studcount_parser as ldraw_parser
-from utils.ldraw_studcount_parser import LineType, FileType
+from utils.ldraw_studcount_parser import FileDic, FileType, LineType
 
 REL_THIS_FILE_DIR = os.path.dirname(os.path.abspath(__file__))
 ABS_PARENT_DIR = os.path.abspath(os.path.join(REL_THIS_FILE_DIR, os.pardir))
 LDRAW_TEST_FILE_DIR = os.path.join(ABS_PARENT_DIR, R'test_files\ldraw_files')
 
 PRIMITIVED_LDRAW_FILE_DIR = os.path.join(LDRAW_TEST_FILE_DIR, 'primitives')
-PARTS_LDRAW_FILE_DIR = os.path.join(LDRAW_TEST_FILE_DIR, 'parts')
-
-
-KEY_FILE_NAMES = [
-    ('lower.txt', 'lower.txt'),
-    ('UPPER.TXT', 'upper.txt'),
-    ('Mixed.TxT', 'mixed.txt'),
-]
-@pytest.mark.parametrize('file_name, key', KEY_FILE_NAMES)
-def test_key_from_file_name(file_name, key):
-    assert ldraw_parser.key_from_file_name(file_name) == key
+PARTS_LDRAW_FILE_DIR = os.path.join(LDRAW_TEST_FILE_DIR, 'part_files')
 
 
 def test_invalid_parts_line():
@@ -168,16 +158,27 @@ files with top stud
 
 @pytest.mark.parametrize('file_name', TOP_STAT_FILES)
 def test_build_dir_finds_top_stud_files(file_name):
-    file_key = ldraw_parser.key_from_file_name(file_name)
+    file_dic = FileDic(PRIMITIVED_LDRAW_FILE_DIR, PARTS_LDRAW_FILE_DIR)
+    assert file_name in file_dic
+    assert os.path.join(PRIMITIVED_LDRAW_FILE_DIR, file_name) == file_dic[file_name]
+
+'''
+def test_get_sub_files_from_file():
     file_dic = ldraw_parser.build_file_path_list(
         PRIMITIVED_LDRAW_FILE_DIR, PARTS_LDRAW_FILE_DIR)
-    assert file_key in file_dic
-    assert os.path.join(PRIMITIVED_LDRAW_FILE_DIR, file_name) == file_dic[file_key]
+    key = ldraw_parser.key
+    assert 
+    file_path = '3070bs01.dat'
+    ldraw_file = ldraw_parser.LdrawFile(file_name)
 
+    sub_files = ldraw_file.sub_files(file_name)
 
+    assert len(sub_files) == 3
+    assert sub_files.count('box4.dat') == 2
+    assert sub_files.count('box5.dat') == 2
 
 # TODO - Find files in part dir
-
+'''
 
 
 

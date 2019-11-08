@@ -1,6 +1,8 @@
 import enum
 import os
 
+from collections import defaultdict
+
 @enum.unique
 class LineType(enum.Enum):
 
@@ -20,6 +22,57 @@ class FileType(enum.Enum):
     UNKNOWN = 'Unknown'
     TOP_STUD = 'Top Stud'
     UNDERSIDE_STUD = 'Underside Stud'
+
+
+class FileDic():
+
+    def __init__(self, primitive_dir, parts_dir):
+
+        self._files = defaultdict(str)
+
+        self._parse_dir(primitive_dir)
+        self._parse_dir(parts_dir)
+
+    def _parse_dir(self, file_dir):
+        for file_name in os.listdir(file_dir):
+            if file_name in self:
+                raise ValueError('Error: Cannot handle multiple Part Locations')
+            self[file_name] = os.path.join(file_dir, file_name)
+
+    @staticmethod
+    def _keytransform(key) -> str:
+        return str(key.lower())
+
+    def __setitem__(self, key, value: str) -> None:
+        self._files[self._keytransform(key)] = value
+
+    def __getitem__(self, key) -> str:
+        return self._files[self._keytransform(key)]
+
+    def __iter__(self):
+        return iter(self._files)
+
+    def __len__(self) -> int:
+        return len(self._files)
+
+    def __str__(self) -> str:
+        return str(self._files)
+
+    def __delitem__(self, key) -> None:
+        del self._files[self._keytransform(key)]
+
+
+class LdrawFile():
+
+    def __init__(self, file_path):
+        self.file_path = file_path
+
+
+
+
+
+
+
 
 
 def line_type_from_line(line):
@@ -65,27 +118,34 @@ def get_ldraw_file_type(file_name):
     return file_type
 
 
-def key_from_file_name(file_name):
-    return file_name.lower()
-
-
-def build_file_path_list(primitives_dir, parts_dir):
-    file_dic = {}
-    file_dirs = [primitives_dir, parts_dir]
-
-    for file_dir in file_dirs:
-        for file_name in os.listdir(file_dir):
-            file_key = key_from_file_name(file_name)
-            if file_key in file_dic:
-                raise ValueError('Error: Cannot handle multiple Part Locations')
-            file_dic[file_key] = os.path.join(file_dir, file_name)
-
-    return file_dic
-
-
 def get_top_stud_count_for_file(file_name):
     single_top_stud_file_types = [FileType.TOP_STUD]
     if get_ldraw_file_type(file_name) in single_top_stud_file_types:
         return 1
 
     return 0
+
+
+
+'''
+
+scan file(file)
+     count = studs in file
+     for each dat subfile in file
+          if subfile in global list
+              count += global_list[sub_file)
+          else
+              count += scan file(sub_file)
+ 
+
+    global_list[file] = count (maybe have a dictionary, e.g. top_studs, bottom_studs…)
+
+    return count
+
+    '''
+
+
+
+
+
+
