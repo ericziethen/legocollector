@@ -148,7 +148,6 @@ STUD_COUNT_PARTS = [
 def test_get_stud_count(stud_count, part_num):
     file_name = F'{part_num}.dat'
     file_dic = FileListDic(IMPORT_FILE_LIST)
-    print(F'FileDic: {file_dic._files.keys()}')
     assert file_name in file_dic
     file_path = file_dic[file_name]
     assert stud_count == ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic)
