@@ -6,7 +6,7 @@ from utils.ldraw_studcount_parser import LineType
 
 def test_invalid_parts_line():
     line = 'Invalid Line'
-    assert ldraw_parser.line_type(line) == LineType.UNKNOWN
+    assert ldraw_parser.line_type_from_line(line) == LineType.UNKNOWN
 
 
 INVALID_PART_LINES = [
@@ -19,11 +19,12 @@ INVALID_PART_LINES = [
 ]
 @pytest.mark.parametrize('line_type, line', INVALID_PART_LINES)
 def test_identify_line_type(line_type, line):
-    assert ldraw_parser.line_type(line) == line_type
+    assert ldraw_parser.line_type_from_line(line) == line_type
 
 
-
-
+def test_get_part_file_from_part_line():
+    part_line = '1 16 0 0 0 1 0 0 0 1 0 0 0 1 10a.dat'
+    assert ldraw_parser.get_file_from_part_line(part_line) == '10a.dat'
 
 # test getting dat file from line
 
