@@ -134,9 +134,9 @@ def test_get_stud_count_for_stud_files(file_name):
 STUD_COUNT_PARTS = [
     (0, '3070b'),
     (1, '3024'),
+    (1, '60477'),
 ]
 '''
-    (1, '60477'),
     (, ''),
     (, ''),
     (, ''),
