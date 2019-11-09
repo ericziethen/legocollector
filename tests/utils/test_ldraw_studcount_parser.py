@@ -64,7 +64,6 @@ TOP_STAT_FILES = [
     ('stud9.dat'),
     ('stud6.dat'),
     ('stud6a.dat'),
-    ('stud3.dat'),
 ]
 @pytest.mark.parametrize('file_name', TOP_STAT_FILES)
 def test_file_is_top_stud_file(file_name):
@@ -72,6 +71,7 @@ def test_file_is_top_stud_file(file_name):
 
 
 UNDERSIDE_STAT_FILES = [
+    ('stud3.dat'),
     ('stud3a.dat'),
     ('studx.dat'),
     ('stud12.dat'),
