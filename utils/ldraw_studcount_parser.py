@@ -136,7 +136,7 @@ def get_top_stud_count_for_file(file_name):
 ERIC_FILE_VISIT_COUNT = defaultdict(int)
 # TODO - Count how often each file is being processed
 def calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic=None, rec_level=0):
-    print(F'{rec_level * "  "} Processing: {file_path}')
+    #print(F'{rec_level * "  "} Processing: {file_path}')
     file_name = os.path.basename(file_path)
     count = get_top_stud_count_for_file(file_name)
     ERIC_FILE_VISIT_COUNT[file_name] += 1
@@ -147,10 +147,10 @@ def calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic=None,
         for sub_file in ldraw_file.sup_part_files:
             if processed_files_dic and sub_file in processed_files_dic:
                 count += processed_files_dic[sub_file]['top_stud_count']
-                print(F'{rec_level * "  "}   Count: {count}')
+                #print(F'{rec_level * "  "}   Count: {count}')
             else:
                 count += calc_stud_count_for_part_file(file_dic[sub_file], file_dic, processed_files_dic, rec_level + 1)
-                print(F'{rec_level * "  "}   Count: {count}')
+                #print(F'{rec_level * "  "}   Count: {count}')
                 '''
                 if not processed_files_dic:
                     processed_files_dic = {}
@@ -163,7 +163,7 @@ def calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic=None,
     if not processed_files_dic:
         processed_files_dic = {}
     processed_files_dic[file_name] = {'top_stud_count': count}
-    print(F'{rec_level * "  "}   Returning Count: {count}')
+    #print(F'{rec_level * "  "}   Returning Count: {count}')
     return count
 
 '''
