@@ -70,28 +70,6 @@ def test_file_is_top_stud_file(file_name):
     assert ldraw_parser.get_ldraw_file_type(file_name) == FileType.TOP_STUD
 
 
-UNDERSIDE_STAT_FILES = [
-    ('stud3.dat'),
-    ('stud3a.dat'),
-    ('studx.dat'),
-    ('stud12.dat'),
-    ('stud4.dat'),
-    ('stud4a.dat'),
-    ('stud4s.dat'),
-    ('stud4s2.dat'),
-    ('stud4o.dat'),
-    ('stud4od.dat'),
-    ('stud4h.dat'),
-    ('stud4fns.dat'),
-    ('stud16.dat'),
-    ('stud21a.dat'),
-    ('stud22a.dat'),
-]
-@pytest.mark.parametrize('file_name', UNDERSIDE_STAT_FILES)
-def test_file_is_underside_stud_file(file_name):
-    assert ldraw_parser.get_ldraw_file_type(file_name) == FileType.UNDERSIDE_STUD
-
-
 UNKNOWN_FILES = [
     ('UnknownFile.dat'),
 ]
