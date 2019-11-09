@@ -26,6 +26,9 @@ class FileType(enum.Enum):
 
 class FileListDic():
 
+    # TODO - We should only need the base dir and get folders to include ourselves,
+    # TODO - Then the key should be the hols relative path
+    # TODO - then remove from transform below
     def __init__(self, import_dir_list):
 
         #self._files = defaultdict(str)
@@ -129,12 +132,16 @@ def get_top_stud_count_for_file(file_name):
         return 1
     return 0
 
-
+# TODO REMOVE
+ERIC_FILE_VISIT_COUNT = defaultdict(int)
 # TODO - Count how often each file is being processed
 def calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic=None, rec_level=0):
     #print(F'{rec_level * "  "} Processing: {file_path}')
     file_name = os.path.basename(file_path)
     count = get_top_stud_count_for_file(file_name)
+    ERIC_FILE_VISIT_COUNT[file_name] += 1
+    if count:
+        return count
 
     # Process sub files
     if count == 0:
@@ -144,11 +151,13 @@ def calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic=None,
                 count += processed_files_dic[sub_file]['top_stud_count']
             else:
                 count += calc_stud_count_for_part_file(file_dic[sub_file], file_dic, processed_files_dic, rec_level + 1)
+                if not processed_files_dic:
+                    processed_files_dic = {}
+                processed_files_dic[sub_file] = {'top_stud_count': count}
+                #print(F'{rec_level * "  "}   Add {file_name} as processed with {count} studs')
 
-    if not processed_files_dic:
-        processed_files_dic = {}
-    processed_files_dic[file_name] = {'top_stud_count': count}
-    #print(F'{rec_level * "  "}   Add {file_name} as processed with {count} studs')
+    #if rec_level == 0:
+    #    print(F'FILES VISITED: {ERIC_FILE_VISIT_COUNT}')
 
     return count
 
