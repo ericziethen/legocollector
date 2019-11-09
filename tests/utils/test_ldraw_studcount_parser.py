@@ -117,6 +117,7 @@ STUD_COUNT_PARTS = [
     (2, '30099'),
     (76, '912'),
     (6, '10201'),
+    (4, '15469'),
 ]
 '''
     (, ''),
@@ -126,6 +127,7 @@ STUD_COUNT_PARTS = [
     (, ''),
     (, ''),
 '''
+@pytest.mark.eric  # TODO Remove
 @pytest.mark.parametrize('stud_count, part_num', STUD_COUNT_PARTS)
 def test_get_stud_count(stud_count, part_num):
     file_name = F'{part_num}.dat'
