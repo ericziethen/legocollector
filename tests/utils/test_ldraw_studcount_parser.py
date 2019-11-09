@@ -110,6 +110,7 @@ def test_get_stud_count_for_stud_files(file_name):
     assert ldraw_parser.get_top_stud_count_for_file(file_name) == 1
 
 
+# The aim is to test at least all (top) studs at least in 1 part for good coverage
 STUD_COUNT_PARTS = [
     (0, '3070b'),
     (1, '3024'),
@@ -118,6 +119,7 @@ STUD_COUNT_PARTS = [
     (76, '912'),
     (6, '10201'),
     (4, '15469'),
+    (764, '10p07')
 ]
 '''
     (, ''),
