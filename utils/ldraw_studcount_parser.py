@@ -78,8 +78,9 @@ class LdrawFile():
     def _parse(self, file_path):
         with open(file_path) as fp:
             for line in fp:
-                if line_type_from_line(line) == LineType.PART:
-                    self.sup_part_files.append(get_file_from_part_line(line))
+                check_line = line.strip()
+                if line_type_from_line(check_line) == LineType.PART:
+                    self.sup_part_files.append(get_file_from_part_line(check_line))
 
 
 def line_type_from_line(line):
@@ -164,7 +165,6 @@ def calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic=None,
 
         visited = '\n'.join(['%s:: %s' % (key, value) for (key, value) in ERIC_FILE_VISIT_COUNT.items()])
         #print(F'VISITED: {visited}')
-        #print(F'VISITED: {ERIC_FILE_VISIT_COUNT}')
 
     return count
 
