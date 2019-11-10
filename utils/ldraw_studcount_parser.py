@@ -133,7 +133,10 @@ ERIC_FILE_VISIT_COUNT = defaultdict(int)
 ERIC_studs_used = defaultdict(int)
 # TODO - Count how often each file is being processed
 def calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic=None, rec_level=0):
-    #print(F'{rec_level * "  "} Processing: {file_path}')
+    if not processed_files_dic:
+        processed_files_dic = {}
+
+    print(F'{rec_level * "  "} Processing: {file_path}')
     file_name = os.path.basename(file_path)
     count = get_top_stud_count_for_file(file_name)
     ERIC_FILE_VISIT_COUNT[file_name] += 1
@@ -142,30 +145,28 @@ def calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic=None,
     if count == 0:
         ldraw_file = LdrawFile(file_path)
         for sub_file in ldraw_file.sup_part_files:
-            ##print(F'{rec_level * "  "}   Checking Sub File: {sub_file} ({get_top_stud_count_for_file(sub_file)})')
+            print(F'{rec_level * "  "}   Checking Sub File: {sub_file} ({get_top_stud_count_for_file(sub_file)})')
             if get_top_stud_count_for_file(sub_file):
                 ERIC_studs_used[sub_file] += 1
             if processed_files_dic and sub_file in processed_files_dic:
                 count += processed_files_dic[sub_file]['top_stud_count']
                 #print(F'{rec_level * "  "}   Count (Dict): {count}')
             else:
-                count += calc_stud_count_for_part_file(file_dic[sub_file], file_dic, processed_files_dic, rec_level + 1)
+                sub_file_count = calc_stud_count_for_part_file(file_dic[sub_file], file_dic, processed_files_dic, rec_level + 1)
+                count += sub_file_count
                 #print(F'{rec_level * "  "}   Count (Calc): {count}')
-                '''
-                if not processed_files_dic:
-                    processed_files_dic = {}
-                processed_files_dic[sub_file] = {'top_stud_count': count}
-                '''
-                #print(F'{rec_level * "  "}   Add {file_name} as processed with {count} studs')
-    if not processed_files_dic:
-        processed_files_dic = {}
-    processed_files_dic[file_name] = {'top_stud_count': count}
+
+                processed_files_dic[sub_file] = {'top_stud_count': sub_file_count}
+                print(F'{rec_level * "  "}   Sub Count Set for {sub_file}')
+
+    if file_name not in processed_files_dic:
+        processed_files_dic[file_name] = {'top_stud_count': count}
     #print(F'{rec_level * "  "}   Returning Count: {count}')
 
-    if rec_level == 0:
+    #if rec_level == 0:
         #print(F'Studs Used: {ERIC_studs_used}')
 
-        visited = '\n'.join(['%s:: %s' % (key, value) for (key, value) in ERIC_FILE_VISIT_COUNT.items()])
+        #visited = '\n'.join(['%s:: %s' % (key, value) for (key, value) in ERIC_FILE_VISIT_COUNT.items()])
         #print(F'VISITED: {visited}')
 
     return count
@@ -187,8 +188,48 @@ scan file(file)
 
 '''
 
+def main():
+    '''
+    STUD_COUNT_PARTS = [
+        (0, '3070b'),
+        (1, '3024'),
+        (1, '60477'),
+        (2, '30099'),
+        (76, '912'),
+        (6, '10201'),
+        (4, '15469'),
+        (764, '10p07'),
+        (4, '6233'),
+        (4, '92947'),
+        (4, '11211'),
+        (4, '13547'),
+        (4, '6032'),
+        (4, '30179'),
+        (2, '38317'),
+        (4, '44511'),
+        (16, '71427c01'),
+    ]
+    '''
+    STUD_COUNT_PARTS = [
+        (16, '71427c01'),
+        #(16, '71427c01'),
+    ]
+
+    prim_dir = R'D:\# Eric Projects\legocollector\tests\test_files\ldraw_files\primitives'
+    parts_dir = R'D:\# Eric Projects\legocollector\tests\test_files\ldraw_files\part_files'
+
+    file_dic = FileListDic(parts_dir=parts_dir, primitives_dir=prim_dir)
+    for entry in STUD_COUNT_PARTS:
+        part_num = entry[1]
+        file_name = F'{part_num}.dat'
+        file_path = file_dic[file_name]
+        stud_count = calc_stud_count_for_part_file(file_path, file_dic)
+        print(F'{part_num:<15} - Count: {stud_count}')
+
+    visited = '\n'.join(['%s:: %s' % (key, value) for (key, value) in ERIC_FILE_VISIT_COUNT.items()])
+    print(F'VISITED: {visited}')
+    print(F'TOTAL VISITS: {sum(ERIC_FILE_VISIT_COUNT.values())}')
 
 
-
-
-
+if __name__ == '__main__':
+    main()
