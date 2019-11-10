@@ -1,4 +1,5 @@
 import enum
+import glob
 import os
 
 from collections import defaultdict
@@ -78,7 +79,7 @@ class LdrawFile():
         self._parse(self.file_path)
 
     def _parse(self, file_path):
-        with open(file_path) as fp:
+        with open(file_path, encoding='utf8', errors="surrogateescape") as fp:
             for line in fp:
                 check_line = line.strip()
                 if line_type_from_line(check_line) == LineType.PART:
@@ -132,11 +133,12 @@ def get_top_stud_count_for_file(file_name):
 ERIC_FILE_VISIT_COUNT = defaultdict(int)
 ERIC_studs_used = defaultdict(int)
 # TODO - Count how often each file is being processed
+# TODO !!! Do we need a wrapper to process multiple parts, then we don't need to pass in dictionaries
 def calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic=None, rec_level=0):
     if processed_files_dic is None:
         processed_files_dic = {}
 
-    print(F'{rec_level * "  "}  >> START Processing: {file_path}')
+    #print(F'{rec_level * "  "}  >> START Processing: {file_path}')
     file_name = os.path.basename(file_path)
     count = get_top_stud_count_for_file(file_name)
     ERIC_FILE_VISIT_COUNT[file_path] += 1
@@ -146,7 +148,7 @@ def calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic=None,
         ldraw_file = LdrawFile(file_path)
         for sub_file in ldraw_file.sup_part_files:
             sub_file = sub_file.lower()
-            print(F'{rec_level * "  "}    Checking Sub File: {sub_file} ({get_top_stud_count_for_file(sub_file)})')
+            #print(F'{rec_level * "  "}    Checking Sub File: {sub_file} ({get_top_stud_count_for_file(sub_file)})')
             if get_top_stud_count_for_file(sub_file):
                 ERIC_studs_used[sub_file] += 1
             if sub_file in processed_files_dic:
@@ -158,7 +160,7 @@ def calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic=None,
                 #print(F'{rec_level * "  "}   Count (Calc): {count}')
 
                 processed_files_dic[sub_file] = {'top_stud_count': sub_file_count}
-                print(F'{rec_level * "  "}    Sub Count Set for {sub_file}')
+                #print(F'{rec_level * "  "}    Sub Count Set for {sub_file}')
 
     if file_name not in processed_files_dic:
         processed_files_dic[file_name] = {'top_stud_count': count}
@@ -170,7 +172,7 @@ def calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic=None,
         #visited = '\n'.join(['%s:: %s' % (key, value) for (key, value) in ERIC_FILE_VISIT_COUNT.items()])
         #print(F'VISITED: {visited}')
 
-    print(F'{rec_level * "  "}  >> FINISH Processing: {file_path}')
+    #print(F'{rec_level * "  "}  >> FINISH Processing: {file_path}')
     return count
 
 '''
@@ -190,7 +192,8 @@ scan file(file)
 
 '''
 
-def main():
+import operator
+def test():
     STUD_COUNT_PARTS = [
         (0, '3070b'),
         (1, '3024'),
@@ -210,12 +213,13 @@ def main():
         (4, '44511'),
         (16, '71427c01'),
     ]
-    '''
+    #'''
     STUD_COUNT_PARTS = [
+        (0, '3024'),
         (16, '3070b'),
         (16, '3070b'),
     ]
-    '''
+    #'''
 
     prim_dir = R'tests\test_files\ldraw_files\primitives'
     parts_dir = R'tests\test_files\ldraw_files\part_files'
@@ -229,10 +233,47 @@ def main():
         stud_count = calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic)
         print(F'{part_num:<15} - Count: {stud_count}')
 
-        visited = '\n'.join(['%s:: %s' % (key, value) for (key, value) in ERIC_FILE_VISIT_COUNT.items()])
-        print(F'VISITED: {visited}')
+        sorted_visits = sorted(ERIC_FILE_VISIT_COUNT.items(), key=operator.itemgetter(1), reverse=True)
+        visited = '\n'.join([F'{tup[1]}:: {tup[0]}' for tup in sorted_visits])
+        print(F'VISITED: \n{visited}')
         print(F'TOTAL VISITS: {sum(ERIC_FILE_VISIT_COUNT.values())}\n\n')
+
+
+def main():
+    prim_dir = R'.eric\ldraw\complete\ldraw\p'
+    parts_dir = R'.eric\ldraw\complete\ldraw\parts'
+
+    file_dic = FileListDic(parts_dir=parts_dir, primitives_dir=prim_dir)
+    processed_files_dic = {}
+    stud_counts = {}
+
+    #for idx, file_name in enumerate(glob.glob(parts_dir + R'\*.dat')):
+    for idx, file_name in enumerate(os.listdir(parts_dir)):
+        
+        #print(F'CHECK: {file_name}')
+        file_path = os.path.join(parts_dir, file_name)
+        if not os.path.isfile(file_path) or not file_name.lower().endswith('.dat'):
+            #print(F'  >> SKIP')
+            continue
+        #if idx > 5600:
+        #    print(F'{file_name}')
+        #print(F'{file_name}')
+        stud_count = calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic)
+        stud_counts[file_name] = stud_count
+
+        if idx % 100 == 0:
+            print(F'Processed Files: {idx}')
+
+    #sorted_visits = sorted(ERIC_FILE_VISIT_COUNT.items(), key=operator.itemgetter(1), reverse=True)
+    #visited = '\n'.join([F'{tup[1]}:: {tup[0]}' for tup in sorted_visits])
+    #print(F'VISITED: \n{visited}\n\n')
+
+    sorted_stud_counts = sorted(stud_counts.items(), key=operator.itemgetter(1), reverse=True)
+    sorted_stud_counts_str = '\n'.join([F'{tup[1]}:: {tup[0]}' for tup in sorted_stud_counts if tup[1] > 0])
+    print(F'STUD COUNTS: {sorted_stud_counts_str}')
+    print(F'TOTAL FILE VISITS: {sum(ERIC_FILE_VISIT_COUNT.values())}\n\n')
 
 
 if __name__ == '__main__':
     main()
+    #test()
