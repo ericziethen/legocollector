@@ -28,25 +28,14 @@ class FileListDic():
     # TODO - We should only need the base dir and get folders to include ourselves,
     # TODO - Then the key should be the hols relative path
     # TODO - then remove from transform below
-    def __init__(self, base_dir):
-        self.base_dir = base_dir
-
-        # TODO - Enable Real
-        self.parts_dir = 'parts'
-        self.primitives_dir = 'p'
-
-        self.parts_dir = 'part_files'
-        self.primitives_dir = 'primitives'
-
+    def __init__(self, parts_dir='parts', primitives_dir='p'):
         self._files = {}
 
-        self._parse_dir(self.base_dir, self.parts_dir)
-        self._parse_dir(self.base_dir, self.primitives_dir)
+        self._parse_dir(parts_dir)
+        self._parse_dir(primitives_dir)
 
 
-    def _parse_dir(self, base_dir, sub_dir):
-        full_dir = os.path.join(base_dir, sub_dir)
-
+    def _parse_dir(self, full_dir):
         for root, _, files in os.walk(full_dir):
             for file_name in files:
                 rel_dir = os.path.relpath(root, start=full_dir)
