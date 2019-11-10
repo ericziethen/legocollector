@@ -59,7 +59,6 @@ TOP_STAT_FILES = [
     ('stud15.dat'),
     ('stud2.dat'),
     ('stud2a.dat'),
-    ('stud2s.dat'),
     ('stud17a.dat'),
     ('stud9.dat'),
     ('stud6.dat'),
@@ -123,8 +122,9 @@ STUD_COUNT_PARTS = [
     (4, '6233'),
     (4, '92947'),
     (4, '11211'),
+    (4, '13547'),
     
-    #(999, '11211'),
+    #(999, '13547'),
 ]
 '''
     (, ''),
@@ -137,6 +137,9 @@ STUD_COUNT_PARTS = [
 @pytest.mark.eric  # TODO Remove
 @pytest.mark.parametrize('stud_count, part_num', STUD_COUNT_PARTS)
 def test_get_stud_count(stud_count, part_num):
+    from collections import defaultdict
+    ldraw_parser.ERIC_FILE_VISIT_COUNT = defaultdict(int)
+    ldraw_parser.ERIC_studs_used = defaultdict(int)
     file_name = F'{part_num}.dat'
     file_dic = FileListDic(IMPORT_FILE_LIST)
     assert file_name in file_dic
@@ -144,39 +147,6 @@ def test_get_stud_count(stud_count, part_num):
     assert stud_count == ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic)
 
 
-'''
-files with top stud
-    ('stud.dat'),
-    ('studa.dat'),
-    ('studp01.dat'),
-    ('studel.dat'),
-    ('stud10.dat'),
-    ('stud15.dat'),
-    ('stud2.dat'),
-    ('stud2a.dat'),
-    ('stud2s.dat'),
-    ('stud17a.da'),
-    ('stud9.dat'),
-    ('stud6.dat'),
-    ('stud6a.dat'),
-    ('stud3.dat'),
-
-files with top stud
-    ('stud3a.dat'),
-    ('studx.dat'),
-    ('stud12.dat'),
-    ('stud4.dat'),
-    ('stud4a.dat'),
-    ('stud4s.dat'),
-    ('stud4s2.dat'),
-    ('stud4o.dat'),
-    ('stud4od.dat'),
-    ('stud4h.dat'),
-    ('stud4fns.dat'),
-    ('stud16.dat'),
-    ('stud21a.dat'),
-    ('stud22a.dat'),
-'''
 
 # TODO - Find files in part dir
 
