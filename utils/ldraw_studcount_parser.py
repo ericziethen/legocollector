@@ -28,25 +28,38 @@ class FileListDic():
     # TODO - We should only need the base dir and get folders to include ourselves,
     # TODO - Then the key should be the hols relative path
     # TODO - then remove from transform below
-    def __init__(self, import_dir_list):
+    def __init__(self, base_dir):
+        self.base_dir = base_dir
 
-        #self._files = defaultdict(str)
+        # TODO - Enable Real
+        self.parts_dir = 'parts'
+        self.primitives_dir = 'p'
+
+        self.parts_dir = 'part_files'
+        self.primitives_dir = 'primitives'
+
         self._files = {}
 
-        for import_dir in import_dir_list:
-            self._parse_dir(import_dir)
+        self._parse_dir(self.base_dir, self.parts_dir)
+        self._parse_dir(self.base_dir, self.primitives_dir)
 
-    def _parse_dir(self, file_dir):
-        file_list = [f for f in os.listdir(file_dir) if os.path.isfile(os.path.join(file_dir, f))]
-        for file_name in file_list:
-            if file_name in self:
-                raise ValueError(F'Error: Cannot handle multiple Part Locations, Duplicate File: {file_name}')
-            self[file_name] = os.path.join(file_dir, file_name)
+
+    def _parse_dir(self, base_dir, sub_dir):
+        full_dir = os.path.join(base_dir, sub_dir)
+
+        for root, _, files in os.walk(full_dir):
+            for file_name in files:
+                rel_dir = os.path.relpath(root, start=full_dir)
+                rel_file = os.path.join(rel_dir, file_name).lstrip('.\\')  # We don't want the leading period
+
+                if rel_file in self:
+                    raise ValueError(F'Error: Cannot handle multiple Part Locations, Duplicate File: {file_name}')
+                self[rel_file] = os.path.join(full_dir, rel_file)
 
     @staticmethod
     def _keytransform(key) -> str:
         # TODO - Check if we're fine with flattening the key, s\file.dat becomes file.dat
-        return str(os.path.basename(key.lower()))
+        return str(key.lower())
 
     def __setitem__(self, key, value: str) -> None:
         self._files[self._keytransform(key)] = value

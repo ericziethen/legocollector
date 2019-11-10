@@ -9,16 +9,6 @@ REL_THIS_FILE_DIR = os.path.dirname(os.path.abspath(__file__))
 ABS_PARENT_DIR = os.path.abspath(os.path.join(REL_THIS_FILE_DIR, os.pardir))
 LDRAW_TEST_FILE_DIR = os.path.join(ABS_PARENT_DIR, R'test_files\ldraw_files')
 
-PRIMITIVED_LDRAW_FILE_DIR = os.path.join(LDRAW_TEST_FILE_DIR, 'primitives')
-PARTS_LDRAW_FILE_DIR = os.path.join(LDRAW_TEST_FILE_DIR, 'part_files')
-SUBPARTS_LDRAW_FILE_DIR = os.path.join(PARTS_LDRAW_FILE_DIR, 's')
-PRIMITIVED_LDRAW_FILE_DIR_48 = os.path.join(PRIMITIVED_LDRAW_FILE_DIR, '48')
-
-IMPORT_FILE_LIST = [
-    PRIMITIVED_LDRAW_FILE_DIR, PARTS_LDRAW_FILE_DIR, SUBPARTS_LDRAW_FILE_DIR, PRIMITIVED_LDRAW_FILE_DIR_48
-]
-
-
 def test_invalid_parts_line():
     line = 'Invalid Line'
     assert ldraw_parser.line_type_from_line(line) == LineType.UNKNOWN
@@ -78,16 +68,18 @@ def test_unknown_file(file_name):
 
 
 @pytest.mark.parametrize('file_name', TOP_STAT_FILES)
-def test_build_dir_finds_top_stud_files(file_name):
-    file_dic = FileListDic(IMPORT_FILE_LIST)
+def test_build_dir_finds_top_stud_primitives(file_name):
+    file_dic = FileListDic(LDRAW_TEST_FILE_DIR)
     assert file_name in file_dic
-    assert os.path.join(PRIMITIVED_LDRAW_FILE_DIR, file_name) == file_dic[file_name]
+
+    primitives_dir = os.path.join(LDRAW_TEST_FILE_DIR, 'primitives')
+    assert os.path.join(primitives_dir, file_name) == file_dic[file_name]
 
 
 def test_get_sub_files_from_file():
-    file_name = '3070bs01.dat'
+    file_name = R's\3070bs01.dat'
 
-    file_dic = FileListDic(IMPORT_FILE_LIST)
+    file_dic = FileListDic(LDRAW_TEST_FILE_DIR)
     assert file_name in file_dic
 
     file_path = file_dic[file_name]
@@ -128,44 +120,14 @@ STUD_COUNT_PARTS = [
     (2, '38317'),
     (4, '44511'),
     (16, '71427c01'),
-
-    #(999, '71427c01'),
 ]
-'''
-    (, ''),
-    (, ''),
-    (, ''),
-    (, ''),
-    (, ''),
-    (, ''),
-'''
-@pytest.mark.eric  # TODO Remove
 @pytest.mark.parametrize('stud_count, part_num', STUD_COUNT_PARTS)
 def test_get_stud_count(stud_count, part_num):
     from collections import defaultdict
-    ldraw_parser.ERIC_FILE_VISIT_COUNT = defaultdict(int)
+    ldraw_parser.ERIC_FILE_VISIT_COUNT = defaultdict(int)   # TODO - REMOVE
     ldraw_parser.ERIC_studs_used = defaultdict(int)
     file_name = F'{part_num}.dat'
-    file_dic = FileListDic(IMPORT_FILE_LIST)
+    file_dic = FileListDic(LDRAW_TEST_FILE_DIR)
     assert file_name in file_dic
     file_path = file_dic[file_name]
     assert stud_count == ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic)
-
-
-
-# TODO - Find files in part dir
-
-
-
-
-
-
-
-
-
-
-
-
-# TODO - Test Build file dir with test files - keep files local for testing
-
-
