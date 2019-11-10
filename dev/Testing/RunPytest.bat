@@ -20,7 +20,7 @@ if "%1"=="travis-ci" (
 :local_setup
 
 :run_tests
-pytest --rootdir="%PROJ_MAIN_DIR%" --cov="%PACKAGE_ROOT%" --no-cov-on-fail
+pytest --rootdir="%PROJ_MAIN_DIR%" --cov="%PACKAGE_ROOT%"
 set return_code=%errorlevel%
 if %return_code% equ 0 (
     echo *** No Pytest Issues Found

@@ -21,7 +21,7 @@ export PYTHONPATH=$PYTHONPATH:$PACKAGE_ROOT
 echo PYTHONPATH: "$PYTHONPATH"
 
 # Test directories are specified in Pytest.ini
-pytest --rootdir="$PROJ_MAIN_DIR" --cov="$PACKAGE_ROOT" --no-cov-on-fail
+pytest --rootdir="$PROJ_MAIN_DIR" --cov="$PACKAGE_ROOT"
 return_code=$?
 
 if [[ $return_code -eq  0 ]];
