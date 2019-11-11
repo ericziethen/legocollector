@@ -152,10 +152,11 @@ def calc_stud_count_for_part_file(
         ldraw_file = LdrawFile(file_path)
         for sub_file in ldraw_file.sup_part_files:
             sub_file = sub_file.lower()
+            sub_file_path = file_dic[sub_file].lower()
             print(F'{rec_level * "  "}    Checking Sub File: {sub_file} ({get_top_stud_count_for_file(sub_file)})')
 
-            if sub_file in processed_files_dic:
-                count += processed_files_dic[sub_file]['top_stud_count']
+            if sub_file_path in processed_files_dic:
+                count += processed_files_dic[sub_file_path]['top_stud_count']
                 print(F'{rec_level * "  "}   Count (Dict): {count}')
             else:
                 sub_file_count = calc_stud_count_for_part_file(
@@ -164,11 +165,11 @@ def calc_stud_count_for_part_file(
                 count += sub_file_count
                 print(F'{rec_level * "  "}   Count (Calc): {count}')
 
-                processed_files_dic[sub_file] = {'top_stud_count': sub_file_count}
+                processed_files_dic[sub_file_path] = {'top_stud_count': sub_file_count}
                 #print(F'{rec_level * "  "}    Sub Count Set for {sub_file}')
 
-    if file_name not in processed_files_dic:
-        processed_files_dic[file_name] = {'top_stud_count': count}
+    if file_path not in processed_files_dic:
+        processed_files_dic[file_path] = {'top_stud_count': count}
     return count
 
 '''
