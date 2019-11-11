@@ -145,19 +145,25 @@ def test_processed_files_dic_specified():
     assert processed_files_dic['box5.dat']['top_stud_count'] == 0
     assert processed_files_dic['stud.dat']['top_stud_count'] == 1
 
-'''
-def test_file_visited_count():
 
+@pytest.mark.Xeric
+def test_file_visited_count():
+    file_dic = FileListDic(parts_dir=LDRAW_PARTS_DIR, primitives_dir=LDRAW_PRIMITIVES_DIR)
+    file_path = file_dic['3024.dat']
     file_visited_count = {}
 
     # Run 1st time
-    ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic)
-    assert len(processed_files_dic.value()) == 4
-    assert processed_files_dic['']
-
+    ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic, None, file_visited_count)
+    assert len(file_visited_count.values()) == 3
+    assert file_visited_count[os.path.join(LDRAW_PARTS_DIR, '3024.dat')] == 1
+    assert file_visited_count[os.path.join(LDRAW_PRIMITIVES_DIR, 'box5.dat')] == 1
+    assert file_visited_count[os.path.join(LDRAW_PRIMITIVES_DIR, 'stud.dat')] == 1
 
     # Run 2nd time
-    ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic)
+    ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic, None, file_visited_count)
+    assert len(file_visited_count.values()) == 3
+    print(file_visited_count)
+    assert file_visited_count[os.path.join(LDRAW_PARTS_DIR, '3024.dat')] == 2
+    assert file_visited_count[os.path.join(LDRAW_PRIMITIVES_DIR, 'box5.dat')] == 1
+    assert file_visited_count[os.path.join(LDRAW_PRIMITIVES_DIR, 'stud.dat')] == 1
 
-
-'''
