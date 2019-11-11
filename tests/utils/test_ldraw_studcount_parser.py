@@ -123,9 +123,6 @@ STUD_COUNT_PARTS = [
 ]
 @pytest.mark.parametrize('stud_count, part_num', STUD_COUNT_PARTS)
 def test_get_stud_count(stud_count, part_num):
-    from collections import defaultdict
-    ldraw_parser.ERIC_FILE_VISIT_COUNT = defaultdict(int)   # TODO - REMOVE
-    ldraw_parser.ERIC_studs_used = defaultdict(int)
     file_name = F'{part_num}.dat'
     file_dic = FileListDic(parts_dir=LDRAW_PARTS_DIR, primitives_dir=LDRAW_PRIMITIVES_DIR)
     assert file_name in file_dic
@@ -141,7 +138,6 @@ def test_processed_files_dic_specified():
 
     ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic)
     assert len(processed_files_dic.values()) == 3
-    print(processed_files_dic)
     assert processed_files_dic[os.path.join(LDRAW_PARTS_DIR, '3024.dat')]['top_stud_count'] == 1
     assert processed_files_dic[os.path.join(LDRAW_PRIMITIVES_DIR, 'box5.dat')]['top_stud_count'] == 0
     assert processed_files_dic[os.path.join(LDRAW_PRIMITIVES_DIR, 'stud.dat')]['top_stud_count'] == 1
@@ -157,7 +153,6 @@ def test_file_visited_count():
     # Run 1st time
     ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic, file_visited_count)
     assert len(file_visited_count.values()) == 3
-    print(F'RUN 1 END: {file_visited_count}')
     assert file_visited_count[os.path.join(LDRAW_PARTS_DIR, '3024.dat')] == 1
     assert file_visited_count[os.path.join(LDRAW_PRIMITIVES_DIR, 'box5.dat')] == 1
     assert file_visited_count[os.path.join(LDRAW_PRIMITIVES_DIR, 'stud.dat')] == 1
@@ -165,7 +160,6 @@ def test_file_visited_count():
     # Run 2nd time
     ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic, file_visited_count)
     assert len(file_visited_count.values()) == 3
-    print(F'RUN 2 END: {file_visited_count}')
     assert file_visited_count[os.path.join(LDRAW_PARTS_DIR, '3024.dat')] == 2
     assert file_visited_count[os.path.join(LDRAW_PRIMITIVES_DIR, 'box5.dat')] == 1
     assert file_visited_count[os.path.join(LDRAW_PRIMITIVES_DIR, 'stud.dat')] == 1
