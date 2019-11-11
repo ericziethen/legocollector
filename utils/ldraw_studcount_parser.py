@@ -123,9 +123,9 @@ def get_ldraw_file_type(file_name):
     return file_type
 
 
-def get_top_stud_count_for_file(file_name):
+def get_top_stud_count_for_file(file_path):
     single_top_stud_file_types = [FileType.TOP_STUD]
-    if get_ldraw_file_type(file_name) in single_top_stud_file_types:
+    if get_ldraw_file_type(os.path.basename(file_path)) in single_top_stud_file_types:
         return 1
     return 0
 
@@ -138,32 +138,34 @@ def calc_stud_count_for_part_file(
     if processed_files_dic is None:
         processed_files_dic = {}
 
-    print(F'{rec_level * "  "}  >> START Processing: {file_path}')
-    file_name = os.path.basename(file_path)
-    count = get_top_stud_count_for_file(file_name)
+    print(F'{rec_level * "  "}  >> START Processing: {file_path} - {file_visited_count}')
+    count = get_top_stud_count_for_file(file_path)
     if file_visited_count is not None:
         if file_path not in file_visited_count:
             file_visited_count[file_path.lower()] = 1
+            print(F'{rec_level * "  "}   Setting File Visit Count to 1 for {file_path}')
+
         else:
+            print(F'{rec_level * "  "}   Increment File Visit Count from {file_visited_count[file_path.lower()]} for {file_path}')
             file_visited_count[file_path.lower()] += 1
 
     # Process sub files
     if count == 0:
         ldraw_file = LdrawFile(file_path)
         for sub_file in ldraw_file.sup_part_files:
-            sub_file = sub_file.lower()
             sub_file_path = file_dic[sub_file].lower()
-            print(F'{rec_level * "  "}    Checking Sub File: {sub_file} ({get_top_stud_count_for_file(sub_file)})')
+            print(F'''{rec_level * "  "}    Checking Sub File: {sub_file_path} ({get_top_stud_count_for_file(sub_file)} - 
+                        Visited? {sub_file_path in processed_files_dic} - {file_visited_count})''')
 
             if sub_file_path in processed_files_dic:
                 count += processed_files_dic[sub_file_path]['top_stud_count']
-                print(F'{rec_level * "  "}   Count (Dict): {count}')
+                print(F'{rec_level * "  "}      Existing Count: {count}')
             else:
                 sub_file_count = calc_stud_count_for_part_file(
-                    file_dic[sub_file], file_dic, processed_files_dic,
+                    sub_file_path, file_dic, processed_files_dic,
                     file_visited_count, rec_level + 1)
                 count += sub_file_count
-                print(F'{rec_level * "  "}   Count (Calc): {count}')
+                print(F'{rec_level * "  "}      Calculated Count: {count}')
 
                 processed_files_dic[sub_file_path] = {'top_stud_count': sub_file_count}
                 #print(F'{rec_level * "  "}    Sub Count Set for {sub_file}')

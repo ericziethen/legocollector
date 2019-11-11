@@ -147,23 +147,25 @@ def test_processed_files_dic_specified():
     assert processed_files_dic[os.path.join(LDRAW_PRIMITIVES_DIR, 'stud.dat')]['top_stud_count'] == 1
 
 
-@pytest.mark.eric
+@pytest.mark.eric # TODO Remove
 def test_file_visited_count():
     file_dic = FileListDic(parts_dir=LDRAW_PARTS_DIR, primitives_dir=LDRAW_PRIMITIVES_DIR)
     file_path = file_dic['3024.dat']
     file_visited_count = {}
+    processed_files_dic = {}
 
     # Run 1st time
-    ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic, None, file_visited_count)
+    ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic, file_visited_count)
     assert len(file_visited_count.values()) == 3
+    print(F'RUN 1 END: {file_visited_count}')
     assert file_visited_count[os.path.join(LDRAW_PARTS_DIR, '3024.dat')] == 1
     assert file_visited_count[os.path.join(LDRAW_PRIMITIVES_DIR, 'box5.dat')] == 1
     assert file_visited_count[os.path.join(LDRAW_PRIMITIVES_DIR, 'stud.dat')] == 1
 
     # Run 2nd time
-    ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic, None, file_visited_count)
+    ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic, file_visited_count)
     assert len(file_visited_count.values()) == 3
-    print(file_visited_count)
+    print(F'RUN 2 END: {file_visited_count}')
     assert file_visited_count[os.path.join(LDRAW_PARTS_DIR, '3024.dat')] == 2
     assert file_visited_count[os.path.join(LDRAW_PRIMITIVES_DIR, 'box5.dat')] == 1
     assert file_visited_count[os.path.join(LDRAW_PRIMITIVES_DIR, 'stud.dat')] == 1
