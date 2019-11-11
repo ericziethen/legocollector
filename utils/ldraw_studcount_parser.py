@@ -1,4 +1,5 @@
 import enum
+import json
 import operator
 import os
 
@@ -138,15 +139,15 @@ def calc_stud_count_for_part_file(
     if processed_files_dic is None:
         processed_files_dic = {}
 
-    print(F'{rec_level * "  "}  >> START Processing: {file_path} - {file_visited_count}')
+    #print(F'{rec_level * "  "}  >> START Processing: {file_path} - {file_visited_count}')
     count = get_top_stud_count_for_file(file_path)
     if file_visited_count is not None:
         if file_path not in file_visited_count:
             file_visited_count[file_path.lower()] = 1
-            print(F'{rec_level * "  "}   Setting File Visit Count to 1 for {file_path}')
+            #print(F'{rec_level * "  "}   Setting File Visit Count to 1 for {file_path}')
 
         else:
-            print(F'{rec_level * "  "}   Increment File Visit Count from {file_visited_count[file_path.lower()]} for {file_path}')
+            #print(F'{rec_level * "  "}   Increment File Visit Count from {file_visited_count[file_path.lower()]} for {file_path}')
             file_visited_count[file_path.lower()] += 1
 
     # Process sub files
@@ -154,18 +155,18 @@ def calc_stud_count_for_part_file(
         ldraw_file = LdrawFile(file_path)
         for sub_file in ldraw_file.sup_part_files:
             sub_file_path = file_dic[sub_file].lower()
-            print(F'''{rec_level * "  "}    Checking Sub File: {sub_file_path} ({get_top_stud_count_for_file(sub_file)} - 
-                        Visited? {sub_file_path in processed_files_dic} - {file_visited_count})''')
+            #print(F'''{rec_level * "  "}    Checking Sub File: {sub_file_path} ({get_top_stud_count_for_file(sub_file)} - 
+            #            Visited? {sub_file_path in processed_files_dic} - {file_visited_count})''')
 
             if sub_file_path in processed_files_dic:
                 count += processed_files_dic[sub_file_path]['top_stud_count']
-                print(F'{rec_level * "  "}      Existing Count: {count}')
+                #print(F'{rec_level * "  "}      Existing Count: {count}')
             else:
                 sub_file_count = calc_stud_count_for_part_file(
                     sub_file_path, file_dic, processed_files_dic,
                     file_visited_count, rec_level + 1)
                 count += sub_file_count
-                print(F'{rec_level * "  "}      Calculated Count: {count}')
+                #print(F'{rec_level * "  "}      Calculated Count: {count}')
 
                 processed_files_dic[sub_file_path] = {'top_stud_count': sub_file_count}
                 #print(F'{rec_level * "  "}    Sub Count Set for {sub_file}')
@@ -174,23 +175,31 @@ def calc_stud_count_for_part_file(
         processed_files_dic[file_path] = {'top_stud_count': count}
     return count
 
-'''
 
-scan file(file)
-     count = studs in file
-     for each dat subfile in file
-          if subfile in global list
-              count += global_list[sub_file)
-          else
-              count += scan file(sub_file)
- 
+def create_json_for_parts(json_out_file_path):
+    prim_dir = R'D:\Downloads\Finished\# Lego\ldraw\complete_2019.11.05\ldraw\p'
+    parts_dir = R'D:\Downloads\Finished\# Lego\ldraw\complete_2019.11.05\ldraw\parts'
 
-    global_list[file] = count (maybe have a dictionary, e.g. top_studs, bottom_studs…)
+    file_dic = FileListDic(parts_dir=parts_dir, primitives_dir=prim_dir)
+    processed_files_dic = {}
+    parts_dic = {}
 
-    return count
+    for idx, file_name in enumerate(os.listdir(parts_dir), 1):
+        file_path = os.path.join(parts_dir, file_name)
+        part_num = os.path.splitext(file_name)[0]
 
-'''
+        if not os.path.isfile(file_path) or not file_name.lower().endswith('.dat'):
+            continue
 
+        stud_count = calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic)
+        parts_dic[part_num] = {}
+        parts_dic[part_num]['stud_count'] = stud_count
+
+        if idx % 500 == 0:
+            print(F'Processed {idx} parts')
+
+    with open(json_out_file_path, 'w', encoding='utf-8') as file_ptr:
+        json.dump(parts_dic, file_ptr)
 
 
 
@@ -226,4 +235,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    #main()
+    create_json_for_parts('ldraw_studcount.json')
