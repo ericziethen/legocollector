@@ -2,7 +2,7 @@ import enum
 import json
 import os
 
-from pathlib Path
+from pathlib import Path
 
 
 @enum.unique
@@ -44,25 +44,27 @@ class FileListDic():
     def _parse_dir(self, full_dir):
         print(F'_parse_dir({full_dir})')
         for root, _, files in os.walk(full_dir):
-            print(F'  root: {root}')
+            #print(F'  root: {root}')
             for file_name in files:
-                print(F'    file_name: {file_name}')
+                #print(F'    file_name: {file_name}')
                 rel_dir = os.path.relpath(root, start=full_dir)
                 
                 #file_path = os.path.join(rel_dir, file_name).lstrip('.\\').lstrip('/')  # We don't want the leading period
                 #rel_file = os.path.normpath(file_path)
 
-                rel_file = Path(rel_dir)
+                #rel_file = Path(rel_dir)
+                rel_file = os.path.join(rel_dir, file_name)
 
                 if rel_file in self:
                     raise ValueError(F'Error: Cannot handle multiple Part Locations, Duplicate File: {file_name}')
                 #self[rel_file] = os.path.normpath(os.path.join(full_dir, rel_file))
                 self[rel_file] = Path(full_dir) / rel_file
-        print(F'  RESULT: _parse_dir({self._files})')
+        print(F'  RESULT: _parse_dir({self._files.keys()})')
 
     @staticmethod
     def _keytransform(key) -> str:
-        return str(key.lower())
+        #return str(key.lower())
+        return Path(key)
 
     def __setitem__(self, key, value: str) -> None:
         self._files[self._keytransform(key)] = value
