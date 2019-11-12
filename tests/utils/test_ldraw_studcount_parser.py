@@ -8,14 +8,6 @@ from utils import ldraw_studcount_parser as ldraw_parser
 from utils.ldraw_studcount_parser import FileListDic, FileType, LineType
 
 REL_THIS_FILE_DIR = os.path.dirname(os.path.abspath(__file__))
-#LDRAW_TEST_FILE_DIR = os.path.join('tests', 'test_files', 'ldraw_files')
-# TODO - TRY WITH RELATIVE PATH
-#LDRAW_PARTS_DIR = os.path.abspath(os.path.join(LDRAW_TEST_FILE_DIR, 'part_files'))
-#LDRAW_PRIMITIVES_DIR = os.path.abspath(os.path.join(LDRAW_TEST_FILE_DIR, 'primitives'))
-#LDRAW_PARTS_DIR = os.path.join(LDRAW_TEST_FILE_DIR, 'part_files')
-#LDRAW_PRIMITIVES_DIR = os.path.join(LDRAW_TEST_FILE_DIR, 'primitives')
-
-
 LDRAW_TEST_FILE_DIR = Path('tests') / 'test_files' / 'ldraw_files'
 LDRAW_PARTS_DIR = LDRAW_TEST_FILE_DIR / 'part_files'
 LDRAW_PRIMITIVES_DIR = LDRAW_TEST_FILE_DIR / 'primitives'
@@ -49,7 +41,7 @@ def test_identify_unknown_line_type(line):
 
 def test_get_part_file_from_part_line():
     part_line = '1 16 0 0 0 1 0 0 0 1 0 0 0 1 10a.dat'
-    assert ldraw_parser.get_file_from_part_line(part_line) == '10a.dat'
+    assert ldraw_parser.get_file_from_part_line(part_line) == Path('10a.dat')
 
 
 TOP_STAT_FILES = [
@@ -110,8 +102,8 @@ def test_get_sub_files_from_file():
     sup_part_files = ldraw_file.sup_part_files
 
     assert len(sup_part_files) == 3
-    assert sup_part_files.count('box4.dat') == 2
-    assert sup_part_files.count('box5.dat') == 1
+    assert sup_part_files.count(Path('box4.dat')) == 2
+    assert sup_part_files.count(Path('box5.dat')) == 1
 
 
 def test_get_stud_count_for_unknown_file():
