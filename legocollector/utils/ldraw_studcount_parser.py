@@ -28,7 +28,7 @@ class FileType(enum.Enum):
 
 class FileListDic():
 
-    def __init__(self, parts_dir='parts', primitives_dir='p'):
+    def __init__(self, parts_dir, primitives_dir):
         self._files = {}
 
         self._parse_dir(parts_dir)
