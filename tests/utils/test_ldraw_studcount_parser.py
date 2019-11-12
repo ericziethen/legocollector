@@ -80,7 +80,7 @@ def test_unknown_file(file_name):
 
 
 def test_find_subdir_file():
-    file_name = R's\10s01.dat'
+    file_name = Path('s/10s01.dat')
     file_dic = FileListDic(parts_dir=LDRAW_PARTS_DIR, primitives_dir=LDRAW_PRIMITIVES_DIR)
     key = Path(file_name)
     assert key in file_dic
