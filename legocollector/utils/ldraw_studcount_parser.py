@@ -193,28 +193,12 @@ def create_json_for_parts(json_out_file_path):
     prim_dir = R'D:\Downloads\Finished\# Lego\ldraw\complete_2019.11.05\ldraw\p'
     parts_dir = R'D:\Downloads\Finished\# Lego\ldraw\complete_2019.11.05\ldraw\parts'
 
-    #part_num_list = 
+    part_num_list = [
+        os.path.splitext(f)[0] for f in os.listdir(parts_dir)
+        if os.path.isfile(os.path.join(parts_dir, f)) and f.lower().endswith('.dat')]
 
-    # TODO - Make use of calc_stud_count_for_part_list
-
-
-    file_dic = FileListDic(parts_dir=parts_dir, primitives_dir=prim_dir)
-    processed_files_dic = {}
-    parts_dic = {}
-
-    for idx, file_name in enumerate(os.listdir(parts_dir), 1):
-        file_path = os.path.join(parts_dir, file_name)
-        part_num = os.path.splitext(file_name)[0]
-
-        if not os.path.isfile(file_path) or not file_name.lower().endswith('.dat'):
-            continue
-
-        stud_count = calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic)
-        parts_dic[part_num] = {}
-        parts_dic[part_num]['stud_count'] = stud_count
-
-        if idx % 500 == 0:
-            print(F'Processed {idx} parts')
+    parts_dic = calc_stud_count_for_part_list(
+        part_num_list, parts_dir=parts_dir, primitives_dir=prim_dir)
 
     with open(json_out_file_path, 'w', encoding='utf-8') as file_ptr:
         json.dump(parts_dic, file_ptr)
