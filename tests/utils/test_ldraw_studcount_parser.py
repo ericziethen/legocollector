@@ -16,7 +16,7 @@ REL_THIS_FILE_DIR = os.path.dirname(os.path.abspath(__file__))
 #LDRAW_PRIMITIVES_DIR = os.path.join(LDRAW_TEST_FILE_DIR, 'primitives')
 
 
-LDRAW_TEST_FILE_DIR = Path('tests\\test_files\\ldraw_files')
+LDRAW_TEST_FILE_DIR = Path('tests') / 'test_files' / 'ldraw_files'
 LDRAW_PARTS_DIR = LDRAW_TEST_FILE_DIR / 'part_files'
 LDRAW_PRIMITIVES_DIR = LDRAW_TEST_FILE_DIR / 'primitives'
 
