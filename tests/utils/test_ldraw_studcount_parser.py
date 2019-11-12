@@ -164,3 +164,6 @@ def test_file_visited_count():
     assert file_visited_count[os.path.join(LDRAW_PRIMITIVES_DIR, 'box5.dat')] == 1
     assert file_visited_count[os.path.join(LDRAW_PRIMITIVES_DIR, 'stud.dat')] == 1
 
+
+
+

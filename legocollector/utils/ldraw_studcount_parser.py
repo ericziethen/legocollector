@@ -3,8 +3,6 @@ import json
 import operator
 import os
 
-from collections import defaultdict
-
 @enum.unique
 class LineType(enum.Enum):
 
@@ -27,9 +25,6 @@ class FileType(enum.Enum):
 
 class FileListDic():
 
-    # TODO - We should only need the base dir and get folders to include ourselves,
-    # TODO - Then the key should be the hols relative path
-    # TODO - then remove from transform below
     def __init__(self, parts_dir='parts', primitives_dir='p'):
         self._files = {}
 
@@ -49,7 +44,6 @@ class FileListDic():
 
     @staticmethod
     def _keytransform(key) -> str:
-        # TODO - Check if we're fine with flattening the key, s\file.dat becomes file.dat
         return str(key.lower())
 
     def __setitem__(self, key, value: str) -> None:
@@ -80,8 +74,8 @@ class LdrawFile():
         self._parse(self.file_path)
 
     def _parse(self, file_path):
-        with open(file_path, encoding='utf8', errors="surrogateescape") as fp:
-            for line in fp:
+        with open(file_path, encoding='utf8', errors="surrogateescape") as file_ptr:
+            for line in file_ptr:
                 check_line = line.strip()
                 if line_type_from_line(check_line) == LineType.PART:
                     self.sup_part_files.append(get_file_from_part_line(check_line))
@@ -176,6 +170,11 @@ def calc_stud_count_for_part_file(
     return count
 
 
+def calc_stud_count_for_part_list(part_list):
+
+
+
+
 def create_json_for_parts(json_out_file_path):
     prim_dir = R'D:\Downloads\Finished\# Lego\ldraw\complete_2019.11.05\ldraw\p'
     parts_dir = R'D:\Downloads\Finished\# Lego\ldraw\complete_2019.11.05\ldraw\parts'
@@ -200,7 +199,6 @@ def create_json_for_parts(json_out_file_path):
 
     with open(json_out_file_path, 'w', encoding='utf-8') as file_ptr:
         json.dump(parts_dic, file_ptr)
-
 
 
 def main():
