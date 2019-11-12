@@ -80,9 +80,8 @@ def test_build_dir_finds_top_stud_primitives(file_name):
     assert os.path.abspath(os.path.join(primitives_dir, file_name)) == file_dic[file_name]
 
 
-# TODO - Forward Slash causes issues, maybe try using pathlib module
 def test_get_sub_files_from_file():
-    file_name = R's\3070bs01.dat'
+    file_name = os.path.join('s', '3070bs01.dat')
 
     file_dic = FileListDic(parts_dir=LDRAW_PARTS_DIR, primitives_dir=LDRAW_PRIMITIVES_DIR)
     assert file_name in file_dic
