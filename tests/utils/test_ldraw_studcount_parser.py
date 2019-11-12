@@ -7,8 +7,8 @@ from utils.ldraw_studcount_parser import FileListDic, FileType, LineType
 
 REL_THIS_FILE_DIR = os.path.dirname(os.path.abspath(__file__))
 LDRAW_TEST_FILE_DIR = R'tests\test_files\ldraw_files'
-LDRAW_PARTS_DIR = os.path.join(LDRAW_TEST_FILE_DIR, 'part_files')
-LDRAW_PRIMITIVES_DIR = os.path.join(LDRAW_TEST_FILE_DIR, 'primitives')
+LDRAW_PARTS_DIR = os.path.abspath(os.path.join(LDRAW_TEST_FILE_DIR, 'part_files'))
+LDRAW_PRIMITIVES_DIR = os.path.abspath(os.path.join(LDRAW_TEST_FILE_DIR, 'primitives'))
 
 
 def test_invalid_parts_line():
@@ -75,7 +75,7 @@ def test_build_dir_finds_top_stud_primitives(file_name):
     assert file_name in file_dic
 
     primitives_dir = os.path.join(LDRAW_TEST_FILE_DIR, 'primitives')
-    assert os.path.join(primitives_dir, file_name) == file_dic[file_name]
+    assert os.path.abspath(os.path.join(primitives_dir, file_name)) == file_dic[file_name]
 
 
 def test_get_sub_files_from_file():
@@ -139,9 +139,10 @@ def test_processed_files_dic_specified():
 
     ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic)
     assert len(processed_files_dic.values()) == 3
-    assert processed_files_dic[os.path.join(LDRAW_PARTS_DIR, '3024.dat')]['top_stud_count'] == 1
-    assert processed_files_dic[os.path.join(LDRAW_PRIMITIVES_DIR, 'box5.dat')]['top_stud_count'] == 0
-    assert processed_files_dic[os.path.join(LDRAW_PRIMITIVES_DIR, 'stud.dat')]['top_stud_count'] == 1
+    print(processed_files_dic)
+    assert processed_files_dic[os.path.join(LDRAW_PARTS_DIR, '3024.dat').lower()]['top_stud_count'] == 1
+    assert processed_files_dic[os.path.join(LDRAW_PRIMITIVES_DIR, 'box5.dat').lower()]['top_stud_count'] == 0
+    assert processed_files_dic[os.path.join(LDRAW_PRIMITIVES_DIR, 'stud.dat').lower()]['top_stud_count'] == 1
 
 
 def test_file_visited_count():
@@ -153,16 +154,16 @@ def test_file_visited_count():
     # Run 1st time
     ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic, file_visited_count)
     assert len(file_visited_count.values()) == 3
-    assert file_visited_count[os.path.join(LDRAW_PARTS_DIR, '3024.dat')] == 1
-    assert file_visited_count[os.path.join(LDRAW_PRIMITIVES_DIR, 'box5.dat')] == 1
-    assert file_visited_count[os.path.join(LDRAW_PRIMITIVES_DIR, 'stud.dat')] == 1
+    assert file_visited_count[os.path.join(LDRAW_PARTS_DIR, '3024.dat').lower()] == 1
+    assert file_visited_count[os.path.join(LDRAW_PRIMITIVES_DIR, 'box5.dat').lower()] == 1
+    assert file_visited_count[os.path.join(LDRAW_PRIMITIVES_DIR, 'stud.dat').lower()] == 1
 
     # Run 2nd time
     ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic, file_visited_count)
     assert len(file_visited_count.values()) == 3
-    assert file_visited_count[os.path.join(LDRAW_PARTS_DIR, '3024.dat')] == 2
-    assert file_visited_count[os.path.join(LDRAW_PRIMITIVES_DIR, 'box5.dat')] == 1
-    assert file_visited_count[os.path.join(LDRAW_PRIMITIVES_DIR, 'stud.dat')] == 1
+    assert file_visited_count[os.path.join(LDRAW_PARTS_DIR, '3024.dat').lower()] == 2
+    assert file_visited_count[os.path.join(LDRAW_PRIMITIVES_DIR, 'box5.dat').lower()] == 1
+    assert file_visited_count[os.path.join(LDRAW_PRIMITIVES_DIR, 'stud.dat').lower()] == 1
 
 
 def test_calc_stud_count_for_part_list():

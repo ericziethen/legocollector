@@ -130,13 +130,15 @@ def calc_stud_count_for_part_file(
     if processed_files_dic is None:
         processed_files_dic = {}
 
+    file_path = file_path.lower()
+
     count = get_top_stud_count_for_file(file_path)
     if file_visited_count is not None:
         if file_path not in file_visited_count:
             file_visited_count[file_path.lower()] = 1
 
         else:
-            file_visited_count[file_path.lower()] += 1
+            file_visited_count[file_path] += 1
 
     # Process sub files
     if count == 0:
