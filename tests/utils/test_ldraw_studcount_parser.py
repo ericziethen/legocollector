@@ -72,7 +72,6 @@ def test_unknown_file(file_name):
 @pytest.mark.parametrize('file_name', TOP_STAT_FILES)
 def test_build_dir_finds_top_stud_primitives(file_name):
     file_dic = FileListDic(parts_dir=LDRAW_PARTS_DIR, primitives_dir=LDRAW_PRIMITIVES_DIR)
-    print(file_dic)
     assert file_name in file_dic
 
     primitives_dir = os.path.join(LDRAW_TEST_FILE_DIR, 'primitives')
