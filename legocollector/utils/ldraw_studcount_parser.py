@@ -39,7 +39,7 @@ class FileListDic():
         print(F'listdir(primitives_dir):    "{os.listdir(primitives_dir)}"')
 
     def _parse_dir(self, full_dir):
-        print(F'_parse_dir()')
+        print(F'_parse_dir({full_dir})')
         for root, _, files in os.walk(full_dir):
             print(F'  root: {root}')
             for file_name in files:
@@ -50,6 +50,7 @@ class FileListDic():
                 if rel_file in self:
                     raise ValueError(F'Error: Cannot handle multiple Part Locations, Duplicate File: {file_name}')
                 self[rel_file] = os.path.join(full_dir, rel_file)
+        print(F'  RESULT: _parse_dir({self._files})')
 
     @staticmethod
     def _keytransform(key) -> str:
