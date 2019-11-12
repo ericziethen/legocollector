@@ -33,13 +33,17 @@ class FileListDic():
         self._parse_dir(primitives_dir)
 
         print(F'FileListDic:__init__()')
-        print(F'parts_dir:      "{parts_dir}"')
-        print(F'primitives_dir: "{primitives_dir}"')
-        print(F'listdir(parts_dir):      "{os.listdir(parts_dir)}"')
+        print(F'parts_dir:                  "{parts_dir}"')
+        print(F'primitives_dir:             "{primitives_dir}"')
+        print(F'listdir(parts_dir):         "{os.listdir(parts_dir)}"')
+        print(F'listdir(primitives_dir):    "{os.listdir(primitives_dir)}"')
 
     def _parse_dir(self, full_dir):
+        print(F'_parse_dir()')
         for root, _, files in os.walk(full_dir):
+            print(F'  root: {root}')
             for file_name in files:
+                print(F'    file_name: {file_name}')
                 rel_dir = os.path.relpath(root, start=full_dir)
                 rel_file = os.path.join(rel_dir, file_name).lstrip('.\\')  # We don't want the leading period
 
