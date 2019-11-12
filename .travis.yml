@@ -63,7 +63,7 @@ before_script:
 #- if [ "$TRAVIS_OS_NAME" = "linux" ]; then ./dev/run_test_server.sh detached; fi
 #- sleep 15 # Git the server some time to startup before tests are starting, we could also run the tests after Linting for a natural delay but this is ok for now
 
-- if [ "$TRAVIS_OS_NAME" = "linux" ]; then tree
+- if [ "$TRAVIS_OS_NAME" = "linux" ]; then tree; fi
 
 - if [ "$TRAVIS_OS_NAME" = "linux" ]; then ping -c 4 127.0.0.1; fi
 - if [ "$TRAVIS_OS_NAME" = "windows" ]; then ping -n 4 127.0.0.1; fi
