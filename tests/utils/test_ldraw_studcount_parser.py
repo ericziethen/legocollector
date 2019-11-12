@@ -8,12 +8,17 @@ from utils import ldraw_studcount_parser as ldraw_parser
 from utils.ldraw_studcount_parser import FileListDic, FileType, LineType
 
 REL_THIS_FILE_DIR = os.path.dirname(os.path.abspath(__file__))
-LDRAW_TEST_FILE_DIR = os.path.join('tests', 'test_files', 'ldraw_files')
+#LDRAW_TEST_FILE_DIR = os.path.join('tests', 'test_files', 'ldraw_files')
 # TODO - TRY WITH RELATIVE PATH
 #LDRAW_PARTS_DIR = os.path.abspath(os.path.join(LDRAW_TEST_FILE_DIR, 'part_files'))
 #LDRAW_PRIMITIVES_DIR = os.path.abspath(os.path.join(LDRAW_TEST_FILE_DIR, 'primitives'))
-LDRAW_PARTS_DIR = os.path.join(LDRAW_TEST_FILE_DIR, 'part_files')
-LDRAW_PRIMITIVES_DIR = os.path.join(LDRAW_TEST_FILE_DIR, 'primitives')
+#LDRAW_PARTS_DIR = os.path.join(LDRAW_TEST_FILE_DIR, 'part_files')
+#LDRAW_PRIMITIVES_DIR = os.path.join(LDRAW_TEST_FILE_DIR, 'primitives')
+
+
+LDRAW_TEST_FILE_DIR = Path(R'tests\test_files\ldraw_files')
+LDRAW_PARTS_DIR = LDRAW_TEST_FILE_DIR / 'part_files'
+LDRAW_PRIMITIVES_DIR = LDRAW_TEST_FILE_DIR / 'primitives'
 
 
 def test_invalid_parts_line():
@@ -74,6 +79,13 @@ def test_unknown_file(file_name):
     assert ldraw_parser.get_ldraw_file_type(file_name) == FileType.UNKNOWN
 
 
+def test_find_subdir_file():
+    file_name = R's\10s01.dat'
+    file_dic = FileListDic(parts_dir=LDRAW_PARTS_DIR, primitives_dir=LDRAW_PRIMITIVES_DIR)
+    key = Path(file_name)
+    assert key in file_dic
+
+
 @pytest.mark.parametrize('file_name', TOP_STAT_FILES)
 def test_build_dir_finds_top_stud_primitives(file_name):
     file_dic = FileListDic(parts_dir=LDRAW_PARTS_DIR, primitives_dir=LDRAW_PRIMITIVES_DIR)
@@ -84,14 +96,15 @@ def test_build_dir_finds_top_stud_primitives(file_name):
     # TODO - TRY WITH RELATIVE PATH
     assert Path(primitives_dir) / file_name == file_dic[key]
 
-'''
+
 def test_get_sub_files_from_file():
     file_name = os.path.join('s', '3070bs01.dat')
+    key = Path(file_name)
 
     file_dic = FileListDic(parts_dir=LDRAW_PARTS_DIR, primitives_dir=LDRAW_PRIMITIVES_DIR)
-    assert file_name in file_dic
+    assert key in file_dic
 
-    file_path = file_dic[file_name]
+    file_path = file_dic[key]
     ldraw_file = ldraw_parser.LdrawFile(file_path)
 
     sup_part_files = ldraw_file.sup_part_files
@@ -133,23 +146,27 @@ STUD_COUNT_PARTS = [
 @pytest.mark.parametrize('stud_count, part_num', STUD_COUNT_PARTS)
 def test_get_stud_count(stud_count, part_num):
     file_name = F'{part_num}.dat'
+    key = Path(file_name)
     file_dic = FileListDic(parts_dir=LDRAW_PARTS_DIR, primitives_dir=LDRAW_PRIMITIVES_DIR)
-    assert file_name in file_dic
-    file_path = file_dic[file_name]
+    assert key in file_dic
+    file_path = file_dic[key]
     assert stud_count == ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic)
 
 
 def test_processed_files_dic_specified():
+    file_name = '3024.dat'
+    key = Path(file_name)
     file_dic = FileListDic(parts_dir=LDRAW_PARTS_DIR, primitives_dir=LDRAW_PRIMITIVES_DIR)
-    file_path = file_dic['3024.dat']
+    file_path = file_dic[key]
     processed_files_dic = {}
 
     ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic)
     assert len(processed_files_dic.values()) == 3
-    print(processed_files_dic)
-    assert processed_files_dic[os.path.join(LDRAW_PARTS_DIR, '3024.dat').lower()]['top_stud_count'] == 1
-    assert processed_files_dic[os.path.join(LDRAW_PRIMITIVES_DIR, 'box5.dat').lower()]['top_stud_count'] == 0
-    assert processed_files_dic[os.path.join(LDRAW_PRIMITIVES_DIR, 'stud.dat').lower()]['top_stud_count'] == 1
+    #print(processed_files_dic)
+
+    assert processed_files_dic[LDRAW_PARTS_DIR / '3024.dat']['top_stud_count'] == 1
+    assert processed_files_dic[LDRAW_PRIMITIVES_DIR / 'box5.dat']['top_stud_count'] == 0
+    assert processed_files_dic[LDRAW_PRIMITIVES_DIR / 'stud.dat']['top_stud_count'] == 1
 
 
 def test_file_visited_count():
@@ -161,16 +178,16 @@ def test_file_visited_count():
     # Run 1st time
     ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic, file_visited_count)
     assert len(file_visited_count.values()) == 3
-    assert file_visited_count[os.path.join(LDRAW_PARTS_DIR, '3024.dat').lower()] == 1
-    assert file_visited_count[os.path.join(LDRAW_PRIMITIVES_DIR, 'box5.dat').lower()] == 1
-    assert file_visited_count[os.path.join(LDRAW_PRIMITIVES_DIR, 'stud.dat').lower()] == 1
+    assert file_visited_count[LDRAW_PARTS_DIR / '3024.dat'] == 1
+    assert file_visited_count[LDRAW_PRIMITIVES_DIR / 'box5.dat'] == 1
+    assert file_visited_count[LDRAW_PRIMITIVES_DIR / 'stud.dat'] == 1
 
     # Run 2nd time
     ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic, file_visited_count)
     assert len(file_visited_count.values()) == 3
-    assert file_visited_count[os.path.join(LDRAW_PARTS_DIR, '3024.dat').lower()] == 2
-    assert file_visited_count[os.path.join(LDRAW_PRIMITIVES_DIR, 'box5.dat').lower()] == 1
-    assert file_visited_count[os.path.join(LDRAW_PRIMITIVES_DIR, 'stud.dat').lower()] == 1
+    assert file_visited_count[LDRAW_PARTS_DIR / '3024.dat'] == 2
+    assert file_visited_count[LDRAW_PRIMITIVES_DIR / 'box5.dat'] == 1
+    assert file_visited_count[LDRAW_PRIMITIVES_DIR / 'stud.dat'] == 1
 
 
 def test_calc_stud_count_for_part_list():
@@ -184,4 +201,3 @@ def test_calc_stud_count_for_part_list():
     assert stud_count_dic['3024']['stud_count'] == 1
     assert stud_count_dic['30099']['stud_count'] == 2
     assert stud_count_dic['912']['stud_count'] == 76
-'''

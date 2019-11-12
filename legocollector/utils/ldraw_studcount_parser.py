@@ -150,12 +150,12 @@ def calc_stud_count_for_part_file(
     if processed_files_dic is None:
         processed_files_dic = {}
 
-    file_path = file_path.lower()
+    #file_path = file_path.lower()
 
     count = get_top_stud_count_for_file(file_path)
     if file_visited_count is not None:
         if file_path not in file_visited_count:
-            file_visited_count[file_path.lower()] = 1
+            file_visited_count[file_path] = 1
 
         else:
             file_visited_count[file_path] += 1
@@ -164,7 +164,8 @@ def calc_stud_count_for_part_file(
     if count == 0:
         ldraw_file = LdrawFile(file_path)
         for sub_file in ldraw_file.sup_part_files:
-            sub_file_path = file_dic[sub_file].lower()
+            #sub_file_path = file_dic[sub_file].lower()
+            sub_file_path = file_dic[sub_file]
 
             if sub_file_path in processed_files_dic:
                 count += processed_files_dic[sub_file_path]['top_stud_count']
