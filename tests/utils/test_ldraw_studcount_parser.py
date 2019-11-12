@@ -6,7 +6,7 @@ from utils import ldraw_studcount_parser as ldraw_parser
 from utils.ldraw_studcount_parser import FileListDic, FileType, LineType
 
 REL_THIS_FILE_DIR = os.path.dirname(os.path.abspath(__file__))
-LDRAW_TEST_FILE_DIR = os.path.join('tests', 'test_files', 'ldraw_files')
+LDRAW_TEST_FILE_DIR = os.path.normpath(R'tests\test_files\ldraw_files')
 # TODO - TRY WITH RELATIVE PATH
 LDRAW_PARTS_DIR = os.path.abspath(os.path.join(LDRAW_TEST_FILE_DIR, 'part_files'))
 LDRAW_PRIMITIVES_DIR = os.path.abspath(os.path.join(LDRAW_TEST_FILE_DIR, 'primitives'))
@@ -81,7 +81,7 @@ def test_build_dir_finds_top_stud_primitives(file_name):
 
 
 def test_get_sub_files_from_file():
-    file_name = os.path.join('s', '3070bs01.dat')
+    file_name = os.path.normpath(R's\3070bs01.dat')
 
     file_dic = FileListDic(parts_dir=LDRAW_PARTS_DIR, primitives_dir=LDRAW_PRIMITIVES_DIR)
     assert file_name in file_dic

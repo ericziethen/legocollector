@@ -46,7 +46,8 @@ class FileListDic():
             for file_name in files:
                 print(F'    file_name: {file_name}')
                 rel_dir = os.path.relpath(root, start=full_dir)
-                rel_file = os.path.join(rel_dir, file_name).lstrip('.\\').lstrip('/')  # We don't want the leading period
+                file_path = os.path.join(rel_dir, file_name).lstrip('.\\').lstrip('/')  # We don't want the leading period
+                rel_file = os.path.normpath(file_path)
 
                 if rel_file in self:
                     raise ValueError(F'Error: Cannot handle multiple Part Locations, Duplicate File: {file_name}')
