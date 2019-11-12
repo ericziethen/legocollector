@@ -2,7 +2,7 @@ import enum
 import json
 import os
 
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 
 @enum.unique
@@ -121,7 +121,7 @@ def line_type_from_line(line):
 
 
 def get_file_from_part_line(line):
-    return Path(line.split()[-1])
+    return Path(PurePosixPath(line.split()[-1]))
 
 
 def get_ldraw_file_type(file_name):
