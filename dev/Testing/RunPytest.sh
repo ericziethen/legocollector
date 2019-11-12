@@ -6,10 +6,11 @@ PROJ_MAIN_DIR=$SCRIPT_PATH/../..
 
 pushd "$PROJ_MAIN_DIR"
 
-echo Current dir
+echo ### Current dir
 pwd
 
-tree .
+echo ### Directory Listing
+ls -R
 
 if [ "$1" == "travis-ci" ]; then
     export PYTEST_ADDOPTS='-m "(not selenium) and (not proxytest)"'
