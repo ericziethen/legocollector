@@ -121,7 +121,7 @@ def line_type_from_line(line):
 
 
 def get_file_from_part_line(line):
-    return line.split()[-1]
+    return Path(line.split()[-1])
 
 
 def get_ldraw_file_type(file_name):
