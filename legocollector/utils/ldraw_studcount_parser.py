@@ -51,7 +51,7 @@ class FileListDic():
 
                 if rel_file in self:
                     raise ValueError(F'Error: Cannot handle multiple Part Locations, Duplicate File: {file_name}')
-                self[rel_file] = os.path.join(full_dir, rel_file)
+                self[rel_file] = os.path.normpath(os.path.join(full_dir, rel_file))
         print(F'  RESULT: _parse_dir({self._files})')
 
     @staticmethod
