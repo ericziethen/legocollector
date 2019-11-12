@@ -13,6 +13,80 @@ LDRAW_PARTS_DIR = LDRAW_TEST_FILE_DIR / 'part_files'
 LDRAW_PRIMITIVES_DIR = LDRAW_TEST_FILE_DIR / 'primitives'
 
 
+
+
+
+from pathlib import PosixPath, WindowsPath, PurePosixPath, PureWindowsPath
+def test_eric():
+
+    path_dic = {
+        'path_windows_raw': R'c:\Windows\system32',
+        'path_windows_str': 'c:\\Windows\\system32',
+        'path_windows_joined_raw': os.path.join(R'c:\Windows', 'system32'),
+        'path_windows_joined': os.path.join('c:\\Windows', 'system32'),
+        'path_linux_raw': R'c:/Windows/system32',
+        'path_linux_str': 'c:/Windows/system32',
+        'path_linux_joined_raw': os.path.join(R'c:/Windows', 'system32'),
+        'path_linux_joined': os.path.join('c:/Windows', 'system32'),
+        'single_file': 'test.dat',
+        'single_file_windows_current': '.\\test.dat',
+        'single_file_linux_current': './test.dat',
+        'single_file_linux_current2': '/test.dat',
+        'path_windows_relative': '\\Windows\\system32',
+    }
+
+    for name, path in path_dic.items():
+        print(F'{name}')
+        print(F'  Normal:       {path}')
+        print(F'  Normpath:     {os.path.normpath(path)}')
+        dic = {path: 'Test'}
+        print(F'  Dictionary:   {dic}')
+        lib_path = Path(path)
+        print(F'  pathlib.Path: {lib_path}')
+        pathlib_dic = {lib_path: 'Test'}
+        print(F'  pathlib dic:  {pathlib_dic}')
+
+    win_path = 's\\tmp.txt'
+    print(F'RAW:::                  {win_path}')
+    print(F'Path                    {Path(win_path)}')
+    print(F'PureWindowsPath:        {PureWindowsPath(win_path)}')
+    print(F'PurePosixPath:          {PurePosixPath(win_path)}')
+    print(F'Path(PureWindowsPath):  {Path(PureWindowsPath(win_path))}')
+    print(F'Path(PurePosixPath):    {Path(PurePosixPath(win_path))}')
+
+    print()
+
+    win_path = 's/tmp.txt'
+    print(F'RAW:::                  {win_path}')
+    print(F'Path                    {Path(win_path)}')
+    print(F'PureWindowsPath:        {PureWindowsPath(win_path)}')
+    print(F'PurePosixPath:          {PurePosixPath(win_path)}')
+    print(F'Path(PureWindowsPath):  {Path(PureWindowsPath(win_path))}')
+    print(F'Path(PurePosixPath):    {Path(PurePosixPath(win_path))}')
+
+    print(F'WindowsPath:            {WindowsPath(win_path)}')
+    print(F'PosixPath:              {PosixPath(win_path)}')
+    print(F'Path(WindowsPath):      {Path(WindowsPath(win_path))}')
+    print(F'Path(PosixPath):        {Path(PosixPath(win_path))}')
+
+
+    assert fail
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def test_invalid_parts_line():
     line = 'Invalid Line'
     assert ldraw_parser.line_type_from_line(line) == LineType.UNKNOWN
