@@ -6,6 +6,11 @@ PROJ_MAIN_DIR=$SCRIPT_PATH/../..
 
 pushd "$PROJ_MAIN_DIR"
 
+echo Current dir
+pwd
+
+tree .
+
 if [ "$1" == "travis-ci" ]; then
     export PYTEST_ADDOPTS='-m "(not selenium) and (not proxytest)"'
     echo "Argument 'travis-ci' passed, set 'PYTEST_ADDOPTS' env variable"
