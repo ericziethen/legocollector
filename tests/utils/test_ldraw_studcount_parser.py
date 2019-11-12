@@ -130,7 +130,6 @@ def test_get_stud_count(stud_count, part_num):
     assert stud_count == ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic)
 
 
-@pytest.mark.eric
 def test_processed_files_dic_specified():
     file_dic = FileListDic(parts_dir=LDRAW_PARTS_DIR, primitives_dir=LDRAW_PRIMITIVES_DIR)
     file_path = file_dic['3024.dat']
@@ -168,8 +167,7 @@ def test_calc_stud_count_for_part_list():
     part_list = ['3070b', '3024', '30099', '912']
 
     stud_count_dic = ldraw_parser.calc_stud_count_for_part_list(
-        part_list,
-        parts_dir=LDRAW_PARTS_DIR, primitives_dir=LDRAW_PRIMITIVES_DIR)
+        part_list, parts_dir=LDRAW_PARTS_DIR, primitives_dir=LDRAW_PRIMITIVES_DIR)
 
     assert len(stud_count_dic) == 4
     assert stud_count_dic['3070b']['stud_count'] == 0

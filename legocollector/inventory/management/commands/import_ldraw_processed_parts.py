@@ -50,7 +50,7 @@ class Command(BaseCommand):
 
                 for part in part_list:
                     part.stud_count = part_dic['stud_count']
-                    part.save
+                    part.save()
 
                     parts_processed_counts += 1
                     if (parts_processed_counts % 1000) == 0:
