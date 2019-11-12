@@ -170,14 +170,36 @@ def calc_stud_count_for_part_file(
     return count
 
 
-def calc_stud_count_for_part_list(part_list):
+def calc_stud_count_for_part_list(part_list, *, parts_dir, primitives_dir):
+    parts_dic = {}
+    processed_files_dic = {}
 
+    file_dic = FileListDic(parts_dir=parts_dir, primitives_dir=primitives_dir)
+
+    for idx, file_name in enumerate(part_list, 1):
+        file_path = os.path.join(parts_dir, file_name)
+        part_num = os.path.splitext(file_name)[0]
+
+        if not os.path.isfile(file_path) or not file_name.lower().endswith('.dat'):
+            continue
+
+        stud_count = calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic)
+        parts_dic[part_num] = {}
+        parts_dic[part_num]['stud_count'] = stud_count
+
+        if idx % 500 == 0:
+            print(F'Processed {idx} parts')
+
+    return stud_count_dic
 
 
 
 def create_json_for_parts(json_out_file_path):
     prim_dir = R'D:\Downloads\Finished\# Lego\ldraw\complete_2019.11.05\ldraw\p'
     parts_dir = R'D:\Downloads\Finished\# Lego\ldraw\complete_2019.11.05\ldraw\parts'
+
+    # TODO - Make use of calc_stud_count_for_part_list
+
 
     file_dic = FileListDic(parts_dir=parts_dir, primitives_dir=prim_dir)
     processed_files_dic = {}

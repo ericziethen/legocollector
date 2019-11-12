@@ -143,7 +143,6 @@ def test_processed_files_dic_specified():
     assert processed_files_dic[os.path.join(LDRAW_PRIMITIVES_DIR, 'stud.dat')]['top_stud_count'] == 1
 
 
-@pytest.mark.eric # TODO Remove
 def test_file_visited_count():
     file_dic = FileListDic(parts_dir=LDRAW_PARTS_DIR, primitives_dir=LDRAW_PRIMITIVES_DIR)
     file_path = file_dic['3024.dat']
@@ -165,5 +164,15 @@ def test_file_visited_count():
     assert file_visited_count[os.path.join(LDRAW_PRIMITIVES_DIR, 'stud.dat')] == 1
 
 
+def test_calc_stud_count_for_part_list():
+    part_list = ['3070b', '3024', '30099', '912']
 
+    stud_count_dic = ldraw_parser.calc_stud_count_for_part_list(
+        part_list,
+        parts_dir=LDRAW_PARTS_DIR, primitives_dir=LDRAW_PRIMITIVES_DIR)
 
+    assert len(stud_count_dic) == 4
+    assert stud_count_dic['3070b']['stud_count'] == 0
+    assert stud_count_dic['3024']['stud_count'] == 1
+    assert stud_count_dic['30099']['stud_count'] == 2
+    assert stud_count_dic['912']['stud_count'] == 76
