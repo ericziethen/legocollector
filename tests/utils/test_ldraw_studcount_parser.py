@@ -10,6 +10,7 @@ LDRAW_TEST_FILE_DIR = R'tests\test_files\ldraw_files'
 LDRAW_PARTS_DIR = os.path.join(LDRAW_TEST_FILE_DIR, 'part_files')
 LDRAW_PRIMITIVES_DIR = os.path.join(LDRAW_TEST_FILE_DIR, 'primitives')
 
+
 def test_invalid_parts_line():
     line = 'Invalid Line'
     assert ldraw_parser.line_type_from_line(line) == LineType.UNKNOWN
@@ -66,6 +67,7 @@ UNKNOWN_FILES = [
 @pytest.mark.parametrize('file_name', UNKNOWN_FILES)
 def test_unknown_file(file_name):
     assert ldraw_parser.get_ldraw_file_type(file_name) == FileType.UNKNOWN
+
 
 @pytest.mark.parametrize('file_name', TOP_STAT_FILES)
 def test_build_dir_finds_top_stud_primitives(file_name):

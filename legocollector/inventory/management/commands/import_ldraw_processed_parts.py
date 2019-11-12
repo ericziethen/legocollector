@@ -24,7 +24,6 @@ class Command(BaseCommand):
 
         self.import_ldraw_data(json_dic)
 
-
     def import_ldraw_data(self, data_dic):
         self.stdout.write(F'Importing Ldraw Data')
         parts_processed_counts = 0

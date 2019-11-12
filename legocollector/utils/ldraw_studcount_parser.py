@@ -1,7 +1,7 @@
 import enum
 import json
-import operator
 import os
+
 
 @enum.unique
 class LineType(enum.Enum):
@@ -14,6 +14,7 @@ class LineType(enum.Enum):
     TRIANGLE = 'Triangles'
     QUAD = 'Quads'
     OPTIONAL = 'Optional'
+
 
 @enum.unique
 class FileType(enum.Enum):
@@ -30,7 +31,6 @@ class FileListDic():
 
         self._parse_dir(parts_dir)
         self._parse_dir(primitives_dir)
-
 
     def _parse_dir(self, full_dir):
         for root, _, files in os.walk(full_dir):
@@ -125,23 +125,17 @@ def get_top_stud_count_for_file(file_path):
     return 0
 
 
-# TODO - Count how often each file is being processed
-# TODO !!! Do we need a wrapper to process multiple parts, then we don't need to pass in dictionaries
-# TODO !!! Write a test that tests processed_files_dic
 def calc_stud_count_for_part_file(
         file_path, file_dic, processed_files_dic=None, file_visited_count=None, rec_level=0):
     if processed_files_dic is None:
         processed_files_dic = {}
 
-    #print(F'{rec_level * "  "}  >> START Processing: {file_path} - {file_visited_count}')
     count = get_top_stud_count_for_file(file_path)
     if file_visited_count is not None:
         if file_path not in file_visited_count:
             file_visited_count[file_path.lower()] = 1
-            #print(F'{rec_level * "  "}   Setting File Visit Count to 1 for {file_path}')
 
         else:
-            #print(F'{rec_level * "  "}   Increment File Visit Count from {file_visited_count[file_path.lower()]} for {file_path}')
             file_visited_count[file_path.lower()] += 1
 
     # Process sub files
@@ -149,21 +143,16 @@ def calc_stud_count_for_part_file(
         ldraw_file = LdrawFile(file_path)
         for sub_file in ldraw_file.sup_part_files:
             sub_file_path = file_dic[sub_file].lower()
-            #print(F'''{rec_level * "  "}    Checking Sub File: {sub_file_path} ({get_top_stud_count_for_file(sub_file)} - 
-            #            Visited? {sub_file_path in processed_files_dic} - {file_visited_count})''')
 
             if sub_file_path in processed_files_dic:
                 count += processed_files_dic[sub_file_path]['top_stud_count']
-                #print(F'{rec_level * "  "}      Existing Count: {count}')
             else:
                 sub_file_count = calc_stud_count_for_part_file(
                     sub_file_path, file_dic, processed_files_dic,
                     file_visited_count, rec_level + 1)
                 count += sub_file_count
-                #print(F'{rec_level * "  "}      Calculated Count: {count}')
 
                 processed_files_dic[sub_file_path] = {'top_stud_count': sub_file_count}
-                #print(F'{rec_level * "  "}    Sub Count Set for {sub_file}')
 
     if file_path not in processed_files_dic:
         processed_files_dic[file_path] = {'top_stud_count': count}
@@ -204,37 +193,5 @@ def create_json_for_parts(json_out_file_path):
         json.dump(parts_dic, file_ptr)
 
 
-def main():
-    prim_dir = R'.eric\ldraw\complete\ldraw\p'
-    parts_dir = R'.eric\ldraw\complete\ldraw\parts'
-
-    file_dic = FileListDic(parts_dir=parts_dir, primitives_dir=prim_dir)
-    processed_files_dic = {}
-    stud_counts = {}
-
-    #for idx, file_name in enumerate(glob.glob(parts_dir + R'\*.dat')):
-    for idx, file_name in enumerate(os.listdir(parts_dir)):
-        
-        #print(F'CHECK: {file_name}')
-        file_path = os.path.join(parts_dir, file_name)
-        if not os.path.isfile(file_path) or not file_name.lower().endswith('.dat'):
-            #print(F'  >> SKIP')
-            continue
-        #if idx > 5600:
-        #    print(F'{file_name}')
-        #print(F'{file_name}')
-        stud_count = calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic)
-        stud_counts[file_name] = stud_count
-
-        if idx % 100 == 0:
-            print(F'Processed Files: {idx}')
-
-    sorted_stud_counts = sorted(stud_counts.items(), key=operator.itemgetter(1), reverse=True)
-    sorted_stud_counts_str = '\n'.join([F'{tup[1]}:: {tup[0]}' for tup in sorted_stud_counts if tup[1] > 0])
-    print(F'STUD COUNTS: {sorted_stud_counts_str}')
-    #print(F'TOTAL FILE VISITS: {sum(ERIC_FILE_VISIT_COUNT.values())}\n\n')
-
-
 if __name__ == '__main__':
-    #main()
     create_json_for_parts('ldraw_studcount.json')
