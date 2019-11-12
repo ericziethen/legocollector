@@ -32,6 +32,7 @@ class FileListDic():
         self._parse_dir(parts_dir)
         self._parse_dir(primitives_dir)
 
+        # TODO - REMOVE
         print(F'FileListDic:__init__()')
         print(F'parts_dir:                  "{parts_dir}"')
         print(F'primitives_dir:             "{primitives_dir}"')
@@ -45,7 +46,7 @@ class FileListDic():
             for file_name in files:
                 print(F'    file_name: {file_name}')
                 rel_dir = os.path.relpath(root, start=full_dir)
-                rel_file = os.path.join(rel_dir, file_name).lstrip('.\\')  # We don't want the leading period
+                rel_file = os.path.join(rel_dir, file_name).lstrip('.\\').lstrip('/')  # We don't want the leading period
 
                 if rel_file in self:
                     raise ValueError(F'Error: Cannot handle multiple Part Locations, Duplicate File: {file_name}')
