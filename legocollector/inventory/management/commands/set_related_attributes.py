@@ -70,7 +70,7 @@ class Command(BaseCommand):
                     self.stdout.write(F'  {idx} Parts Processed')
 
         self.stdout.write(F'  Attributes Set on: {related_attributes_set_count} related parts')
-        self.stdout.write(F'  Stud Count set on: {related_stud_counts_set} related parts')        
+        self.stdout.write(F'  Stud Count set on: {related_stud_counts_set} related parts')
         self.print_attribute_details()
 
     def print_attribute_details(self):
