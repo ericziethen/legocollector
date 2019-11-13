@@ -44,7 +44,6 @@ class FileListDic():
                     raise ValueError(F'Error: Cannot handle multiple Part Locations, Duplicate File: {rel_file}')
 
                 self[rel_file] = Path(full_dir) / rel_file
-        print(F'  RESULT: _parse_dir({self._files.keys()})')
 
     @staticmethod
     def _keytransform(key) -> str:
@@ -185,6 +184,10 @@ def calc_stud_count_for_part_list(part_list, *, parts_dir, primitives_dir):
 def create_json_for_parts(json_out_file_path):
     prim_dir = R'D:\Downloads\Finished\# Lego\ldraw\complete_2019.11.05\ldraw\p'
     parts_dir = R'D:\Downloads\Finished\# Lego\ldraw\complete_2019.11.05\ldraw\parts'
+
+
+    prim_dir = R'.eric\ldraw\complete\ldraw\p'
+    parts_dir = R'.eric\ldraw\complete\ldraw\parts'
 
     part_num_list = [
         os.path.splitext(f)[0] for f in os.listdir(parts_dir)
