@@ -4,6 +4,8 @@ PACKAGE_ROOT=legocollector
 SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 PROJ_MAIN_DIR=$SCRIPT_PATH/../..
 
+pushd "$PROJ_MAIN_DIR"
+
 if [ "$1" == "travis-ci" ]; then
     export PYTEST_ADDOPTS='-m "(not selenium) and (not proxytest)"'
     echo "Argument 'travis-ci' passed, set 'PYTEST_ADDOPTS' env variable"
@@ -21,7 +23,7 @@ export PYTHONPATH=$PYTHONPATH:$PACKAGE_ROOT
 echo PYTHONPATH: "$PYTHONPATH"
 
 # Test directories are specified in Pytest.ini
-pytest --rootdir="$PROJ_MAIN_DIR" --cov="$PACKAGE_ROOT"
+pytest --cov="$PACKAGE_ROOT"
 return_code=$?
 
 if [[ $return_code -eq  0 ]];
@@ -31,5 +33,6 @@ else
     echo "*** Some Issues Found"
 fi
 
+popd
 echo "exit $return_code"
 exit $return_code
