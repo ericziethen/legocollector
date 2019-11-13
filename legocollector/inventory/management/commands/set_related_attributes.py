@@ -20,19 +20,12 @@ class Command(BaseCommand):
                 if part.part_num not in processed_parts:
                     related_parts = part.get_related_parts(parents=True, children=True, transitive=True)
 
-
                     part_family = sorted(related_parts + [part], key=lambda p: p.attribute_count, reverse=True)
 
-                    # TODO For Processing Stud Counts we need to be carefull as related parts may have
-                    # a different stud count
-                    # 
-                    # The following 2 related parts have a different stud count
+                    # For Processing Stud Counts we need to be carefull as related parts may have a different stud count
+                    # e.g. the following 2 related parts have a different stud count
                     #       https://rebrickable.com/parts/10a/baseplate-24-x-32-with-squared-corners/
                     #       https://rebrickable.com/parts/10b/baseplate-24-x-32-with-rounded-corners/
-                    # 
-                    # What we can do is to check all parts in the relationship, and only if a single number of studs is
-                    # found will we take this one, otherwise we leave it blank
-                    # 
 
                     # Figure out the Stud Count, only take the count if there are not more than 1 different stud counts
                     stud_count = None
