@@ -185,10 +185,6 @@ def create_json_for_parts(json_out_file_path):
     prim_dir = R'D:\Downloads\Finished\# Lego\ldraw\complete_2019.11.05\ldraw\p'
     parts_dir = R'D:\Downloads\Finished\# Lego\ldraw\complete_2019.11.05\ldraw\parts'
 
-
-    prim_dir = R'.eric\ldraw\complete\ldraw\p'
-    parts_dir = R'.eric\ldraw\complete\ldraw\parts'
-
     part_num_list = [
         os.path.splitext(f)[0] for f in os.listdir(parts_dir)
         if os.path.isfile(os.path.join(parts_dir, f)) and f.lower().endswith('.dat')]
