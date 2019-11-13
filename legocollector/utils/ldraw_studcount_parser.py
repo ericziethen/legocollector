@@ -34,36 +34,20 @@ class FileListDic():
         self._parse_dir(parts_dir)
         self._parse_dir(primitives_dir)
 
-        # TODO - REMOVE
-        print(F'FileListDic:__init__()')
-        print(F'parts_dir:                  "{parts_dir}"')
-        print(F'primitives_dir:             "{primitives_dir}"')
-        print(F'listdir(parts_dir):         "{os.listdir(parts_dir)}"')
-        print(F'listdir(primitives_dir):    "{os.listdir(primitives_dir)}"')
-
     def _parse_dir(self, full_dir):
-        print(F'_parse_dir({full_dir})')
         for root, _, files in os.walk(full_dir):
-            #print(F'  root: {root}')
             for file_name in files:
-                #print(F'    file_name: {file_name}')
                 rel_dir = os.path.relpath(root, start=full_dir)
-                
-                #file_path = os.path.join(rel_dir, file_name).lstrip('.\\').lstrip('/')  # We don't want the leading period
-                #rel_file = os.path.normpath(file_path)
-
-                #rel_file = Path(rel_dir)
-                rel_file = os.path.join(rel_dir, file_name)
+                rel_file = os.path.join(rel_dir, file_name.lower())
 
                 if rel_file in self:
-                    raise ValueError(F'Error: Cannot handle multiple Part Locations, Duplicate File: {file_name}')
-                #self[rel_file] = os.path.normpath(os.path.join(full_dir, rel_file))
+                    raise ValueError(F'Error: Cannot handle multiple Part Locations, Duplicate File: {rel_file}')
+
                 self[rel_file] = Path(full_dir) / rel_file
         print(F'  RESULT: _parse_dir({self._files.keys()})')
 
     @staticmethod
     def _keytransform(key) -> str:
-        #return str(key.lower())
         return Path(key)
 
     def __setitem__(self, key, value: str) -> None:
@@ -150,8 +134,6 @@ def calc_stud_count_for_part_file(
     if processed_files_dic is None:
         processed_files_dic = {}
 
-    #file_path = file_path.lower()
-
     count = get_top_stud_count_for_file(file_path)
     if file_visited_count is not None:
         if file_path not in file_visited_count:
@@ -164,7 +146,6 @@ def calc_stud_count_for_part_file(
     if count == 0:
         ldraw_file = LdrawFile(file_path)
         for sub_file in ldraw_file.sup_part_files:
-            #sub_file_path = file_dic[sub_file].lower()
             sub_file_path = file_dic[sub_file]
 
             if sub_file_path in processed_files_dic:
