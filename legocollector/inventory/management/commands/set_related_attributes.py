@@ -5,7 +5,7 @@ from inventory.models import Part
 
 class Command(BaseCommand):
 
-    def handle(self, *args, **options):
+    def handle(self, *args, **options):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
         self.stdout.write(F'Calculating Related Part Attributes')
 
         processed_parts = {}
@@ -15,7 +15,10 @@ class Command(BaseCommand):
 
         related_attributes_set_count = 0
         related_stud_counts_set = 0
+        conflicting_stud_counts = {}
         related_image_urls_set = 0
+        conflicting_image_urls = {}
+
         with transaction.atomic():
             for idx, part in enumerate(Part.objects.all(), 1):
                 if part.part_num not in processed_parts:
@@ -37,6 +40,8 @@ class Command(BaseCommand):
                             if stud_count and stud_count != related_part.stud_count:
                                 # a different stud count found, igore whole family
                                 stud_count = None
+                                conflicting_stud_counts[part.part_num] =\
+                                    [p.part_num for p in sorted(part_family, key=lambda p: p.part_num)]
                                 break
 
                             if stud_count is None:
@@ -46,6 +51,8 @@ class Command(BaseCommand):
                             if image_url and image_url != related_part.image_url:
                                 # a different image_url found, igore whole family
                                 image_url = None
+                                conflicting_image_urls[part.image_url] =\
+                                    [p.part_num for p in sorted(part_family, key=lambda p: p.part_num)]
                                 break
 
                             if image_url is None:
@@ -87,6 +94,8 @@ class Command(BaseCommand):
                 if (idx % 1000) == 0:
                     self.stdout.write(F'  {idx} Parts Processed')
 
+        self.stdout.write(F'  {len(conflicting_stud_counts)} Conflicting StudCounts Found: {conflicting_stud_counts}')
+        self.stdout.write(F'  {len(conflicting_image_urls)} Conflicting Image Urls Found: {conflicting_image_urls}')
         self.stdout.write(F'  Attributes Set on: {related_attributes_set_count} related parts')
         self.stdout.write(F'  Stud Count set on: {related_stud_counts_set} related parts')
         self.stdout.write(F'  Image Url set on:  {related_image_urls_set} related parts')
