@@ -89,8 +89,8 @@ class Part(models.Model):
         return F'{self.name} ({self.part_num})'
 
     @property
-    def attribute_count(self):
-        return [bool(self.width), bool(self.height), bool(self.length)].count(True)
+    def dimension_set_count(self):
+        return [self.width is None, self.height is None, self.length is None].count(True)
 
     @property
     def available_colors(self):

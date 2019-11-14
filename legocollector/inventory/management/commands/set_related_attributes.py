@@ -23,7 +23,7 @@ class Command(BaseCommand):
                 if part.part_num not in processed_parts:
                     related_parts = part.get_related_parts(parents=True, children=True, transitive=True)
 
-                    part_family = sorted(related_parts + [part], key=lambda p: p.attribute_count, reverse=True)
+                    part_family = sorted(related_parts + [part], key=lambda p: p.dimension_set_count, reverse=True)
 
                     # For Processing Stud Counts we need to be carefull as related parts may have a different stud count
                     # e.g. the following 2 related parts have a different stud count
@@ -63,7 +63,7 @@ class Command(BaseCommand):
 
                         # Set the Attributes
                         if ((highest_count_part is not related_part) and
-                                (highest_count_part.attribute_count > related_part.attribute_count)):
+                                (highest_count_part.dimension_set_count > related_part.dimension_set_count)):
                             update = True
                             related_part.width = highest_count_part.width
                             related_part.length = highest_count_part.length

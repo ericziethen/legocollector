@@ -15,8 +15,6 @@ class Command(BaseCommand):
     def guess_dimensions(self):
         self.stdout.write(F'Guess Dimensions')
 
-        # !!! TODO - Maybe combine with Initial Data Import ???, no need to run separate?
-
         part_list = Part.objects.all()
         part_updates = 0
         with transaction.atomic():
@@ -33,7 +31,7 @@ class Command(BaseCommand):
                     if part_updates and (part_updates % 1000) == 0:
                         self.stdout.write(F'  Parts Updated: {part_updates}')
 
-        self.stdout.write(F'Total Parts Updated: {part_updates}')
+        self.stdout.write(F'Total Dimensions Updated: {part_updates}')
 
     @staticmethod
     def guess_dimension_from_name(name):
