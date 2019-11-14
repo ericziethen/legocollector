@@ -5,7 +5,7 @@ from inventory.models import Part
 
 class Command(BaseCommand):
 
-    def handle(self, *args, **options):
+    def handle(self, *args, **options):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
         self.stdout.write(F'Calculating Related Part Attributes')
 
         processed_parts = {}
@@ -15,8 +15,11 @@ class Command(BaseCommand):
 
         related_attributes_set_count = 0
         related_stud_counts_set = 0
+        conflicting_stud_counts = {}
+        related_image_urls_set = 0
+
         with transaction.atomic():
-            for idx, part in enumerate(Part.objects.all()):
+            for idx, part in enumerate(Part.objects.all(), 1):
                 if part.part_num not in processed_parts:
                     related_parts = part.get_related_parts(parents=True, children=True, transitive=True)
 
@@ -27,17 +30,32 @@ class Command(BaseCommand):
                     #       https://rebrickable.com/parts/10a/baseplate-24-x-32-with-squared-corners/
                     #       https://rebrickable.com/parts/10b/baseplate-24-x-32-with-rounded-corners/
 
-                    # Figure out the Stud Count, only take the count if there are not more than 1 different stud counts
                     stud_count = None
+                    image_url = None
                     for related_part in part_family:
+                        # Figure out the Stud Count, only take the count if there are not more
+                        # than 1 different stud counts
                         if related_part.stud_count is not None:
                             if stud_count and stud_count != related_part.stud_count:
                                 # a different stud count found, igore whole family
                                 stud_count = None
+                                conflicting_stud_counts[part.part_num] =\
+                                    [(p.part_num, p.stud_count) for p in sorted(part_family, key=lambda p: p.part_num)]
                                 break
 
                             if stud_count is None:
                                 stud_count = related_part.stud_count
+
+                        # Check the image url, only copy if none other set
+                        # It's quite likely that different part's have different urls, e.g. different prints
+                        # We could just guess it, but don't want to do that now
+                            if image_url and image_url != related_part.image_url:
+                                # a different image_url found, igore whole family
+                                image_url = None
+                                break
+
+                            if image_url is None:
+                                image_url = related_part.image_url
 
                     highest_count_part = part_family[0]  # Will always exist since we added ourselves
                     for related_part in part_family:
@@ -53,10 +71,16 @@ class Command(BaseCommand):
                             related_attributes_set_count += 1
 
                         # Set the Stud Count
-                        if stud_count is not None:
+                        if stud_count and related_part.stud_count is None:
                             update = True
                             related_part.stud_count = stud_count
                             related_stud_counts_set += 1
+
+                        # Set Image URL
+                        if image_url and related_part.image_url is None:
+                            update = True
+                            related_part.image_url = image_url
+                            related_image_urls_set += 1
 
                         if update:
                             related_part.save()
@@ -69,8 +93,11 @@ class Command(BaseCommand):
                 if (idx % 1000) == 0:
                     self.stdout.write(F'  {idx} Parts Processed')
 
+        conflict_stud_str = '\n    '.join([F'%s:: %s' % (key, val) for (key, val) in conflicting_stud_counts.items()])
+        self.stdout.write(F'  Conflicting StudCounts Families: \n    {conflict_stud_str}')
         self.stdout.write(F'  Attributes Set on: {related_attributes_set_count} related parts')
-        self.stdout.write(F'  Stud Count set on: {related_stud_counts_set} related parts')
+        self.stdout.write(F'  Stud Count set on: {related_stud_counts_set} related parts.')
+        self.stdout.write(F'  Image Url set on:  {related_image_urls_set} related parts')
         self.print_attribute_details()
 
     def print_attribute_details(self):
