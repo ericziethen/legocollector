@@ -17,7 +17,6 @@ class Command(BaseCommand):
         related_stud_counts_set = 0
         conflicting_stud_counts = {}
         related_image_urls_set = 0
-        conflicting_image_urls = {}
 
         with transaction.atomic():
             for idx, part in enumerate(Part.objects.all(), 1):
@@ -41,18 +40,18 @@ class Command(BaseCommand):
                                 # a different stud count found, igore whole family
                                 stud_count = None
                                 conflicting_stud_counts[part.part_num] =\
-                                    [p.part_num for p in sorted(part_family, key=lambda p: p.part_num)]
+                                    [(p.part_num, p.stud_count) for p in sorted(part_family, key=lambda p: p.part_num)]
                                 break
 
                             if stud_count is None:
                                 stud_count = related_part.stud_count
 
-                        # Check the image url                        if related_part.stud_count is not None:
+                        # Check the image url, only copy if none other set
+                        # It's quite likely that different part's have different urls, e.g. different prints
+                        # We could just guess it, but don't want to do that now
                             if image_url and image_url != related_part.image_url:
                                 # a different image_url found, igore whole family
                                 image_url = None
-                                conflicting_image_urls[part.image_url] =\
-                                    [p.part_num for p in sorted(part_family, key=lambda p: p.part_num)]
                                 break
 
                             if image_url is None:
@@ -94,10 +93,10 @@ class Command(BaseCommand):
                 if (idx % 1000) == 0:
                     self.stdout.write(F'  {idx} Parts Processed')
 
-        self.stdout.write(F'  {len(conflicting_stud_counts)} Conflicting StudCounts Found: {conflicting_stud_counts}')
-        self.stdout.write(F'  {len(conflicting_image_urls)} Conflicting Image Urls Found: {conflicting_image_urls}')
+        conflict_stud_str = '\n    '.join([F'%s:: %s' % (key, val) for (key, val) in conflicting_stud_counts.items()])
+        self.stdout.write(F'  Conflicting StudCounts Families: \n    {conflict_stud_str}')
         self.stdout.write(F'  Attributes Set on: {related_attributes_set_count} related parts')
-        self.stdout.write(F'  Stud Count set on: {related_stud_counts_set} related parts')
+        self.stdout.write(F'  Stud Count set on: {related_stud_counts_set} related parts.')
         self.stdout.write(F'  Image Url set on:  {related_image_urls_set} related parts')
         self.print_attribute_details()
 
