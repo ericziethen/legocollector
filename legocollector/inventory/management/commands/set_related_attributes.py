@@ -93,6 +93,13 @@ class Command(BaseCommand):
                 if (idx % 1000) == 0:
                     self.stdout.write(F'  {idx} Parts Processed')
 
+
+        # !!! TODO - WHY ARE THERE SO FEW PART ATTRIBUTES SET ???
+        # INVESTIGATE
+        # MAKE SEPARATE SCRIPT TO SHOW DB TABES, SO CAN EASILY INVESTIGATE
+
+
+
         conflict_stud_str = '\n    '.join([F'%s:: %s' % (key, val) for (key, val) in conflicting_stud_counts.items()])
         self.stdout.write(F'  Conflicting StudCounts Families: \n    {conflict_stud_str}')
         self.stdout.write(F'  Attributes Set on: {related_attributes_set_count} related parts')

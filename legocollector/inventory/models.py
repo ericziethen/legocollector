@@ -90,7 +90,7 @@ class Part(models.Model):
 
     @property
     def dimension_set_count(self):
-        return [self.width is None, self.height is None, self.length is None].count(True)
+        return [self.width is not None, self.height is not None, self.length is not None].count(True)
 
     @property
     def available_colors(self):
