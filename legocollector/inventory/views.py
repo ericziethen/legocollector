@@ -2,7 +2,6 @@ import csv
 import io
 
 from django.db import transaction
-from django.db.models import Q
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -213,8 +212,8 @@ class FilteredPartListUserPartCreateView(LoginRequiredMixin, SingleTableMixin, F
         return part_id_list
 
     def get_queryset(self):
-        """Only parts we don't have already."""
-        return Part.objects.filter(~Q(user_parts__user=self.request.user))
+        # Ignore Parts already in our Inventory and Parts that don't have any colors
+        return Part.objects.exclude(user_parts__user=self.request.user).exclude(setparts__isnull=True)
 
 
 class InventoryCreateView(LoginRequiredMixin, CreateView):  # pylint: disable=too-many-ancestors
