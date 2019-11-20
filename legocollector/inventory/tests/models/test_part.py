@@ -224,3 +224,36 @@ class TestAvailableColors(TestCase):
         self.assertEqual(result.count(), 2)
         self.assertTrue(result.filter(name=self.color1.name).exists())
         self.assertTrue(result.filter(name=self.color2.name).exists())
+
+
+class TestDimensions(TestCase):
+
+    def setUp(self):
+        self.part_category1 = PartCategory.objects.create(id=1, name='category1')
+        self.color1 = Color.objects.create(id='1', name='Red', rgb='AAAAAA')
+
+    def test_dimension_no_attribs(self):
+        part = Part.objects.create(
+            part_num='PartA', name='A Part', category=self.part_category1)
+        self.assertEqual(part.dimension_set_count, 0)
+
+    def test_dimension_single_attribs(self):
+        part = Part.objects.create(
+            part_num='Part1', name='A Part', category=self.part_category1, width=1)
+        self.assertEqual(part.dimension_set_count, 1)
+        part = Part.objects.create(
+            part_num='Part2', name='A Part', category=self.part_category1, height=1)
+        self.assertEqual(part.dimension_set_count, 1)
+        part = Part.objects.create(
+            part_num='Part3', name='A Part', category=self.part_category1, length=1)
+        self.assertEqual(part.dimension_set_count, 1)
+
+    def test_dimension_2_attribs(self):
+        part = Part.objects.create(
+            part_num='PartA', name='A Part', category=self.part_category1, width=1, length=3)
+        self.assertEqual(part.dimension_set_count, 2)
+
+    def test_dimension_all_attribs(self):
+        part = Part.objects.create(
+            part_num='PartA', name='A Part', category=self.part_category1, width=1, height=15, length=3)
+        self.assertEqual(part.dimension_set_count, 3)
