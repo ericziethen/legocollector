@@ -4,9 +4,11 @@ setlocal
 
 set BATCH_DIR=%~dp0
 set PROJ_MAIN_DIR=%BATCH_DIR%..\..
-set MODULE_PATH=%PROJ_MAIN_DIR%\legocollector
+set MODULE_PATH=legocollector
 
-bandit -r "%MODULE_PATH%"
+pushd "%PROJ_MAIN_DIR%"
+
+bandit -r "%MODULE_PATH%" --exclude "legocollector/tests/"
 set return_code=%errorlevel%
 if %return_code% equ 0 (
     echo *** No Issues Found
@@ -17,9 +19,11 @@ if %return_code% equ 0 (
 )
 
 :exit_error
+popd
 endlocal
 exit /B 1
 
 :exit_ok
+popd
 endlocal
 exit /B 0
