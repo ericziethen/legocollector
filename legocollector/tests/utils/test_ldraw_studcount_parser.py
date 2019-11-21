@@ -8,7 +8,7 @@ from utils import ldraw_studcount_parser as ldraw_parser
 from utils.ldraw_studcount_parser import FileListDic, FileType, LineType
 
 REL_THIS_FILE_DIR = os.path.dirname(os.path.abspath(__file__))
-LDRAW_TEST_FILE_DIR = Path('tests') / 'test_files' / 'ldraw_files'
+LDRAW_TEST_FILE_DIR = Path('legocollector') / 'tests' / 'test_files' / 'ldraw_files'
 LDRAW_PARTS_DIR = LDRAW_TEST_FILE_DIR / 'part_files'
 LDRAW_PRIMITIVES_DIR = LDRAW_TEST_FILE_DIR / 'primitives'
 
