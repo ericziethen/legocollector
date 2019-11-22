@@ -8,6 +8,7 @@ set MODULE_PATH=legocollector
 
 pushd "%PROJ_MAIN_DIR%"
 
+rem Exclusion via config file currently not working in bandit 1.6.2
 bandit -r "%MODULE_PATH%" --exclude "legocollector/tests/"
 set return_code=%errorlevel%
 if %return_code% equ 0 (

@@ -30,7 +30,8 @@
         {% if user.is_authenticated %}
           <p>Welcome, {{ user.get_username }}.</p>
           <a class="p-2 text-dark" href="{% url 'home' %}">Home</a>
-          <a class="p-2 text-dark" href="{% url 'color-list' %}">Colors</a>
+          <a class="p-2 text-dark" href="{% url 'color_list' %}">Colors</a>
+          <a class="p-2 text-dark" href="{% url 'part_list' %}">Parts</a>
           <a class="p-2 text-dark" href="{% url 'logout' %}">Log Out</a>
         {% else %}
           <a class="p-2 text-dark" href="{% url 'login' %}">Log In</a>

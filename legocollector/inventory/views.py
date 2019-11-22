@@ -107,6 +107,13 @@ class ColorListView(ListView):  # pylint: disable=too-many-ancestors
         return Color.objects.all()
 
 
+class PartListView(LoginRequiredMixin, SingleTableMixin, FilterView):   # pylint: disable=too-many-ancestors
+    model = Part
+    template_name = 'inventory/part_list.html'
+    table_class = PartTable
+    filterset_class = PartFilter
+
+
 class UserPartUpdateView(LoginRequiredMixin, UpdateView):  # pylint: disable=too-many-ancestors
     model = UserPart
     pk_url_kwarg = 'pk1'
