@@ -10,7 +10,7 @@
 # no Warning level messages displayed, use "--disable=all --enable=classes
 # --disable=W".
 # R0801 - Similar Code Parts
-disable=logging-fstring-interpolation,missing-docstring,R0801
+disable=logging-fstring-interpolation,logging-format-interpolation,missing-docstring,R0801
 
 
 # Enable the message, report, category or checker with the given id(s). You can
