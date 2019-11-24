@@ -1,9 +1,12 @@
 #!/usr/bin/env python
 """Django's command-line utility for administrative tasks."""
+import logging
 import os
 import sys
 
 from utils import project_logger
+
+logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
 def setup_logger():
@@ -27,6 +30,8 @@ def main():
         ) from exc
 
     setup_logger()
+    if len(sys.argv) > 1:
+        logger.info(F'Start Running Command: {sys.argv[1]}')
     execute_from_command_line(sys.argv)
 
 
