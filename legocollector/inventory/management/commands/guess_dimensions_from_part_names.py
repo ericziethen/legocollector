@@ -1,3 +1,4 @@
+import logging
 import re
 
 from decimal import Decimal
@@ -6,6 +7,8 @@ from django.db import transaction
 from django.core.management.base import BaseCommand
 from inventory.models import Part
 
+logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
+
 
 class Command(BaseCommand):
 
@@ -13,7 +16,7 @@ class Command(BaseCommand):
         self.guess_dimensions()
 
     def guess_dimensions(self):
-        self.stdout.write(F'Guess Dimensions')
+        logger.info(F'Guess Dimensions')
         part_list = Part.objects.all()
         part_updates = 0
         with transaction.atomic():
@@ -29,9 +32,9 @@ class Command(BaseCommand):
                         part_updates += 1
 
                         if part_updates and (part_updates % 1000) == 0:
-                            self.stdout.write(F'  Parts Updated: {part_updates}')
+                            logger.info(F'  Parts Updated: {part_updates}')
 
-        self.stdout.write(F'Total Dimensions Updated: {part_updates}')
+        logger.info(F'Total Dimensions Updated: {part_updates}')
 
     @staticmethod
     def guess_dimension_from_name(name):

@@ -1,10 +1,13 @@
 import json
+import logging
 import os
 
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
 from inventory.models import Part, PartExternalId
+
+logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
 class Command(BaseCommand):
@@ -20,12 +23,13 @@ class Command(BaseCommand):
             with open(json_file_path, 'r', encoding='utf-8') as file_ptr:
                 json_dic = json.load(file_ptr)
         else:
-            self.stderr.write(F'ERROR - Json file "{json_file_path}" does not exist')
+            logger.error.write(F'ERROR - Json file "{json_file_path}" does not exist')
 
         self.import_ldraw_data(json_dic)
 
-    def import_ldraw_data(self, data_dic):
-        self.stdout.write(F'Importing Ldraw Data')
+    @staticmethod
+    def import_ldraw_data(data_dic):
+        logger.info(F'Importing Ldraw Data')
         parts_processed_counts = 0
         part_list = Part.objects.values_list('part_num', flat=True)
 
@@ -53,7 +57,7 @@ class Command(BaseCommand):
 
                     parts_processed_counts += 1
                     if (parts_processed_counts % 1000) == 0:
-                        self.stdout.write(F'  {parts_processed_counts} Parts Processed')
+                        logger.info(F'  {parts_processed_counts} Parts Processed')
 
-        self.stdout.write(F'Parts not Found:\n{sorted(parts_not_found_list)}')
-        self.stdout.write(F'Total of {parts_processed_counts} DB Parts Processed')
+        logger.info(F'Parts not Found:\n{sorted(parts_not_found_list)}')
+        logger.info(F'Total of {parts_processed_counts} DB Parts Processed')

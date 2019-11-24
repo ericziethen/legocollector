@@ -1,10 +1,13 @@
 import json
+import logging
 import os
 
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
 from inventory.models import Part, PartExternalId
+
+logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
 TEXT_TO_PROVIDER_DIC = {
@@ -30,12 +33,12 @@ class Command(BaseCommand):
             with open(json_file_path, 'r', encoding='utf-8') as file_ptr:
                 json_dic = json.load(file_ptr)
         else:
-            self.stderr.write(F'ERROR - Json file "{json_file_path}" does not exist')
+            logger.error.write(F'ERROR - Json file "{json_file_path}" does not exist')
 
         self.import_scraped_data(json_dic['parts'])
 
     def import_scraped_data(self, data_dic):
-        self.stdout.write(F'Importing Scraped Data')
+        logger.info(F'Importing Scraped Data')
         external_id_counts = 0
         parts_processed_counts = 0
         part_list = Part.objects.values_list('part_num', flat=True)
@@ -65,14 +68,14 @@ class Command(BaseCommand):
                                 external_id_counts += 1
 
                                 if (external_id_counts % 1000) == 0:
-                                    self.stdout.write(F'    {external_id_counts} External IDs imported')
+                                    logger.info(F'    {external_id_counts} External IDs imported')
 
                         parts_processed_counts += 1
                         if (parts_processed_counts % 1000) == 0:
-                            self.stdout.write(F'  {parts_processed_counts} Parts Processed')
+                            logger.info(F'  {parts_processed_counts} Parts Processed')
 
-        self.stdout.write(F'Total of {parts_processed_counts} DB Parts Processed')
-        self.stdout.write(F'Total of {external_id_counts} External IDs imported')
+        logger.info(F'Total of {parts_processed_counts} DB Parts Processed')
+        logger.info(F'Total of {external_id_counts} External IDs imported')
 
     @staticmethod
     def provider_from_string(text):
