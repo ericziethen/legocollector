@@ -68,7 +68,7 @@ class Command(BaseCommand):
                                 external_id_counts += 1
 
                                 if (external_id_counts % 1000) == 0:
-                                    logger.info(F'    {external_id_counts} External IDs imported')
+                                    logger.debug(F'    {external_id_counts} External IDs imported')
 
                         parts_processed_counts += 1
                         if (parts_processed_counts % 1000) == 0:
