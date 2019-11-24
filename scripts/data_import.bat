@@ -22,28 +22,36 @@ if not exist "%REBRICKABLE_PART_SCRAPE_FILE_PATH%" echo Cannot find "%REBRICKABL
 if not exist "%BRICKLINK_PART_FILE_PATH%" echo Cannot find "%BRICKLINK_PART_FILE_PATH%" & goto error
 if not exist "%LDRAW_PARTS_FILE_PATH%" echo Cannot find "%LDRAW_PARTS_FILE_PATH%" & goto error
 
+rem Show Initial Counts
+python manage.py show_db_details
 rem Import the Rebrickable Data
 python manage.py import_rebrickable_data "%REBRICKABLE_CSV_FILES_DIR%"
+python manage.py show_db_details
 if %errorlevel% gtr 0 goto error
 
 rem Import Rebrickable Scraped Parts Details
 python manage.py import_rebrickable_scraped_parts "%REBRICKABLE_PART_SCRAPE_FILE_PATH%"
+python manage.py show_db_details
 if %errorlevel% gtr 0 goto error
 
 rem Import the Bricklink Attributes
 python manage.py import_bricklink_attributes "%BRICKLINK_PART_FILE_PATH%"
+python manage.py show_db_details
 if %errorlevel% gtr 0 goto error
 
 rem Import the Ldraw Attributes
 python manage.py import_ldraw_processed_parts "%LDRAW_PARTS_FILE_PATH%"
+python manage.py show_db_details
 if %errorlevel% gtr 0 goto error
 
 rem Guess the Part Dimensions from Name for non set ones
 python manage.py guess_dimensions_from_part_names
+python manage.py show_db_details
 if %errorlevel% gtr 0 goto error
 
 rem Set the Related Attributes
 python manage.py set_related_attributes
+python manage.py show_db_details
 if %errorlevel% gtr 0 goto error
 
 goto end
