@@ -14,9 +14,6 @@ class Command(BaseCommand):
 
         processed_parts = {}
 
-        # Build the ordered part list
-        self.print_attribute_details()
-
         related_attributes_set_count = 0
         related_stud_counts_set = 0
         conflicting_stud_counts = {}
@@ -102,12 +99,3 @@ class Command(BaseCommand):
         logger.info(F'  Attributes Set on: {related_attributes_set_count} related parts')
         logger.info(F'  Stud Count set on: {related_stud_counts_set} related parts.')
         logger.info(F'  Image Url set on:  {related_image_urls_set} related parts')
-        self.print_attribute_details()
-
-    @staticmethod
-    def print_attribute_details():
-        logger.info(F'Parts without Width:  {Part.objects.filter(width__isnull=True).count()}')
-        logger.info(F'Parts without Length: {Part.objects.filter(length__isnull=True).count()}')
-        logger.info(F'Parts without Height: {Part.objects.filter(height__isnull=True).count()}')
-        part_list = Part.objects.filter(width__isnull=True, length__isnull=True, height__isnull=True)
-        logger.info(F'Parts without any:    {part_list.count()}')
