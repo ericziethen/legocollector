@@ -2,6 +2,7 @@
 .eric
 *.dia~
 legocollector/static/inventory/
+legocollector/logs
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
