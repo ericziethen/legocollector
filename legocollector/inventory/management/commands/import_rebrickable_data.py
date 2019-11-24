@@ -147,7 +147,7 @@ class Command(BaseCommand):
                 if (csv_row_count % batch_size) == 0:
                     SetPart.objects.bulk_create(batch_list)
                     batch_list.clear()
-                    logger.info(F'  SetParts Created: {csv_row_count}')
+                    logger.debug(F'  SetParts Created: {csv_row_count}')
 
             if batch_list:
                 SetPart.objects.bulk_create(batch_list)
