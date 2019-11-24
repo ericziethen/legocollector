@@ -3,6 +3,17 @@
 import os
 import sys
 
+from utils import project_logger
+
+
+def setup_logger():
+    log_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'logs')
+    if not os.path.exists(log_dir):
+        os.makedirs(log_dir)
+
+    log_file = os.path.join(log_dir, 'management.log')
+    project_logger.setup_logger(log_file)
+
 
 def main():
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'legocollector.settings')
@@ -14,6 +25,8 @@ def main():
             "available on your PYTHONPATH environment variable? Did you "
             "forget to activate a virtual environment?"
         ) from exc
+
+    setup_logger()
     execute_from_command_line(sys.argv)
 
 

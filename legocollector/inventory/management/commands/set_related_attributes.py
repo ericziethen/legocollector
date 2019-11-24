@@ -1,12 +1,16 @@
+import logging
+
 from django.db import transaction
 from django.core.management.base import BaseCommand
 from inventory.models import Part
+
+logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
 class Command(BaseCommand):
 
     def handle(self, *args, **options):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
-        self.stdout.write(F'Calculating Related Part Attributes')
+        logger.info(F'Calculating Related Part Attributes')
 
         processed_parts = {}
 
@@ -88,21 +92,21 @@ class Command(BaseCommand):
                         processed_parts[related_part.part_num] = True
 
                         if related_attributes_set_count and (related_attributes_set_count % 1000) == 0:
-                            self.stdout.write(F'  Attributes Set: {related_attributes_set_count}')
+                            logger.info(F'  Attributes Set: {related_attributes_set_count}')
 
                 if (idx % 1000) == 0:
-                    self.stdout.write(F'  {idx} Parts Processed')
+                    logger.info(F'  {idx} Parts Processed')
 
         conflict_stud_str = '\n    '.join([F'%s:: %s' % (key, val) for (key, val) in conflicting_stud_counts.items()])
-        self.stdout.write(F'  Conflicting StudCounts Families: \n    {conflict_stud_str}')
-        self.stdout.write(F'  Attributes Set on: {related_attributes_set_count} related parts')
-        self.stdout.write(F'  Stud Count set on: {related_stud_counts_set} related parts.')
-        self.stdout.write(F'  Image Url set on:  {related_image_urls_set} related parts')
+        logger.info(F'  Conflicting StudCounts Families: \n    {conflict_stud_str}')
+        logger.info(F'  Attributes Set on: {related_attributes_set_count} related parts')
+        logger.info(F'  Stud Count set on: {related_stud_counts_set} related parts.')
+        logger.info(F'  Image Url set on:  {related_image_urls_set} related parts')
         self.print_attribute_details()
 
     def print_attribute_details(self):
-        self.stdout.write(F'Parts without Width:  {Part.objects.filter(width__isnull=True).count()}')
-        self.stdout.write(F'Parts without Length: {Part.objects.filter(length__isnull=True).count()}')
-        self.stdout.write(F'Parts without Height: {Part.objects.filter(height__isnull=True).count()}')
+        logger.info(F'Parts without Width:  {Part.objects.filter(width__isnull=True).count()}')
+        logger.info(F'Parts without Length: {Part.objects.filter(length__isnull=True).count()}')
+        logger.info(F'Parts without Height: {Part.objects.filter(height__isnull=True).count()}')
         part_list = Part.objects.filter(width__isnull=True, length__isnull=True, height__isnull=True)
-        self.stdout.write(F'Parts without any:    {part_list.count()}')
+        logger.info(F'Parts without any:    {part_list.count()}')

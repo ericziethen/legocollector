@@ -1,4 +1,5 @@
 import csv
+import logging
 import os
 
 from collections import OrderedDict
@@ -6,6 +7,8 @@ from collections import OrderedDict
 from django.db import transaction
 from django.core.management.base import BaseCommand, CommandError
 from inventory.models import Color, PartCategory, Part, PartRelationship, SetPart
+
+logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
 class Command(BaseCommand):
@@ -37,7 +40,7 @@ class Command(BaseCommand):
                 import_func(reader)
 
     def _populate_colors(self, csv_data):
-        self.stdout.write(F'Populate Colors')
+        logger.info(F'Populate Colors')
         with transaction.atomic():
             for row in csv_data:
                 rgb = row['rgb']
@@ -52,7 +55,7 @@ class Command(BaseCommand):
                 )
 
     def _populate_part_categories(self, csv_data):
-        self.stdout.write(F'Populate Part Categories')
+        logger.info(F'Populate Part Categories')
         with transaction.atomic():
             for row in csv_data:
                 PartCategory.objects.update_or_create(
@@ -60,7 +63,7 @@ class Command(BaseCommand):
                     defaults={'name': row['name']})
 
     def _populate_parts(self, csv_data):
-        self.stdout.write(F'Populate Parts')
+        logger.info(F'Populate Parts')
         part_list = Part.objects.values_list('part_num', flat=True)
         create_count = 0
         with transaction.atomic():
@@ -74,11 +77,11 @@ class Command(BaseCommand):
                     create_count += 1
 
                     if (create_count % 1000) == 0:
-                        self.stdout.write(F'  Parts Created {create_count}')
-        self.stdout.write(F'  Total Parts Created {create_count}')
+                        logger.info(F'  Parts Created {create_count}')
+        logger.info(F'  Total Parts Created {create_count}')
 
     def _populate_relationships(self, csv_data):
-        self.stdout.write(F'Populate Relationships')
+        logger.info(F'Populate Relationships')
         with transaction.atomic():
             relation_mapping = {
                 'A': PartRelationship.ALTERNATE_PART,
@@ -106,15 +109,15 @@ class Command(BaseCommand):
                         )
 
                         if (idx % 1000) == 0:
-                            self.stdout.write(F'  Relationships Processed: {idx}')
+                            logger.info(F'  Relationships Processed: {idx}')
 
     def _populate_set_parts(self, csv_data):
-        self.stdout.write(F'Populate Set Parts')
+        logger.info(F'Populate Set Parts')
 
-        self.stdout.write(F'Deleting all Set Parts - Start')
+        logger.info(F'Deleting all Set Parts - Start')
         with transaction.atomic():
             SetPart.objects.all().delete()
-        self.stdout.write(F'Deleting all Set Parts - End')
+        logger.info(F'Deleting all Set Parts - End')
 
         batch_size = 999  # Max for Sqlite3
         batch_list = []
@@ -139,12 +142,12 @@ class Command(BaseCommand):
                 if (csv_row_count % batch_size) == 0:
                     SetPart.objects.bulk_create(batch_list)
                     batch_list.clear()
-                    self.stdout.write(F'  SetParts Created: {csv_row_count}')
+                    logger.info(F'  SetParts Created: {csv_row_count}')
 
             if batch_list:
                 SetPart.objects.bulk_create(batch_list)
 
-        self.stdout.write(F'  Total SetParts Processed: {csv_row_count}')
+        logger.info(F'  Total SetParts Processed: {csv_row_count}')
 
     @staticmethod
     def _validate_config_path(base_path, expected_file_list):

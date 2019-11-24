@@ -1,8 +1,12 @@
+import logging
+
 from defusedxml import ElementTree as ET
 
 from django.db import transaction
 from django.core.management.base import BaseCommand
 from inventory.models import Part, PartExternalId
+
+logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
 class Command(BaseCommand):
@@ -13,7 +17,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):  # pylint: disable=too-many-locals,too-many-branches
         parts_xml_path = options['parts_xml_path']
 
-        self.stdout.write(F'Importing Part Attributes')
+        logger.info(F'Importing Part Attributes')
         # parse the xml file
         tree = ET.parse(parts_xml_path)
         root = tree.getroot()
@@ -57,11 +61,11 @@ class Command(BaseCommand):
                         attributes_set_count += 1
 
                         if (attributes_set_count % 1000) == 0:
-                            self.stdout.write(F'   Attributes Set on: {attributes_set_count} parts')
+                            logger.info(F'   Attributes Set on: {attributes_set_count} parts')
                 else:
-                    self.stdout.write(F'  Invalid item Id Found: "{item_id}"')
+                    logger.info(F'  Invalid item Id Found: "{item_id}"')
 
                 if (idx % 1000) == 0:
-                    self.stdout.write(F'  Items Processed: {idx}')
+                    logger.info(F'  Items Processed: {idx}')
 
-        self.stdout.write(F'  Total Attributes Set on: {attributes_set_count} parts')
+        logger.info(F'  Total Attributes Set on: {attributes_set_count} parts')
