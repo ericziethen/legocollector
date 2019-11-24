@@ -104,7 +104,8 @@ class Command(BaseCommand):
         logger.info(F'  Image Url set on:  {related_image_urls_set} related parts')
         self.print_attribute_details()
 
-    def print_attribute_details(self):
+    @staticmethod
+    def print_attribute_details():
         logger.info(F'Parts without Width:  {Part.objects.filter(width__isnull=True).count()}')
         logger.info(F'Parts without Length: {Part.objects.filter(length__isnull=True).count()}')
         logger.info(F'Parts without Height: {Part.objects.filter(height__isnull=True).count()}')

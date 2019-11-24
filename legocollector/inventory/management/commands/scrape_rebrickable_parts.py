@@ -86,7 +86,8 @@ class Command(BaseCommand):
         # to include part relationships, add "&inc_part_details=1" to the url
         return F'https://rebrickable.com/api/v3/lego/parts/?part_nums={part_list_str}&key={api_key}&inc_part_details=1'
 
-    def _load_scrape_data(self, json_file_path, part_csv_path):
+    @staticmethod
+    def _load_scrape_data(json_file_path, part_csv_path):
         part_dic = {}
         part_nums = []
 
@@ -115,7 +116,8 @@ class Command(BaseCommand):
 
         return (part_nums, part_dic)
 
-    def _scrape(self, url):
+    @staticmethod
+    def _scrape(url):
         logger.info(F'  Scraping Url: {url}')
         json_result = {}
 
@@ -123,11 +125,12 @@ class Command(BaseCommand):
         if result.status == ScrapeStatus.SUCCESS:
             json_result = json.loads(result.first_page.html)
         else:
-            self.stderr.write(F'Scraping Issue: {result.error_msg}')
+            logger.error.write(F'Scraping Issue: {result.error_msg}')
 
         return json_result
 
-    def _save_scrape(self, json_file_path, data_dic, unscraped_list):
+    @staticmethod
+    def _save_scrape(json_file_path, data_dic, unscraped_list):
         logger.info(F'  Save Scrape State, Unscraped Items: {len(unscraped_list)}')
         json_dic = {}
         json_dic['unscraped_parts'] = unscraped_list

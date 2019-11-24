@@ -33,7 +33,7 @@ class Command(BaseCommand):
             with open(json_file_path, 'r', encoding='utf-8') as file_ptr:
                 json_dic = json.load(file_ptr)
         else:
-            self.stderr.write(F'ERROR - Json file "{json_file_path}" does not exist')
+            logger.error.write(F'ERROR - Json file "{json_file_path}" does not exist')
 
         self.import_scraped_data(json_dic['parts'])
 

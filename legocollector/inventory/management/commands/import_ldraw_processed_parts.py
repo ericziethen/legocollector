@@ -23,11 +23,12 @@ class Command(BaseCommand):
             with open(json_file_path, 'r', encoding='utf-8') as file_ptr:
                 json_dic = json.load(file_ptr)
         else:
-            self.stderr.write(F'ERROR - Json file "{json_file_path}" does not exist')
+            logger.error.write(F'ERROR - Json file "{json_file_path}" does not exist')
 
         self.import_ldraw_data(json_dic)
 
-    def import_ldraw_data(self, data_dic):
+    @staticmethod
+    def import_ldraw_data(data_dic):
         logger.info(F'Importing Ldraw Data')
         parts_processed_counts = 0
         part_list = Part.objects.values_list('part_num', flat=True)

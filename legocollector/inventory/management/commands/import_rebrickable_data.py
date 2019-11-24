@@ -39,7 +39,8 @@ class Command(BaseCommand):
                 reader = csv.DictReader(csvfile)
                 import_func(reader)
 
-    def _populate_colors(self, csv_data):
+    @staticmethod
+    def _populate_colors(csv_data):
         logger.info(F'Populate Colors')
         with transaction.atomic():
             for row in csv_data:
@@ -54,7 +55,8 @@ class Command(BaseCommand):
                     }
                 )
 
-    def _populate_part_categories(self, csv_data):
+    @staticmethod
+    def _populate_part_categories(csv_data):
         logger.info(F'Populate Part Categories')
         with transaction.atomic():
             for row in csv_data:
@@ -62,7 +64,8 @@ class Command(BaseCommand):
                     id=row['id'],
                     defaults={'name': row['name']})
 
-    def _populate_parts(self, csv_data):
+    @staticmethod
+    def _populate_parts(csv_data):
         logger.info(F'Populate Parts')
         part_list = Part.objects.values_list('part_num', flat=True)
         create_count = 0
@@ -80,7 +83,8 @@ class Command(BaseCommand):
                         logger.info(F'  Parts Created {create_count}')
         logger.info(F'  Total Parts Created {create_count}')
 
-    def _populate_relationships(self, csv_data):
+    @staticmethod
+    def _populate_relationships(csv_data):
         logger.info(F'Populate Relationships')
         with transaction.atomic():
             relation_mapping = {
@@ -111,7 +115,8 @@ class Command(BaseCommand):
                         if (idx % 1000) == 0:
                             logger.info(F'  Relationships Processed: {idx}')
 
-    def _populate_set_parts(self, csv_data):
+    @staticmethod
+    def _populate_set_parts(csv_data):
         logger.info(F'Populate Set Parts')
 
         logger.info(F'Deleting all Set Parts - Start')

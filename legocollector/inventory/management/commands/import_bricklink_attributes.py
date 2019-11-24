@@ -63,7 +63,7 @@ class Command(BaseCommand):
                         if (attributes_set_count % 1000) == 0:
                             logger.info(F'   Attributes Set on: {attributes_set_count} parts')
                 else:
-                    logger.info(F'  Invalid item Id Found: "{item_id}"')
+                    logger.debug(F'  Invalid item Id Found: "{item_id}"')
 
                 if (idx % 1000) == 0:
                     logger.info(F'  Items Processed: {idx}')
