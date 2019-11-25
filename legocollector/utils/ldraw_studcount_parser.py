@@ -28,11 +28,18 @@ class FileType(enum.Enum):
 
 class FileListDic():
 
-    def __init__(self, parts_dir, primitives_dir):
+    def __init__(self, *, parts_dir, primitives_dir,
+                 unofficial_parts_dir=None, unofficial_primitives_dir=None):
         self._files = {}
 
         self._parse_dir(parts_dir)
         self._parse_dir(primitives_dir)
+
+        if unofficial_parts_dir is not None:
+            self._parse_dir(unofficial_parts_dir)
+
+        if unofficial_primitives_dir is not None:
+            self._parse_dir(unofficial_primitives_dir)
 
     def _parse_dir(self, full_dir):
         for root, _, files in os.walk(full_dir):

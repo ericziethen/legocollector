@@ -11,6 +11,8 @@ REL_THIS_FILE_DIR = os.path.dirname(os.path.abspath(__file__))
 LDRAW_TEST_FILE_DIR = Path('legocollector') / 'tests' / 'test_files' / 'ldraw_files'
 LDRAW_PARTS_DIR = LDRAW_TEST_FILE_DIR / 'part_files'
 LDRAW_PRIMITIVES_DIR = LDRAW_TEST_FILE_DIR / 'primitives'
+LDRAW_PARTS_DIR_UNOFFICIAL = LDRAW_TEST_FILE_DIR / 'unofficial_part_files'
+LDRAW_PRIMITIVES_DIR_UNOFFICIAL = LDRAW_TEST_FILE_DIR / 'unofficial_primitives'
 
 
 def test_invalid_parts_line():
@@ -191,3 +193,45 @@ def test_calc_stud_count_for_part_list():
     assert stud_count_dic['3024']['stud_count'] == 1
     assert stud_count_dic['30099']['stud_count'] == 2
     assert stud_count_dic['912']['stud_count'] == 76
+
+
+UNOFFICIAL_FILES = [
+    ('2048.dat'),       # in parts
+    ('s/3587s01.dat'),    # in parts/s
+    ('stud26.dat'),     # in primitives
+    ('8/stud4hlf.dat'),   # in primitives/8
+    ('48/1-4ring15.dat'),  # in primitives/48
+]
+@pytest.mark.parametrize('file_name', UNOFFICIAL_FILES)
+def test_unofficial_missing_parts_included(file_name):
+    key = Path(file_name)
+
+    # Check file not found in official Parts
+    file_dic = FileListDic(parts_dir=LDRAW_PARTS_DIR, primitives_dir=LDRAW_PRIMITIVES_DIR)
+    assert key not in file_dic
+
+    # Check file found un Unofficial Parts
+    file_dic = FileListDic(
+        parts_dir=LDRAW_PARTS_DIR, primitives_dir=LDRAW_PRIMITIVES_DIR,
+        unofficial_parts_dir=LDRAW_PARTS_DIR_UNOFFICIAL,
+        unofficial_primitives_dir=LDRAW_PRIMITIVES_DIR_UNOFFICIAL)
+    assert key in file_dic
+
+
+def test_can_handle_duplicate_unofficial_files():
+    assert False
+
+
+STUD_COUNT_MISSING_UNOFFICIAL_PARTS = [
+    (1+12, '2048.dat'),
+    (1+6, '3587s01.dat'),
+]
+@pytest.mark.parametrize('stud_count, part_num', STUD_COUNT_MISSING_UNOFFICIAL_PARTS)
+def test_unofficial_missing_part_stud_count(stud_count, part_num):
+    file_name = F'{part_num}.dat'
+    key = Path(file_name)
+    file_dic = FileListDic(parts_dir=LDRAW_PARTS_DIR, primitives_dir=LDRAW_PRIMITIVES_DIR)
+    assert key in file_dic
+    file_path = file_dic[key]
+    assert stud_count == ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic)
+
