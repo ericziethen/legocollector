@@ -47,6 +47,13 @@ class FileListDic():
                 rel_dir = os.path.relpath(root, start=full_dir)
                 rel_file = os.path.join(rel_dir, file_name.lower())
 
+
+
+
+                if file_name == '92947.dat':
+                    print(F'Found: "{file_name}" in "{full_dir}" - Rel: {rel_file} - InList: {rel_file in self}')
+                    print(F'  Count: {len(self)}')
+
                 if rel_file in self:
                     raise ValueError(F'Error: Cannot handle multiple Part Locations, Duplicate File: {rel_file}')
 

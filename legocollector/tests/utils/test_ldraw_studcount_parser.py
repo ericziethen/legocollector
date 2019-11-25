@@ -219,9 +219,25 @@ def test_unofficial_missing_parts_included(file_name):
 
 
 def test_can_handle_duplicate_unofficial_files():
+    duplicate_part_file = '92947.dat'
+    key = Path(duplicate_part_file)
+
+    # Check file not found in official Parts
+    file_dic = FileListDic(parts_dir=LDRAW_PARTS_DIR, primitives_dir=LDRAW_PRIMITIVES_DIR)
+    assert key in file_dic
+
+    # Check file found un Unofficial Parts
+    file_dic = FileListDic(
+        parts_dir=LDRAW_PARTS_DIR, primitives_dir=LDRAW_PRIMITIVES_DIR,
+        unofficial_parts_dir=LDRAW_PARTS_DIR_UNOFFICIAL,
+        unofficial_primitives_dir=LDRAW_PRIMITIVES_DIR_UNOFFICIAL)
+    assert key in file_dic
+
+    WHY IS THERE NO EXCEPTION RAISED HERE???
+
     assert False
 
-
+'''
 STUD_COUNT_MISSING_UNOFFICIAL_PARTS = [
     (1+12, '2048.dat'),
     (1+6, '3587s01.dat'),
@@ -234,4 +250,4 @@ def test_unofficial_missing_part_stud_count(stud_count, part_num):
     assert key in file_dic
     file_path = file_dic[key]
     assert stud_count == ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic)
-
+'''
