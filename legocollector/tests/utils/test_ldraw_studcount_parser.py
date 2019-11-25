@@ -235,14 +235,16 @@ def test_can_handle_duplicate_unofficial_files():
 
 
 STUD_COUNT_MISSING_UNOFFICIAL_PARTS = [
-    (1+12, '2048.dat'),
-    (1+6, '3587s01.dat'),
+    (1+12, '2048'),
+    (1+6, 's/3587s01'),
 ]
 @pytest.mark.parametrize('stud_count, part_num', STUD_COUNT_MISSING_UNOFFICIAL_PARTS)
 def test_unofficial_missing_part_stud_count(stud_count, part_num):
     file_name = F'{part_num}.dat'
     key = Path(file_name)
-    file_dic = FileListDic(parts_dir=LDRAW_PARTS_DIR, primitives_dir=LDRAW_PRIMITIVES_DIR)
+    file_dic = FileListDic(parts_dir=LDRAW_PARTS_DIR, primitives_dir=LDRAW_PRIMITIVES_DIR,
+        unofficial_parts_dir=LDRAW_PARTS_DIR_UNOFFICIAL,
+        unofficial_primitives_dir=LDRAW_PRIMITIVES_DIR_UNOFFICIAL)
     assert key in file_dic
     file_path = file_dic[key]
     assert stud_count == ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic)
