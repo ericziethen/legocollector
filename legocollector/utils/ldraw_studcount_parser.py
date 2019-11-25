@@ -36,28 +36,27 @@ class FileListDic():
         self._parse_dir(primitives_dir)
 
         if unofficial_parts_dir is not None:
-            self._parse_dir(unofficial_parts_dir)
+            self._parse_dir(unofficial_parts_dir, ignore_duplicates=True)
 
         if unofficial_primitives_dir is not None:
-            self._parse_dir(unofficial_primitives_dir)
+            self._parse_dir(unofficial_primitives_dir, ignore_duplicates=True)
 
-    def _parse_dir(self, full_dir):
+    def _parse_dir(self, full_dir, *, ignore_duplicates=False):
         for root, _, files in os.walk(full_dir):
             for file_name in files:
                 rel_dir = os.path.relpath(root, start=full_dir)
                 rel_file = os.path.join(rel_dir, file_name.lower())
 
-
-
-
-                if file_name == '92947.dat':
+                if file_name.lower() == '92947.dat':
                     print(F'Found: "{file_name}" in "{full_dir}" - Rel: {rel_file} - InList: {rel_file in self}')
                     print(F'  Count: {len(self)}')
 
-                if rel_file in self:
+                if not ignore_duplicates and rel_file in self:
                     raise ValueError(F'Error: Cannot handle multiple Part Locations, Duplicate File: {rel_file}')
 
-                self[rel_file] = Path(full_dir) / rel_file
+                # Don't add duplicates
+                if rel_file not in self:
+                    self[rel_file] = Path(full_dir) / rel_file
 
     @staticmethod
     def _keytransform(key) -> str:
@@ -81,6 +80,8 @@ class FileListDic():
     def __delitem__(self, key) -> None:
         del self._files[self._keytransform(key)]
 
+    def __contains__(self, item):
+        return self._keytransform(item) in self._files
 
 class LdrawFile():
 

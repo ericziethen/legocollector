@@ -233,11 +233,7 @@ def test_can_handle_duplicate_unofficial_files():
         unofficial_primitives_dir=LDRAW_PRIMITIVES_DIR_UNOFFICIAL)
     assert key in file_dic
 
-    WHY IS THERE NO EXCEPTION RAISED HERE???
 
-    assert False
-
-'''
 STUD_COUNT_MISSING_UNOFFICIAL_PARTS = [
     (1+12, '2048.dat'),
     (1+6, '3587s01.dat'),
@@ -250,4 +246,3 @@ def test_unofficial_missing_part_stud_count(stud_count, part_num):
     assert key in file_dic
     file_path = file_dic[key]
     assert stud_count == ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic)
-'''
