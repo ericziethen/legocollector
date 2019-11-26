@@ -1,3 +1,4 @@
+import datetime
 import enum
 import json
 import os
@@ -190,6 +191,8 @@ def calc_stud_count_for_part_list(part_list, file_dic):
     parts_dic = {}
     processed_files_dic = {}
 
+    start_time = datetime.datetime.now()
+
     for idx, file_path in enumerate(part_list, 1):
         part_num = os.path.splitext(os.path.basename(file_path))[0]
         parts_dic[part_num] = {}
@@ -201,7 +204,9 @@ def calc_stud_count_for_part_list(part_list, file_dic):
             parts_dic[part_num]['stud_count'] = stud_count
 
         if idx % 500 == 0:
-            print(F'Processed {idx} parts')
+            now = datetime.datetime.now()
+            print(F'Processed {idx} parts - {(now - start_time).total_seconds():<4} seconds')
+            start_time = now
 
     return parts_dic
 
@@ -227,11 +232,6 @@ def create_json_for_parts(json_out_file_path):
         if os.path.isfile(Path(unofficial_parts_dir) / f) and f.lower().endswith('.dat')]
 
     part_num_list += unofficial_part_num_list
-
-    part_num_list = [
-        Path(R'D:\Downloads\Finished\# Lego\ldraw\ldrawunf_2019.11.14\parts\2048.dat'),
-        Path(R'D:\Downloads\Finished\# Lego\ldraw\ldrawunf_2019.11.14\parts\91347c01.dat'),
-    ]
 
     parts_dic = calc_stud_count_for_part_list(part_num_list, file_dic)
 
