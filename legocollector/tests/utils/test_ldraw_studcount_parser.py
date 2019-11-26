@@ -238,7 +238,6 @@ STUD_COUNT_MISSING_UNOFFICIAL_PARTS = [
     (24, '2048'),
     (6, 's/3587s01'),
 ]
-@pytest.mark.eric
 @pytest.mark.parametrize('stud_count, part_num', STUD_COUNT_MISSING_UNOFFICIAL_PARTS)
 def test_unofficial_missing_part_stud_count(stud_count, part_num):
     file_name = F'{part_num}.dat'
@@ -250,3 +249,21 @@ def test_unofficial_missing_part_stud_count(stud_count, part_num):
     assert key in file_dic
     file_path = file_dic[key]
     assert stud_count == ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic)
+
+
+@pytest.mark.eric
+def test_unofficial_file_with_missing_subparts():
+    part_with_missing_subs = '91347c01.dat'
+    part_with_missing_subs = 'NestedMissingSubfileTest.dat'
+    key = Path(part_with_missing_subs)
+
+    file_dic = FileListDic(
+        parts_dir=LDRAW_PARTS_DIR, primitives_dir=LDRAW_PRIMITIVES_DIR,
+        unofficial_parts_dir=LDRAW_PARTS_DIR_UNOFFICIAL,
+        unofficial_primitives_dir=LDRAW_PRIMITIVES_DIR_UNOFFICIAL)
+    
+    assert key in file_dic
+    file_path = file_dic[key]
+
+    with pytest.raises(ldraw_parser.SubfileMissingError):
+        ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic)

@@ -5,6 +5,10 @@ import os
 from pathlib import Path, PureWindowsPath
 
 
+class SubfileMissingError(Exception):
+    """Subfile is Missing Exception."""
+
+
 @enum.unique
 class LineType(enum.Enum):
 
@@ -157,14 +161,22 @@ def calc_stud_count_for_part_file(
     if count == 0:
         ldraw_file = LdrawFile(file_path)
         for sub_file in ldraw_file.sup_part_files:
-            sub_file_path = file_dic[sub_file]
+
+            try:
+                sub_file_path = file_dic[sub_file]
+            except KeyError:
+                raise SubfileMissingError(F'"{file_path}" misses Subfile "{sub_file}"')
 
             if sub_file_path in processed_files_dic:
                 count += processed_files_dic[sub_file_path]['top_stud_count']
             else:
-                sub_file_count = calc_stud_count_for_part_file(
-                    sub_file_path, file_dic, processed_files_dic,
-                    file_visited_count, rec_level + 1)
+                try:
+                    sub_file_count = calc_stud_count_for_part_file(
+                        sub_file_path, file_dic, processed_files_dic,
+                        file_visited_count, rec_level + 1)
+                except SubfileMissingError as error:
+                    raise SubfileMissingError(F'{file_path} -> {error}')
+
                 count += sub_file_count
 
                 processed_files_dic[sub_file_path] = {'top_stud_count': sub_file_count}
@@ -187,9 +199,13 @@ def calc_stud_count_for_part_list(
     for idx, file_path in enumerate(part_list, 1):
         part_num = os.path.splitext(os.path.basename(file_path))[0]
 
-        stud_count = calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic)
         parts_dic[part_num] = {}
-        parts_dic[part_num]['stud_count'] = stud_count
+        try:
+            stud_count = calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic)
+        except SubfileMissingError as error:
+            parts_dic[part_num]['processing_errors'] = [error]
+        else:
+            parts_dic[part_num]['stud_count'] = stud_count
 
         if idx % 500 == 0:
             print(F'Processed {idx} parts')
