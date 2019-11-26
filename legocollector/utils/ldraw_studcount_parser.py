@@ -217,15 +217,16 @@ def generate_part_list_to_process(dir_list):
     for part_dir in dir_list:
         for file_name in os.listdir(part_dir):
             file_name = file_name.lower()
-            if file_name not in part_dic:
+            file_path = Path(part_dir) / file_name
+            if os.path.isfile(file_path) and file_name not in part_dic:
                 part_dic[file_name] = Path(part_dir) / file_name
 
     return part_dic.values()
 
 
 def create_json_for_parts(json_out_file_path):
-    prim_dir = R'D:\Downloads\Finished\# Lego\ldraw\complete_2019.11.05\ldraw\p'
     parts_dir = R'D:\Downloads\Finished\# Lego\ldraw\complete_2019.11.05\ldraw\parts'
+    prim_dir = R'D:\Downloads\Finished\# Lego\ldraw\complete_2019.11.05\ldraw\p'
     unofficial_parts_dir = R'D:\Downloads\Finished\# Lego\ldraw\ldrawunf_2019.11.14\parts'
     unofficial_primitives_dir = R'D:\Downloads\Finished\# Lego\ldraw\ldrawunf_2019.11.14\p'
 
@@ -233,26 +234,10 @@ def create_json_for_parts(json_out_file_path):
         parts_dir=parts_dir, primitives_dir=prim_dir,
         unofficial_parts_dir=unofficial_parts_dir, unofficial_primitives_dir=unofficial_primitives_dir)
 
-    # TODO - Remove Duplication, have Function to get PartList from Dic
-    # TODO - Make it a function with unit tests
-    # TODO - MAKE IT A PART NUM DIC (part_num:file_path)
-    # TODO - ENSURE - Primary Parts preferred, dont add unofficial if already exists
-    #!!!!!!!!!!!!!!
-    part_num_list = [
-        Path(parts_dir) / f for f in os.listdir(parts_dir)
-        if os.path.isfile(Path(parts_dir) / f) and f.lower().endswith('.dat')]
+    part_list = generate_part_list_to_process([parts_dir, unofficial_parts_dir])
+    print(F'Number of parts to process: {len(part_list)}')
 
-    unofficial_part_num_list = [
-        Path(unofficial_parts_dir) / f for f in os.listdir(unofficial_parts_dir)
-        if os.path.isfile(Path(unofficial_parts_dir) / f) and f.lower().endswith('.dat') and Path(unofficial_parts_dir) / f not in part_num_list]
-
-    print(F'{len(part_num_list)}, {len(unofficial_part_num_list)}')
-    import sys
-    sys.exit(1)
-
-    part_num_list += unofficial_part_num_list
-
-    parts_dic = calc_stud_count_for_part_list(part_num_list, file_dic)
+    parts_dic = calc_stud_count_for_part_list(part_list, file_dic)
 
     with open(json_out_file_path, 'w', encoding='utf-8') as file_ptr:
         json.dump(parts_dic, file_ptr)
