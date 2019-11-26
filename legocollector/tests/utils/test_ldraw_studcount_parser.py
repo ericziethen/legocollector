@@ -235,9 +235,10 @@ def test_can_handle_duplicate_unofficial_files():
 
 
 STUD_COUNT_MISSING_UNOFFICIAL_PARTS = [
-    (1+12, '2048'),
-    (1+6, 's/3587s01'),
+    (12, '2048'),
+    (6, 's/3587s01'),
 ]
+@pytest.mark.eric
 @pytest.mark.parametrize('stud_count, part_num', STUD_COUNT_MISSING_UNOFFICIAL_PARTS)
 def test_unofficial_missing_part_stud_count(stud_count, part_num):
     file_name = F'{part_num}.dat'
