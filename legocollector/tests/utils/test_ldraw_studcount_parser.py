@@ -184,11 +184,15 @@ def test_file_visited_count():
 
 def test_calc_stud_count_for_part_list():
     part_list = ['3070b', '3024', '30099', '912']
+    part_list = [Path(LDRAW_PARTS_DIR) / F'{p}.dat' for p in part_list]
 
-    stud_count_dic = ldraw_parser.calc_stud_count_for_part_list(
-        part_list, parts_dir=LDRAW_PARTS_DIR, primitives_dir=LDRAW_PRIMITIVES_DIR)
+    file_dic = FileListDic(
+        parts_dir=LDRAW_PARTS_DIR, primitives_dir=LDRAW_PRIMITIVES_DIR)
+
+    stud_count_dic = ldraw_parser.calc_stud_count_for_part_list(part_list, file_dic)
 
     assert len(stud_count_dic) == 4
+    print(stud_count_dic)
     assert stud_count_dic['3070b']['stud_count'] == 0
     assert stud_count_dic['3024']['stud_count'] == 1
     assert stud_count_dic['30099']['stud_count'] == 2
@@ -251,7 +255,6 @@ def test_unofficial_missing_part_stud_count(stud_count, part_num):
     assert stud_count == ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic)
 
 
-@pytest.mark.eric
 def test_unofficial_file_with_missing_subparts():
     part_with_missing_subs = '91347c01.dat'
     part_with_missing_subs = 'NestedMissingSubfileTest.dat'
