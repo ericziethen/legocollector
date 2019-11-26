@@ -211,6 +211,18 @@ def calc_stud_count_for_part_list(part_list, file_dic):
     return parts_dic
 
 
+def generate_part_list_to_process(dir_list):
+
+    part_dic = {}
+    for part_dir in dir_list:
+        for file_name in os.listdir(part_dir):
+            file_name = file_name.lower()
+            if file_name not in part_dic:
+                part_dic[file_name] = Path(part_dir) / file_name
+
+    return part_dic.values()
+
+
 def create_json_for_parts(json_out_file_path):
     prim_dir = R'D:\Downloads\Finished\# Lego\ldraw\complete_2019.11.05\ldraw\p'
     parts_dir = R'D:\Downloads\Finished\# Lego\ldraw\complete_2019.11.05\ldraw\parts'
@@ -225,7 +237,7 @@ def create_json_for_parts(json_out_file_path):
     # TODO - Make it a function with unit tests
     # TODO - MAKE IT A PART NUM DIC (part_num:file_path)
     # TODO - ENSURE - Primary Parts preferred, dont add unofficial if already exists
-    !!!!!!!!!!!!!!
+    #!!!!!!!!!!!!!!
     part_num_list = [
         Path(parts_dir) / f for f in os.listdir(parts_dir)
         if os.path.isfile(Path(parts_dir) / f) and f.lower().endswith('.dat')]
