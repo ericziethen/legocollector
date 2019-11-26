@@ -235,7 +235,7 @@ def test_can_handle_duplicate_unofficial_files():
 
 
 STUD_COUNT_MISSING_UNOFFICIAL_PARTS = [
-    (12, '2048'),
+    (24, '2048'),
     (6, 's/3587s01'),
 ]
 @pytest.mark.eric
