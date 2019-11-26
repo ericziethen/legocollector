@@ -79,6 +79,7 @@ class FileListDic():
     def __contains__(self, item):
         return self._keytransform(item) in self._files
 
+
 class LdrawFile():
 
     def __init__(self, file_path):

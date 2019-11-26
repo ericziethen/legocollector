@@ -243,7 +243,8 @@ STUD_COUNT_MISSING_UNOFFICIAL_PARTS = [
 def test_unofficial_missing_part_stud_count(stud_count, part_num):
     file_name = F'{part_num}.dat'
     key = Path(file_name)
-    file_dic = FileListDic(parts_dir=LDRAW_PARTS_DIR, primitives_dir=LDRAW_PRIMITIVES_DIR,
+    file_dic = FileListDic(
+        parts_dir=LDRAW_PARTS_DIR, primitives_dir=LDRAW_PRIMITIVES_DIR,
         unofficial_parts_dir=LDRAW_PARTS_DIR_UNOFFICIAL,
         unofficial_primitives_dir=LDRAW_PRIMITIVES_DIR_UNOFFICIAL)
     assert key in file_dic
