@@ -174,14 +174,18 @@ def calc_stud_count_for_part_file(
     return count
 
 
-def calc_stud_count_for_part_list(part_list, *, parts_dir, primitives_dir):
+def calc_stud_count_for_part_list(
+        part_list, *, parts_dir, primitives_dir,
+        unofficial_parts_dir=None, unofficial_primitives_dir=None):
     parts_dic = {}
     processed_files_dic = {}
 
-    file_dic = FileListDic(parts_dir=parts_dir, primitives_dir=primitives_dir)
+    file_dic = FileListDic(
+        parts_dir=parts_dir, primitives_dir=primitives_dir,
+        unofficial_parts_dir=unofficial_parts_dir, unofficial_primitives_dir=unofficial_primitives_dir)
 
-    for idx, part_num in enumerate(part_list, 1):
-        file_path = os.path.join(parts_dir, F'{part_num}.dat')
+    for idx, file_path in enumerate(part_list, 1):
+        part_num = os.path.splitext(os.path.basename(file_path))[0]
 
         stud_count = calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic)
         parts_dic[part_num] = {}
@@ -196,13 +200,22 @@ def calc_stud_count_for_part_list(part_list, *, parts_dir, primitives_dir):
 def create_json_for_parts(json_out_file_path):
     prim_dir = R'D:\Downloads\Finished\# Lego\ldraw\complete_2019.11.05\ldraw\p'
     parts_dir = R'D:\Downloads\Finished\# Lego\ldraw\complete_2019.11.05\ldraw\parts'
+    unofficial_parts_dir = R'D:\Downloads\Finished\# Lego\ldraw\ldrawunf_2019.11.14\parts'
+    unofficial_primitives_dir = R'D:\Downloads\Finished\# Lego\ldraw\ldrawunf_2019.11.14\p'
 
+    # TODO - Remove Duplication, have Function to get PartList from Dic
     part_num_list = [
-        os.path.splitext(f)[0] for f in os.listdir(parts_dir)
+        os.path.join(parts_dir, f) for f in os.listdir(parts_dir)
         if os.path.isfile(os.path.join(parts_dir, f)) and f.lower().endswith('.dat')]
+    unofficial_part_num_list = [
+        os.path.join(unofficial_parts_dir, f) for f in os.listdir(unofficial_parts_dir)
+        if os.path.isfile(os.path.join(unofficial_parts_dir, f)) and f.lower().endswith('.dat')]
+
+    part_num_list = list(set(part_num_list + unofficial_part_num_list))
 
     parts_dic = calc_stud_count_for_part_list(
-        part_num_list, parts_dir=parts_dir, primitives_dir=prim_dir)
+        part_num_list, parts_dir=parts_dir, primitives_dir=prim_dir,
+        unofficial_parts_dir=unofficial_parts_dir, unofficial_primitives_dir=unofficial_primitives_dir)
 
     with open(json_out_file_path, 'w', encoding='utf-8') as file_ptr:
         json.dump(parts_dic, file_ptr)
