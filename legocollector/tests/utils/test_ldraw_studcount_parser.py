@@ -264,14 +264,14 @@ def test_unofficial_file_with_missing_subparts():
         parts_dir=LDRAW_PARTS_DIR, primitives_dir=LDRAW_PRIMITIVES_DIR,
         unofficial_parts_dir=LDRAW_PARTS_DIR_UNOFFICIAL,
         unofficial_primitives_dir=LDRAW_PRIMITIVES_DIR_UNOFFICIAL)
-    
+
     assert key in file_dic
     file_path = file_dic[key]
 
     with pytest.raises(ldraw_parser.SubfileMissingError):
         ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic)
 
-@pytest.mark.eric
+
 def test_generate_part_list_to_process():
     duplicate_part_file = '92947.dat'
     official_key = Path(LDRAW_PARTS_DIR) / duplicate_part_file
