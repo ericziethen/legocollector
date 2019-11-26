@@ -223,13 +223,20 @@ def create_json_for_parts(json_out_file_path):
 
     # TODO - Remove Duplication, have Function to get PartList from Dic
     # TODO - Make it a function with unit tests
+    # TODO - MAKE IT A PART NUM DIC (part_num:file_path)
+    # TODO - ENSURE - Primary Parts preferred, dont add unofficial if already exists
+    !!!!!!!!!!!!!!
     part_num_list = [
         Path(parts_dir) / f for f in os.listdir(parts_dir)
         if os.path.isfile(Path(parts_dir) / f) and f.lower().endswith('.dat')]
 
     unofficial_part_num_list = [
         Path(unofficial_parts_dir) / f for f in os.listdir(unofficial_parts_dir)
-        if os.path.isfile(Path(unofficial_parts_dir) / f) and f.lower().endswith('.dat')]
+        if os.path.isfile(Path(unofficial_parts_dir) / f) and f.lower().endswith('.dat') and Path(unofficial_parts_dir) / f not in part_num_list]
+
+    print(F'{len(part_num_list)}, {len(unofficial_part_num_list)}')
+    import sys
+    sys.exit(1)
 
     part_num_list += unofficial_part_num_list
 
