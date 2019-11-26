@@ -225,7 +225,11 @@ def create_json_for_parts(json_out_file_path):
         Path(unofficial_parts_dir) / f for f in os.listdir(unofficial_parts_dir)
         if os.path.isfile(Path(unofficial_parts_dir)) and f.lower().endswith('.dat')]
 
-    part_num_list = list(set(part_num_list + unofficial_part_num_list))
+    part_num_list += unofficial_part_num_list
+
+
+    !!! TODO - NOT WORKING YET ???
+    !!! e.g. Why is 2048 not in the list ????
 
     parts_dic = calc_stud_count_for_part_list(part_num_list, file_dic)
 
