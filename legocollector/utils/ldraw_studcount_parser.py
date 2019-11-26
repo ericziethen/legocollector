@@ -192,12 +192,11 @@ def calc_stud_count_for_part_list(part_list, file_dic):
 
     for idx, file_path in enumerate(part_list, 1):
         part_num = os.path.splitext(os.path.basename(file_path))[0]
-
         parts_dic[part_num] = {}
         try:
             stud_count = calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic)
         except SubfileMissingError as error:
-            parts_dic[part_num]['processing_errors'] = [error]
+            parts_dic[part_num]['processing_errors'] = [str(error)]
         else:
             parts_dic[part_num]['stud_count'] = stud_count
 
@@ -218,18 +217,21 @@ def create_json_for_parts(json_out_file_path):
         unofficial_parts_dir=unofficial_parts_dir, unofficial_primitives_dir=unofficial_primitives_dir)
 
     # TODO - Remove Duplication, have Function to get PartList from Dic
+    # TODO - Make it a function with unit tests
     part_num_list = [
         Path(parts_dir) / f for f in os.listdir(parts_dir)
         if os.path.isfile(Path(parts_dir) / f) and f.lower().endswith('.dat')]
+
     unofficial_part_num_list = [
         Path(unofficial_parts_dir) / f for f in os.listdir(unofficial_parts_dir)
-        if os.path.isfile(Path(unofficial_parts_dir)) and f.lower().endswith('.dat')]
+        if os.path.isfile(Path(unofficial_parts_dir) / f) and f.lower().endswith('.dat')]
 
     part_num_list += unofficial_part_num_list
 
-
-    !!! TODO - NOT WORKING YET ???
-    !!! e.g. Why is 2048 not in the list ????
+    part_num_list = [
+        Path(R'D:\Downloads\Finished\# Lego\ldraw\ldrawunf_2019.11.14\parts\2048.dat'),
+        Path(R'D:\Downloads\Finished\# Lego\ldraw\ldrawunf_2019.11.14\parts\91347c01.dat'),
+    ]
 
     parts_dic = calc_stud_count_for_part_list(part_num_list, file_dic)
 
