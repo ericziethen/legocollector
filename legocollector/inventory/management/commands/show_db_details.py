@@ -33,9 +33,6 @@ class Command(BaseCommand):
         # Collect part Data
         for part in Part.objects.all().iterator():
 
-            if part_count < 1:
-                print(part.width, type(part.width))
-
             part_count += 1
             dimension_set_count[part.dimension_set_count] += 1
             for name, attrib_name in check_not_none_fields.items():

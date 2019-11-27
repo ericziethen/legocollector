@@ -11,6 +11,8 @@ REL_THIS_FILE_DIR = os.path.dirname(os.path.abspath(__file__))
 LDRAW_TEST_FILE_DIR = Path('legocollector') / 'tests' / 'test_files' / 'ldraw_files'
 LDRAW_PARTS_DIR = LDRAW_TEST_FILE_DIR / 'part_files'
 LDRAW_PRIMITIVES_DIR = LDRAW_TEST_FILE_DIR / 'primitives'
+LDRAW_PARTS_DIR_UNOFFICIAL = LDRAW_TEST_FILE_DIR / 'unofficial_part_files'
+LDRAW_PRIMITIVES_DIR_UNOFFICIAL = LDRAW_TEST_FILE_DIR / 'unofficial_primitives'
 
 
 def test_invalid_parts_line():
@@ -182,12 +184,105 @@ def test_file_visited_count():
 
 def test_calc_stud_count_for_part_list():
     part_list = ['3070b', '3024', '30099', '912']
+    part_list = [Path(LDRAW_PARTS_DIR) / F'{p}.dat' for p in part_list]
 
-    stud_count_dic = ldraw_parser.calc_stud_count_for_part_list(
-        part_list, parts_dir=LDRAW_PARTS_DIR, primitives_dir=LDRAW_PRIMITIVES_DIR)
+    file_dic = FileListDic(
+        parts_dir=LDRAW_PARTS_DIR, primitives_dir=LDRAW_PRIMITIVES_DIR)
+
+    stud_count_dic = ldraw_parser.calc_stud_count_for_part_list(part_list, file_dic)
 
     assert len(stud_count_dic) == 4
+    print(stud_count_dic)
     assert stud_count_dic['3070b']['stud_count'] == 0
     assert stud_count_dic['3024']['stud_count'] == 1
     assert stud_count_dic['30099']['stud_count'] == 2
     assert stud_count_dic['912']['stud_count'] == 76
+
+
+UNOFFICIAL_FILES = [
+    ('2048.dat'),       # in parts
+    ('s/3587s01.dat'),    # in parts/s
+    ('stud26.dat'),     # in primitives
+    ('8/stud4hlf.dat'),   # in primitives/8
+    ('48/1-4ring15.dat'),  # in primitives/48
+]
+@pytest.mark.parametrize('file_name', UNOFFICIAL_FILES)
+def test_unofficial_missing_parts_included(file_name):
+    key = Path(file_name)
+
+    # Check file not found in official Parts
+    file_dic = FileListDic(parts_dir=LDRAW_PARTS_DIR, primitives_dir=LDRAW_PRIMITIVES_DIR)
+    assert key not in file_dic
+
+    # Check file found un Unofficial Parts
+    file_dic = FileListDic(
+        parts_dir=LDRAW_PARTS_DIR, primitives_dir=LDRAW_PRIMITIVES_DIR,
+        unofficial_parts_dir=LDRAW_PARTS_DIR_UNOFFICIAL,
+        unofficial_primitives_dir=LDRAW_PRIMITIVES_DIR_UNOFFICIAL)
+    assert key in file_dic
+
+
+def test_can_handle_duplicate_unofficial_files():
+    duplicate_part_file = '92947.dat'
+    key = Path(duplicate_part_file)
+
+    # Check file not found in official Parts
+    file_dic = FileListDic(parts_dir=LDRAW_PARTS_DIR, primitives_dir=LDRAW_PRIMITIVES_DIR)
+    assert key in file_dic
+
+    # Check file found un Unofficial Parts
+    file_dic = FileListDic(
+        parts_dir=LDRAW_PARTS_DIR, primitives_dir=LDRAW_PRIMITIVES_DIR,
+        unofficial_parts_dir=LDRAW_PARTS_DIR_UNOFFICIAL,
+        unofficial_primitives_dir=LDRAW_PRIMITIVES_DIR_UNOFFICIAL)
+    assert key in file_dic
+
+
+STUD_COUNT_MISSING_UNOFFICIAL_PARTS = [
+    (24, '2048'),
+    (6, 's/3587s01'),
+]
+@pytest.mark.parametrize('stud_count, part_num', STUD_COUNT_MISSING_UNOFFICIAL_PARTS)
+def test_unofficial_missing_part_stud_count(stud_count, part_num):
+    file_name = F'{part_num}.dat'
+    key = Path(file_name)
+    file_dic = FileListDic(
+        parts_dir=LDRAW_PARTS_DIR, primitives_dir=LDRAW_PRIMITIVES_DIR,
+        unofficial_parts_dir=LDRAW_PARTS_DIR_UNOFFICIAL,
+        unofficial_primitives_dir=LDRAW_PRIMITIVES_DIR_UNOFFICIAL)
+    assert key in file_dic
+    file_path = file_dic[key]
+    assert stud_count == ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic)
+
+
+def test_unofficial_file_with_missing_subparts():
+    part_with_missing_subs = '91347c01.dat'
+    part_with_missing_subs = 'NestedMissingSubfileTest.dat'
+    key = Path(part_with_missing_subs)
+
+    file_dic = FileListDic(
+        parts_dir=LDRAW_PARTS_DIR, primitives_dir=LDRAW_PRIMITIVES_DIR,
+        unofficial_parts_dir=LDRAW_PARTS_DIR_UNOFFICIAL,
+        unofficial_primitives_dir=LDRAW_PRIMITIVES_DIR_UNOFFICIAL)
+
+    assert key in file_dic
+    file_path = file_dic[key]
+
+    with pytest.raises(ldraw_parser.SubfileMissingError):
+        ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic)
+
+
+def test_generate_part_list_to_process():
+    duplicate_part_file = '92947.dat'
+    official_key = Path(LDRAW_PARTS_DIR) / duplicate_part_file
+    unofficial_key = Path(LDRAW_PARTS_DIR_UNOFFICIAL) / duplicate_part_file
+
+    # Check file in official not unofficial
+    part_list = ldraw_parser.generate_part_list_to_process([LDRAW_PARTS_DIR, LDRAW_PARTS_DIR_UNOFFICIAL])
+    assert official_key in part_list
+    assert unofficial_key not in part_list
+
+    # Check file in unofficial not official
+    part_list = ldraw_parser.generate_part_list_to_process([LDRAW_PARTS_DIR_UNOFFICIAL, LDRAW_PARTS_DIR])
+    assert official_key not in part_list
+    assert unofficial_key in part_list

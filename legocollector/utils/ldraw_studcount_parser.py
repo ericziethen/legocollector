@@ -1,8 +1,13 @@
+import datetime
 import enum
 import json
 import os
 
 from pathlib import Path, PureWindowsPath
+
+
+class SubfileMissingError(Exception):
+    """Subfile is Missing Exception."""
 
 
 @enum.unique
@@ -28,29 +33,38 @@ class FileType(enum.Enum):
 
 class FileListDic():
 
-    def __init__(self, parts_dir, primitives_dir):
+    def __init__(self, *, parts_dir, primitives_dir,
+                 unofficial_parts_dir=None, unofficial_primitives_dir=None):
         self._files = {}
 
         self._parse_dir(parts_dir)
         self._parse_dir(primitives_dir)
 
-    def _parse_dir(self, full_dir):
+        if unofficial_parts_dir is not None:
+            self._parse_dir(unofficial_parts_dir, ignore_duplicates=True)
+
+        if unofficial_primitives_dir is not None:
+            self._parse_dir(unofficial_primitives_dir, ignore_duplicates=True)
+
+    def _parse_dir(self, full_dir, *, ignore_duplicates=False):
         for root, _, files in os.walk(full_dir):
             for file_name in files:
                 rel_dir = os.path.relpath(root, start=full_dir)
-                rel_file = os.path.join(rel_dir, file_name.lower())
+                rel_file = os.path.join(rel_dir, file_name)
 
-                if rel_file in self:
+                if not ignore_duplicates and rel_file in self:
                     raise ValueError(F'Error: Cannot handle multiple Part Locations, Duplicate File: {rel_file}')
 
-                self[rel_file] = Path(full_dir) / rel_file
+                # Don't add duplicates
+                if rel_file not in self:
+                    self[rel_file] = Path(full_dir) / rel_file
 
     @staticmethod
     def _keytransform(key) -> str:
-        return Path(key)
+        return Path(str(key).lower())
 
     def __setitem__(self, key, value: str) -> None:
-        self._files[self._keytransform(key)] = value
+        self._files[self._keytransform(key)] = Path(value)
 
     def __getitem__(self, key) -> str:
         return self._files[self._keytransform(key)]
@@ -66,6 +80,9 @@ class FileListDic():
 
     def __delitem__(self, key) -> None:
         del self._files[self._keytransform(key)]
+
+    def __contains__(self, item: str):
+        return self._keytransform(item) in self._files
 
 
 class LdrawFile():
@@ -145,14 +162,22 @@ def calc_stud_count_for_part_file(
     if count == 0:
         ldraw_file = LdrawFile(file_path)
         for sub_file in ldraw_file.sup_part_files:
-            sub_file_path = file_dic[sub_file]
+
+            try:
+                sub_file_path = file_dic[sub_file]
+            except KeyError:
+                raise SubfileMissingError(F'"{file_path}" misses Subfile "{sub_file}"')
 
             if sub_file_path in processed_files_dic:
                 count += processed_files_dic[sub_file_path]['top_stud_count']
             else:
-                sub_file_count = calc_stud_count_for_part_file(
-                    sub_file_path, file_dic, processed_files_dic,
-                    file_visited_count, rec_level + 1)
+                try:
+                    sub_file_count = calc_stud_count_for_part_file(
+                        sub_file_path, file_dic, processed_files_dic,
+                        file_visited_count, rec_level + 1)
+                except SubfileMissingError as error:
+                    raise SubfileMissingError(F'{file_path} -> {error}')
+
                 count += sub_file_count
 
                 processed_files_dic[sub_file_path] = {'top_stud_count': sub_file_count}
@@ -162,35 +187,57 @@ def calc_stud_count_for_part_file(
     return count
 
 
-def calc_stud_count_for_part_list(part_list, *, parts_dir, primitives_dir):
+def calc_stud_count_for_part_list(part_list, file_dic):
     parts_dic = {}
     processed_files_dic = {}
 
-    file_dic = FileListDic(parts_dir=parts_dir, primitives_dir=primitives_dir)
+    start_time = datetime.datetime.now()
 
-    for idx, part_num in enumerate(part_list, 1):
-        file_path = os.path.join(parts_dir, F'{part_num}.dat')
-
-        stud_count = calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic)
+    for idx, file_path in enumerate(part_list, 1):
+        part_num = os.path.splitext(os.path.basename(file_path))[0]
         parts_dic[part_num] = {}
-        parts_dic[part_num]['stud_count'] = stud_count
+        try:
+            stud_count = calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic)
+        except SubfileMissingError as error:
+            parts_dic[part_num]['processing_errors'] = [str(error)]
+        else:
+            parts_dic[part_num]['stud_count'] = stud_count
 
         if idx % 500 == 0:
-            print(F'Processed {idx} parts')
+            now = datetime.datetime.now()
+            print(F'Processed {idx} parts - {(now - start_time).total_seconds():<4} seconds')
+            start_time = now
 
     return parts_dic
 
 
+def generate_part_list_to_process(dir_list):
+
+    part_dic = {}
+    for part_dir in dir_list:
+        for file_name in os.listdir(part_dir):
+            file_name = file_name.lower()
+            file_path = Path(part_dir) / file_name
+            if os.path.isfile(file_path) and file_name not in part_dic:
+                part_dic[file_name] = Path(part_dir) / file_name
+
+    return part_dic.values()
+
+
 def create_json_for_parts(json_out_file_path):
-    prim_dir = R'D:\Downloads\Finished\# Lego\ldraw\complete_2019.11.05\ldraw\p'
     parts_dir = R'D:\Downloads\Finished\# Lego\ldraw\complete_2019.11.05\ldraw\parts'
+    prim_dir = R'D:\Downloads\Finished\# Lego\ldraw\complete_2019.11.05\ldraw\p'
+    unofficial_parts_dir = R'D:\Downloads\Finished\# Lego\ldraw\ldrawunf_2019.11.14\parts'
+    unofficial_primitives_dir = R'D:\Downloads\Finished\# Lego\ldraw\ldrawunf_2019.11.14\p'
 
-    part_num_list = [
-        os.path.splitext(f)[0] for f in os.listdir(parts_dir)
-        if os.path.isfile(os.path.join(parts_dir, f)) and f.lower().endswith('.dat')]
+    file_dic = FileListDic(
+        parts_dir=parts_dir, primitives_dir=prim_dir,
+        unofficial_parts_dir=unofficial_parts_dir, unofficial_primitives_dir=unofficial_primitives_dir)
 
-    parts_dic = calc_stud_count_for_part_list(
-        part_num_list, parts_dir=parts_dir, primitives_dir=prim_dir)
+    part_list = generate_part_list_to_process([parts_dir, unofficial_parts_dir])
+    print(F'Number of parts to process: {len(part_list)}')
+
+    parts_dic = calc_stud_count_for_part_list(part_list, file_dic)
 
     with open(json_out_file_path, 'w', encoding='utf-8') as file_ptr:
         json.dump(parts_dic, file_ptr)
