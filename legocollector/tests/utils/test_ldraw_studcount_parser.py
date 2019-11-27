@@ -265,6 +265,9 @@ def test_unofficial_file_with_missing_subparts():
         unofficial_parts_dir=LDRAW_PARTS_DIR_UNOFFICIAL,
         unofficial_primitives_dir=LDRAW_PRIMITIVES_DIR_UNOFFICIAL)
 
+    # Issue on travis, debug info
+    print(file_dic)
+
     assert key in file_dic
     file_path = file_dic[key]
 
