@@ -61,7 +61,7 @@ class FileListDic():
 
     @staticmethod
     def _keytransform(key) -> str:
-        return Path(key)
+        return Path(str(key).lower())
 
     def __setitem__(self, key, value: str) -> None:
         self._files[self._keytransform(key)] = value
@@ -81,7 +81,7 @@ class FileListDic():
     def __delitem__(self, key) -> None:
         del self._files[self._keytransform(key)]
 
-    def __contains__(self, item):
+    def __contains__(self, item: str):
         return self._keytransform(item) in self._files
 
 
