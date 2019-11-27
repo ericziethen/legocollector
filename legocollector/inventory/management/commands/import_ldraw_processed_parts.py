@@ -52,8 +52,9 @@ class Command(BaseCommand):
                         parts_not_found_list.append(part_num)
 
                 for part in part_list:
-                    part.stud_count = part_dic['stud_count']
-                    part.save()
+                    if 'stud_count' in part_dic:
+                        part.stud_count = part_dic['stud_count']
+                        part.save()
 
                     parts_processed_counts += 1
                     if (parts_processed_counts % 1000) == 0:
