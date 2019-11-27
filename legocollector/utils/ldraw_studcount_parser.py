@@ -50,7 +50,7 @@ class FileListDic():
         for root, _, files in os.walk(full_dir):
             for file_name in files:
                 rel_dir = os.path.relpath(root, start=full_dir)
-                rel_file = os.path.join(rel_dir, file_name.lower())
+                rel_file = os.path.join(rel_dir, file_name)
 
                 if not ignore_duplicates and rel_file in self:
                     raise ValueError(F'Error: Cannot handle multiple Part Locations, Duplicate File: {rel_file}')
