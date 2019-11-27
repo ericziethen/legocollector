@@ -64,7 +64,7 @@ class FileListDic():
         return Path(str(key).lower())
 
     def __setitem__(self, key, value: str) -> None:
-        self._files[self._keytransform(key)] = value
+        self._files[self._keytransform(key)] = Path(value)
 
     def __getitem__(self, key) -> str:
         return self._files[self._keytransform(key)]
