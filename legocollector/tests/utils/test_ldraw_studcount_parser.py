@@ -332,7 +332,7 @@ UNDERSIDE_STAT_FILES = [
     ('stud4a.dat'),
     #('stud4s.dat'),    # Ignore Slope Part for Now, hard to spot
     #('stud4s2.dat'),   # Ignore Slope Part for Now, hard to spot
-    ('stud4o.dat'),
+    #('stud4o.dat'),    # Ignore, Seems not visible as stud, more of a hole
     ('stud4od.dat'),
     ('stud4h.dat'),
     ('stud4fns.dat'),
@@ -346,8 +346,6 @@ def test_file_is_underside_stud_file(file_name):
 
 
 ''' MISSING TESTS
-    (''),
-    ('.dat'),
     ('stud4o.dat'),
     ('stud4od.dat'),
     ('stud4h.dat'),
@@ -367,6 +365,14 @@ UNDERSIDE_STUD_COUNT_PARTS = [
     (1, 'u8101'),                   # contains stud12.dat
     (9, '13269'),                   # contains stud4s.dat
     (21, '32084'),                  # contain stud4s.dat, stud4s2.dat, excluded from count, not visible in ldraw
+    (0, '10172'),                   # contains stud4o.dat, exclude from count, more of a stud hole
+
+
+    #(, ''),         # contains
+    #(, ''),         # contains
+    #(, ''),         # contains
+    #(, ''),         # contains
+    #(, ''),         # contains
 ]
 @pytest.mark.eric
 @pytest.mark.parametrize('stud_count, part_num', UNDERSIDE_STUD_COUNT_PARTS)
