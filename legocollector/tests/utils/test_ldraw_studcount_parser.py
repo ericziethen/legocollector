@@ -347,8 +347,6 @@ def test_file_is_underside_stud_file(file_name):
 
 ''' MISSING TESTS
     (''),
-    ('stud12.dat'),
-    ('stud4s.dat'),
     ('stud4s2.dat'),
     ('stud4o.dat'),
     ('stud4od.dat'),
@@ -367,6 +365,7 @@ UNDERSIDE_STUD_COUNT_PARTS = [
     (1, '15469'),                   # contains: stud4a.dat
     (12, '32531'),                  # contains: studx.dat
     (1, 'u8101'),                   # contains stud12.dat
+    (9+1, '13269'),                 # contains stud4s.dat
 ]
 @pytest.mark.eric
 @pytest.mark.parametrize('stud_count, part_num', UNDERSIDE_STUD_COUNT_PARTS)
