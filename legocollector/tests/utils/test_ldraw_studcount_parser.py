@@ -330,7 +330,7 @@ UNDERSIDE_STAT_FILES = [
     ('stud12.dat'),
     ('stud4.dat'),
     ('stud4a.dat'),
-    ('stud4s.dat'),
+    #('stud4s.dat'),    # Ignore Slope Part for Now, hard to spot
     ('stud4s2.dat'),
     ('stud4o.dat'),
     ('stud4od.dat'),
@@ -365,7 +365,7 @@ UNDERSIDE_STUD_COUNT_PARTS = [
     (1, '15469'),                   # contains: stud4a.dat
     (12, '32531'),                  # contains: studx.dat
     (1, 'u8101'),                   # contains stud12.dat
-    (9+1, '13269'),                 # contains stud4s.dat
+    (9, '13269'),                   # contains stud4s.dat
 ]
 @pytest.mark.eric
 @pytest.mark.parametrize('stud_count, part_num', UNDERSIDE_STUD_COUNT_PARTS)
