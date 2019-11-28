@@ -147,9 +147,8 @@ def get_ldraw_file_type(file_name):
     return file_type
 
 
-def get_top_stud_count_for_file(file_path):
-    single_top_stud_file_types = [FileType.TOP_STUD]
-    if get_ldraw_file_type(os.path.basename(file_path)) in single_top_stud_file_types:
+def get_stud_count_for_file_type(file_path, file_type):
+    if get_ldraw_file_type(os.path.basename(file_path)) == file_type:
         return 1
     return 0
 
@@ -164,7 +163,7 @@ def calc_stud_count_for_part_file(
         else:
             file_visited_count[file_path] += 1
 
-    top_stud_count = get_top_stud_count_for_file(file_path)
+    top_stud_count = get_stud_count_for_file_type(file_path, FileType.TOP_STUD)
 
     # Process sub files
     if top_stud_count == 0:
