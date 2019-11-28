@@ -323,15 +323,16 @@ def test_create_sub_file_dic():
     assert Path(sub1_file) in rel_dic
     assert len(rel_dic[Path(file_name_subs)]) == len(sub1_subs)
 '''
-'''
-def test_file_is_underside_stud_file                # test_file_is_top_stud_file
+
+def test_file_is_underside_stud_file():                # test_file_is_top_stud_file
     assert False
 
 
-def test_get_underside_stud_count                   # test_get_stud_count
+def test_get_underside_stud_count():                   # test_get_stud_count
     assert False
 
 
-def test_calc_underside_stud_count_for_part_list    # test_calc_stud_count_for_part_list
+def test_calc_underside_stud_count_for_part_list():    # test_calc_stud_count_for_part_list
     assert False
-'''
+
+
