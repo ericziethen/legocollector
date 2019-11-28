@@ -158,17 +158,16 @@ def calc_stud_count_for_part_file(
         file_path, file_dic, processed_files_dic=None, file_visited_count=None, rec_level=0):
     if processed_files_dic is None:
         processed_files_dic = {}
-
-    count = get_top_stud_count_for_file(file_path)
     if file_visited_count is not None:
         if file_path not in file_visited_count:
             file_visited_count[file_path] = 1
-
         else:
             file_visited_count[file_path] += 1
 
+    top_stud_count = get_top_stud_count_for_file(file_path)
+
     # Process sub files
-    if count == 0:
+    if top_stud_count == 0:
         ldraw_file = LdrawFile(file_path)
         for sub_file in ldraw_file.sup_part_files:
 
@@ -178,7 +177,7 @@ def calc_stud_count_for_part_file(
                 raise SubfileMissingError(F'"{file_path}" misses Subfile "{sub_file}"')
 
             if sub_file_path in processed_files_dic:
-                count += processed_files_dic[sub_file_path]['top_stud_count']
+                top_stud_count += processed_files_dic[sub_file_path]['top_stud_count']
             else:
                 try:
                     calc_stud_count_for_part_file(
@@ -187,10 +186,10 @@ def calc_stud_count_for_part_file(
                 except SubfileMissingError as error:
                     raise SubfileMissingError(F'{file_path} -> {error}')
 
-                count += processed_files_dic[sub_file_path]['top_stud_count']
+                top_stud_count += processed_files_dic[sub_file_path]['top_stud_count']
 
     if file_path not in processed_files_dic:
-        processed_files_dic[file_path] = {'top_stud_count': count}
+        processed_files_dic[file_path] = {'top_stud_count': top_stud_count}
 
 
 def calc_stud_count_for_part_list(part_list, file_dic):
