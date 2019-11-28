@@ -1,6 +1,6 @@
 import os
 
-from pathlib import Path
+from pathlib import Path, WindowsPath
 
 import pytest
 
@@ -136,14 +136,19 @@ STUD_COUNT_PARTS = [
     (4, '44511'),
     (16, '71427c01'),
 ]
+@pytest.mark.eric
 @pytest.mark.parametrize('stud_count, part_num', STUD_COUNT_PARTS)
 def test_get_stud_count(stud_count, part_num):
     file_name = F'{part_num}.dat'
     key = Path(file_name)
+
     file_dic = FileListDic(parts_dir=LDRAW_PARTS_DIR, primitives_dir=LDRAW_PRIMITIVES_DIR)
     assert key in file_dic
     file_path = file_dic[key]
-    assert stud_count == ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic)
+
+    processed_files_dic = {}
+    ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic)
+    assert stud_count == processed_files_dic[file_path]['top_stud_count']
 
 
 def test_processed_files_dic_specified():
@@ -250,9 +255,13 @@ def test_unofficial_missing_part_stud_count(stud_count, part_num):
         parts_dir=LDRAW_PARTS_DIR, primitives_dir=LDRAW_PRIMITIVES_DIR,
         unofficial_parts_dir=LDRAW_PARTS_DIR_UNOFFICIAL,
         unofficial_primitives_dir=LDRAW_PRIMITIVES_DIR_UNOFFICIAL)
+
     assert key in file_dic
     file_path = file_dic[key]
-    assert stud_count == ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic)
+
+    processed_files_dic = {}
+    ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic)
+    assert stud_count == processed_files_dic[file_path]['top_stud_count']
 
 
 def test_unofficial_file_with_missing_subparts():
@@ -286,3 +295,43 @@ def test_generate_part_list_to_process():
     part_list = ldraw_parser.generate_part_list_to_process([LDRAW_PARTS_DIR_UNOFFICIAL, LDRAW_PARTS_DIR])
     assert official_key not in part_list
     assert unofficial_key in part_list
+
+
+
+
+
+
+
+
+
+'''
+@pytest.mark.eric
+def test_create_sub_file_dic():
+    file_name = '60477.dat'
+    file_name_subs = [WindowsPath(R's\60477s01.dat')]
+    sub1_file = WindowsPath(R's\60477s01.dat')
+    sub1_subs = ['1-4cyls.dat', '2-4cyli.dat', '2-4edge.dat', '4-4cyls.dat',
+                 '4-4edge.dat', 'box2-5.dat', 'rect.dat', 'rect2p.dat', 'stud.dat', 'stud3a.dat']
+
+    file_dic = FileListDic(parts_dir=LDRAW_PARTS_DIR, primitives_dir=LDRAW_PRIMITIVES_DIR)
+
+    rel_dic = ldraw_parser.get_sub_file_dic(file_name, file_dic)
+
+    assert Path(file_name) in rel_dic
+    assert len(rel_dic[Path(file_name)]) == len(file_name_subs)
+
+    assert Path(sub1_file) in rel_dic
+    assert len(rel_dic[Path(file_name_subs)]) == len(sub1_subs)
+'''
+'''
+def test_file_is_underside_stud_file                # test_file_is_top_stud_file
+    assert False
+
+
+def test_get_underside_stud_count                   # test_get_stud_count
+    assert False
+
+
+def test_calc_underside_stud_count_for_part_list    # test_calc_stud_count_for_part_list
+    assert False
+'''
