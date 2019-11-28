@@ -172,19 +172,16 @@ def calc_stud_count_for_part_file(
                 count += processed_files_dic[sub_file_path]['top_stud_count']
             else:
                 try:
-                    sub_file_count = calc_stud_count_for_part_file(
+                    calc_stud_count_for_part_file(
                         sub_file_path, file_dic, processed_files_dic,
                         file_visited_count, rec_level + 1)
                 except SubfileMissingError as error:
                     raise SubfileMissingError(F'{file_path} -> {error}')
 
-                count += sub_file_count
-
-                processed_files_dic[sub_file_path] = {'top_stud_count': sub_file_count}
+                count += processed_files_dic[sub_file_path]['top_stud_count']
 
     if file_path not in processed_files_dic:
         processed_files_dic[file_path] = {'top_stud_count': count}
-    return count
 
 
 def calc_stud_count_for_part_list(part_list, file_dic):
@@ -197,11 +194,11 @@ def calc_stud_count_for_part_list(part_list, file_dic):
         part_num = os.path.splitext(os.path.basename(file_path))[0]
         parts_dic[part_num] = {}
         try:
-            stud_count = calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic)
+            calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic)
         except SubfileMissingError as error:
             parts_dic[part_num]['processing_errors'] = [str(error)]
         else:
-            parts_dic[part_num]['stud_count'] = stud_count
+            parts_dic[part_num]['stud_count'] = processed_files_dic[file_path]['top_stud_count']
 
         if idx % 500 == 0:
             now = datetime.datetime.now()
