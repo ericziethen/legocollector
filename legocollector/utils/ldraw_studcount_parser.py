@@ -153,6 +153,16 @@ def get_stud_count_for_file_type(file_path, file_type):
     return 0
 
 
+def print_sub_files(file_path, file_dic, *, prefix=None, level=0):
+    base_name = os.path.basename(file_path)
+    if not prefix or base_name.lower().startswith(prefix.lower()):
+        print(F'{level * 2 * " "}{os.path.basename(file_path)} - {get_ldraw_file_type(base_name)}')
+    ldraw_file = LdrawFile(file_path)
+    for sub_file in ldraw_file.sup_part_files:
+        sub_file_path = file_dic[sub_file]
+        print_sub_files(sub_file_path, file_dic, prefix=prefix, level=level + 1)
+
+
 def calc_stud_count_for_part_file(
         file_path, file_dic, processed_files_dic=None, file_visited_count=None, rec_level=0):
     if processed_files_dic is None:
@@ -164,9 +174,10 @@ def calc_stud_count_for_part_file(
             file_visited_count[file_path] += 1
 
     top_stud_count = get_stud_count_for_file_type(file_path, FileType.TOP_STUD)
+    underside_stud_count = get_stud_count_for_file_type(file_path, FileType.UNDERSIDE_STUD)
 
     # Process sub files
-    if top_stud_count == 0:
+    if not top_stud_count and not underside_stud_count:
         ldraw_file = LdrawFile(file_path)
         for sub_file in ldraw_file.sup_part_files:
 
@@ -177,6 +188,7 @@ def calc_stud_count_for_part_file(
 
             if sub_file_path in processed_files_dic:
                 top_stud_count += processed_files_dic[sub_file_path]['top_stud_count']
+                underside_stud_count += processed_files_dic[sub_file_path]['underside_stud_count']
             else:
                 try:
                     calc_stud_count_for_part_file(
@@ -186,9 +198,12 @@ def calc_stud_count_for_part_file(
                     raise SubfileMissingError(F'{file_path} -> {error}')
 
                 top_stud_count += processed_files_dic[sub_file_path]['top_stud_count']
+                underside_stud_count += processed_files_dic[sub_file_path]['underside_stud_count']
 
     if file_path not in processed_files_dic:
-        processed_files_dic[file_path] = {'top_stud_count': top_stud_count}
+        processed_files_dic[file_path] = {
+            'top_stud_count': top_stud_count,
+            'underside_stud_count': underside_stud_count}
 
 
 def calc_stud_count_for_part_list(part_list, file_dic):

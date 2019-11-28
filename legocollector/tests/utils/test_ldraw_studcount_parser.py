@@ -344,8 +344,27 @@ def test_file_is_underside_stud_file(file_name):
     assert ldraw_parser.get_ldraw_file_type(file_name) == FileType.UNDERSIDE_STUD
 
 
+
+''' MISSING TESTS
+    ('studx.dat'),
+    ('stud12.dat'),
+    ('stud4s.dat'),
+    ('stud4s2.dat'),
+    ('stud4o.dat'),
+    ('stud4od.dat'),
+    ('stud4h.dat'),
+    ('stud4fns.dat'),
+    ('stud16.dat'),
+    ('stud21a.dat'),
+ '''
+
+
+
 UNDERSIDE_STUD_COUNT_PARTS = [
-    (1, '11211'),
+    (1, '11211'),                   # contains: stud3.dat
+    (2, '30099'),                   # contains: stud3.dat, stud3a.dat
+    (3, '71427c01'),                # contains: stud4.dat - Based on File 3, Image looks like 5
+    (1, '15469'),                   # contains: stud4a.dat
 ]
 @pytest.mark.eric
 @pytest.mark.parametrize('stud_count, part_num', UNDERSIDE_STUD_COUNT_PARTS)
@@ -357,14 +376,16 @@ def test_get_underside_stud_count(stud_count, part_num):
     assert key in file_dic
     file_path = file_dic[key]
 
+    ldraw_parser.print_sub_files(file_dic[key], file_dic, prefix='stud')
+
     processed_files_dic = {}
     ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic)
     assert stud_count == processed_files_dic[file_path]['underside_stud_count']
 
 
 
-
+'''
 def test_calc_underside_stud_count_for_part_list():    # test_calc_stud_count_for_part_list
     assert False
-
+'''
 
