@@ -29,6 +29,7 @@ class FileType(enum.Enum):
     # pylint: disable=invalid-name
     UNKNOWN = 'Unknown'
     TOP_STUD = 'Top Stud'
+    UNDERSIDE_STUD = 'Underside Stud'
 
 
 class FileListDic():
@@ -131,9 +132,17 @@ def get_ldraw_file_type(file_name):
         'stud15.dat', 'stud2.dat', 'stud2a.dat', 'stud17a.dat',
         'stud9.dat', 'stud6.dat', 'stud6a.dat']
 
+    underside_stud_file_names = [
+        'stud3.dat', 'stud3a.dat', 'studx.dat', 'stud12.dat', 'stud4.dat',
+        'stud4a.dat', 'stud4s.dat', 'stud4s2.dat', 'stud4o.dat', 'stud4od.dat',
+        'stud4h.dat', 'stud4fns.dat', 'stud16.dat', 'stud21a.dat'
+    ]
+
     check_name = file_name.lower()
     if check_name in top_stud_file_names:
         file_type = FileType.TOP_STUD
+    elif check_name in underside_stud_file_names:
+        file_type = FileType.UNDERSIDE_STUD
 
     return file_type
 

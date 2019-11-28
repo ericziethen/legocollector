@@ -323,11 +323,29 @@ def test_create_sub_file_dic():
     assert Path(sub1_file) in rel_dic
     assert len(rel_dic[Path(file_name_subs)]) == len(sub1_subs)
 '''
+# Focus on Proper Lego Underside Studs, Duplo etc. might not considered atm
+UNDERSIDE_STAT_FILES = [
+    ('stud3.dat'),
+    ('stud3a.dat'),
+    ('studx.dat'),
+    ('stud12.dat'),
+    ('stud4.dat'),
+    ('stud4a.dat'),
+    ('stud4s.dat'),
+    ('stud4s2.dat'),
+    ('stud4o.dat'),
+    ('stud4od.dat'),
+    ('stud4h.dat'),
+    ('stud4fns.dat'),
+    ('stud16.dat'),
+    ('stud21a.dat'),
+]
+@pytest.mark.parametrize('file_name', UNDERSIDE_STAT_FILES)
+def test_file_is_underside_stud_file(file_name):
+    assert ldraw_parser.get_ldraw_file_type(file_name) == FileType.UNDERSIDE_STUD
 
-def test_file_is_underside_stud_file():                # test_file_is_top_stud_file
-    assert False
 
-
+@pytest.mark.eric
 def test_get_underside_stud_count():                   # test_get_stud_count
     assert False
 
