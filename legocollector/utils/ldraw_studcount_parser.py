@@ -133,13 +133,22 @@ def get_ldraw_file_type(file_name):
         'stud9.dat', 'stud6.dat', 'stud6a.dat']
 
     underside_stud_file_names = [
-        'stud3.dat', 'stud3a.dat', 'studx.dat', 'stud12.dat', 'stud4.dat',
-        'stud4a.dat', 'stud4od.dat',
-        'stud4h.dat', 'stud4fns.dat', 'stud16.dat', 'stud21a.dat'
+        'stud3.dat', 'stud3a.dat', 'studx.dat', 'stud12.dat', 
     ]
-    # Underside studs ignored for now
-    # - stud4s.dat, stud4s2.dat - slope part, hard to spor\t
-    # - stud4o.dat - Whole for stud
+    # Underside studs rings5ignored for now
+    '''
+    stud16.dat
+    stud21a.dat
+    stud22a.dat
+    stud4.dat
+    stud4a.dat
+    stud4fns.dat
+    stud4h.dat
+    stud4o.dat
+    stud4od.dat
+    stud4s.dat
+    stud4s2.dat
+'''
 
     check_name = file_name.lower()
     if check_name in top_stud_file_names:

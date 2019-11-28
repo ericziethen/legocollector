@@ -328,16 +328,17 @@ UNDERSIDE_STAT_FILES = [
     ('stud3a.dat'),
     ('studx.dat'),
     ('stud12.dat'),
-    ('stud4.dat'),
-    ('stud4a.dat'),
-    #('stud4s.dat'),    # Ignore Slope Part for Now, hard to spot
-    #('stud4s2.dat'),   # Ignore Slope Part for Now, hard to spot
-    #('stud4o.dat'),    # Ignore, Seems not visible as stud, more of a hole
-    ('stud4od.dat'),
-    ('stud4h.dat'),
-    ('stud4fns.dat'),
-    ('stud16.dat'),
-    ('stud21a.dat'),
+    #('stud4.dat'),,    # Start Stud Ring
+    #('stud4a.dat'),
+    #('stud4s.dat')
+    #('stud4s2.dat'),
+    #('stud4o.dat'),
+    #('stud4od.dat'),
+    #('stud4h.dat'),
+    #('stud4fns.dat'),
+    #('stud16.dat'),
+    #('stud21a.dat'),
+    #('stud22a.dat'),
 ]
 @pytest.mark.parametrize('file_name', UNDERSIDE_STAT_FILES)
 def test_file_is_underside_stud_file(file_name):
@@ -346,8 +347,7 @@ def test_file_is_underside_stud_file(file_name):
 
 
 ''' MISSING TESTS
-    ('stud4o.dat'),
-    ('stud4od.dat'),
+    (''),
     ('stud4h.dat'),
     ('stud4fns.dat'),
     ('stud16.dat'),
@@ -359,20 +359,14 @@ def test_file_is_underside_stud_file(file_name):
 UNDERSIDE_STUD_COUNT_PARTS = [
     (1, '11211'),                   # contains: stud3.dat
     (2, '30099'),                   # contains: stud3.dat, stud3a.dat
-    (3, '71427c01'),                # contains: stud4.dat - Based on File 3, Image looks like 5
-    (1, '15469'),                   # contains: stud4a.dat
     (12, '32531'),                  # contains: studx.dat
     (1, 'u8101'),                   # contains stud12.dat
-    (9, '13269'),                   # contains stud4s.dat
-    (21, '32084'),                  # contain stud4s.dat, stud4s2.dat, excluded from count, not visible in ldraw
-    (0, '10172'),                   # contains stud4o.dat, exclude from count, more of a stud hole
-
-
-    #(, ''),         # contains
-    #(, ''),         # contains
-    #(, ''),         # contains
-    #(, ''),         # contains
-    #(, ''),         # contains
+    #(3, '71427c01'),                # contains: stud4.dat - Based on File 3, Image looks like 5
+    #(1, '15469'),                   # contains: stud4a.dat
+    #(9, '13269'),                   # contains stud4s.dat
+    #(21, '32084'),                  # contain stud4s.dat, stud4s2.dat, excluded from count, not visible in ldraw
+    #(0, '10172'),                   # contains stud4o.dat, exclude from count, more of a stud hole
+    #(13+1, '2681'),                 # contains stud4od.dat, exclude from count, more of a stud hole, seems like visible in here
 ]
 @pytest.mark.eric
 @pytest.mark.parametrize('stud_count, part_num', UNDERSIDE_STUD_COUNT_PARTS)
@@ -397,3 +391,11 @@ def test_calc_underside_stud_count_for_part_list():    # test_calc_stud_count_fo
     assert False
 '''
 
+'''
+def test_file_is_underside_stud_ring_file():
+def test_file_is_underside_stud_ring_file():
+def test_get_underside_stud_ring_count():
+
+def test_get_mixed_stud_counts():
+
+'''
