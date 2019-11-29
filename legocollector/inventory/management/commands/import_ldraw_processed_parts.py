@@ -52,18 +52,10 @@ class Command(BaseCommand):
                         parts_not_found_list.append(part_num)
 
                 for part in part_list:
-                    update = False
-                    if 'top_top_studs' in part_dic:
+                    if "processing_errors" not in part_dic:
                         part.top_studs = part_dic['top_top_studs']
-                        update = True
-                    if 'bottom_studs' in part_dic:
                         part.bottom_studs = part_dic['bottom_studs']
-                        update = True
-                    if 'stud_rings' in part_dic:
-                        part.stud_rings = part_dic['stud_rings']
-                        update = True
-
-                    if update:
+                        part.stud_rings = part_dic['stud_ring_count']
                         part.save()
 
                     parts_processed_counts += 1
