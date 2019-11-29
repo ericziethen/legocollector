@@ -1,6 +1,6 @@
 import os
 
-from pathlib import Path, WindowsPath
+from pathlib import Path
 
 import pytest
 
@@ -203,7 +203,6 @@ def test_calc_stud_count_for_part_list():
     assert stud_count_dic['3070b']['underside_stud_count'] == 0
     assert stud_count_dic['3070b']['stud_ring_count'] == 0
 
-
     # Part 71427c01
     assert stud_count_dic['71427c01']['top_stud_count'] == 16
     assert stud_count_dic['71427c01']['underside_stud_count'] == 0  # on graphic looks like 2 but no files defined
@@ -351,8 +350,8 @@ STUD_RING_FILES = [
     ('stud4h.dat'),
     ('stud4o.dat'),
     ('stud4od.dat'),
-    #('stud4s.dat'),    # Ignore, Sloped, Invisible
-    #('stud4s2.dat'),   # Ignore, Sloped, Invisible
+    # ('stud4s.dat'),    # Ignore, Sloped, Invisible
+    # ('stud4s2.dat'),   # Ignore, Sloped, Invisible
 ]
 @pytest.mark.parametrize('file_name', STUD_RING_FILES)
 def test_file_is_stud_ring_file(file_name):

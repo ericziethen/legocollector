@@ -134,7 +134,7 @@ def get_ldraw_file_type(file_name):
         'stud9.dat', 'stud6.dat', 'stud6a.dat']
 
     underside_stud_file_names = [
-        'stud3.dat', 'stud3a.dat', 'studx.dat', 'stud12.dat', 
+        'stud3.dat', 'stud3a.dat', 'studx.dat', 'stud12.dat',
     ]
 
     stud_ring_file_names = [
