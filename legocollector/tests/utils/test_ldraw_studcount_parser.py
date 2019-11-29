@@ -296,64 +296,15 @@ def test_generate_part_list_to_process():
     assert unofficial_key in part_list
 
 
-
-
-
-
-
-
-
-'''
-@pytest.mark.eric
-def test_create_sub_file_dic():
-    file_name = '60477.dat'
-    file_name_subs = [WindowsPath(R's\60477s01.dat')]
-    sub1_file = WindowsPath(R's\60477s01.dat')
-    sub1_subs = ['1-4cyls.dat', '2-4cyli.dat', '2-4edge.dat', '4-4cyls.dat',
-                 '4-4edge.dat', 'box2-5.dat', 'rect.dat', 'rect2p.dat', 'stud.dat', 'stud3a.dat']
-
-    file_dic = FileListDic(parts_dir=LDRAW_PARTS_DIR, primitives_dir=LDRAW_PRIMITIVES_DIR)
-
-    rel_dic = ldraw_parser.get_sub_file_dic(file_name, file_dic)
-
-    assert Path(file_name) in rel_dic
-    assert len(rel_dic[Path(file_name)]) == len(file_name_subs)
-
-    assert Path(sub1_file) in rel_dic
-    assert len(rel_dic[Path(file_name_subs)]) == len(sub1_subs)
-'''
-# Focus on Proper Lego Underside Studs, Duplo etc. might not considered atm
-UNDERSIDE_STAT_FILES = [
+UNDERSIDE_STUD_FILES = [
     ('stud3.dat'),
     ('stud3a.dat'),
     ('studx.dat'),
     ('stud12.dat'),
-    #('stud4.dat'),,    # Start Stud Ring
-    #('stud4a.dat'),
-    #('stud4s.dat')
-    #('stud4s2.dat'),
-    #('stud4o.dat'),
-    #('stud4od.dat'),
-    #('stud4h.dat'),
-    #('stud4fns.dat'),
-    #('stud16.dat'),
-    #('stud21a.dat'),
-    #('stud22a.dat'),
 ]
-@pytest.mark.parametrize('file_name', UNDERSIDE_STAT_FILES)
+@pytest.mark.parametrize('file_name', UNDERSIDE_STUD_FILES)
 def test_file_is_underside_stud_file(file_name):
     assert ldraw_parser.get_ldraw_file_type(file_name) == FileType.UNDERSIDE_STUD
-
-
-
-''' MISSING TESTS
-    (''),
-    ('stud4h.dat'),
-    ('stud4fns.dat'),
-    ('stud16.dat'),
-    ('stud21a.dat'),
- '''
-
 
 
 UNDERSIDE_STUD_COUNT_PARTS = [
@@ -368,7 +319,6 @@ UNDERSIDE_STUD_COUNT_PARTS = [
     #(0, '10172'),                   # contains stud4o.dat, exclude from count, more of a stud hole
     #(13+1, '2681'),                 # contains stud4od.dat, exclude from count, more of a stud hole, seems like visible in here
 ]
-@pytest.mark.eric
 @pytest.mark.parametrize('stud_count, part_num', UNDERSIDE_STUD_COUNT_PARTS)
 def test_get_underside_stud_count(stud_count, part_num):
     file_name = F'{part_num}.dat'
@@ -385,17 +335,49 @@ def test_get_underside_stud_count(stud_count, part_num):
     assert stud_count == processed_files_dic[file_path]['underside_stud_count']
 
 
-
 '''
+# TODO
 def test_calc_underside_stud_count_for_part_list():    # test_calc_stud_count_for_part_list
     assert False
 '''
 
+STUD_RING_FILES = [
+    ('stud16.dat'),
+    ('stud21a.dat'),
+    ('stud22a.dat'),
+    ('stud4.dat'),
+    ('stud4a.dat'),
+    ('stud4fns.dat'),
+    ('stud4h.dat'),
+    ('stud4o.dat'),
+    ('stud4od.dat'),
+    ('stud4s.dat'),
+    ('stud4s2.dat'),
+]
+@pytest.mark.eric
+@pytest.mark.parametrize('file_name', STUD_RING_FILES)
+def test_file_is_underside_stud_file(file_name):
+    assert ldraw_parser.get_ldraw_file_type(file_name) == FileType.STUD_RING
+
+
+
 '''
-def test_file_is_underside_stud_ring_file():
-def test_file_is_underside_stud_ring_file():
-def test_get_underside_stud_ring_count():
+def test_file_is_stud_ring_file():
+        assert False
+
+
+def test_file_is_stud_ring_file():
+        assert False
+
+
+def test_get_stud_ring_count():
+        assert False
+
+
 
 def test_get_mixed_stud_counts():
+        assert False
+
+
 
 '''
