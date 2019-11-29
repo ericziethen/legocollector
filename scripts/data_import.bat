@@ -9,11 +9,10 @@ pushd "%PROJ_MAIN_DIR%\%PACKAGE_ROOT%"
 
 set IMPORT_DATE=2019.11.29
 
-!!! UPDATE ALL 4
 set REBRICKABLE_CSV_FILES_DIR=D:\Downloads\Finished\# Lego\rebrickable.com\Downloads\%IMPORT_DATE%
 set REBRICKABLE_PART_SCRAPE_FILE_PATH=D:\Downloads\Finished\# Lego\rebrickable.com\Scraped\%IMPORT_DATE%\parts_scraped.json
 set BRICKLINK_PART_FILE_PATH=D:\Downloads\Finished\# Lego\bricklink.com\%IMPORT_DATE%\Parts.xml
-set LDRAW_PARTS_FILE_PATH=D:\Downloads\Finished\# Lego\ldraw\# Processed Data\2019.11.27_ldraw_studcount.json
+set LDRAW_PARTS_FILE_PATH=D:\Downloads\Finished\# Lego\ldraw\# Processed Data\%IMPORT_DATE%\ldraw_studcount.json
 
 echo %date% - %time%
 
