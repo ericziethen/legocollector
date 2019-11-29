@@ -180,9 +180,10 @@ def calc_stud_count_for_part_file(
 
     top_stud_count = get_stud_count_for_file_type(file_path, FileType.TOP_STUD)
     underside_stud_count = get_stud_count_for_file_type(file_path, FileType.UNDERSIDE_STUD)
+    stud_ring_count = get_stud_count_for_file_type(file_path, FileType.STUD_RING)
 
     # Process sub files
-    if not top_stud_count and not underside_stud_count:
+    if not any([top_stud_count, underside_stud_count, stud_ring_count]):
         ldraw_file = LdrawFile(file_path)
         for sub_file in ldraw_file.sup_part_files:
 
@@ -194,6 +195,7 @@ def calc_stud_count_for_part_file(
             if sub_file_path in processed_files_dic:
                 top_stud_count += processed_files_dic[sub_file_path]['top_stud_count']
                 underside_stud_count += processed_files_dic[sub_file_path]['underside_stud_count']
+                stud_ring_count += processed_files_dic[sub_file_path]['stud_ring_count']
             else:
                 try:
                     calc_stud_count_for_part_file(
@@ -204,11 +206,13 @@ def calc_stud_count_for_part_file(
 
                 top_stud_count += processed_files_dic[sub_file_path]['top_stud_count']
                 underside_stud_count += processed_files_dic[sub_file_path]['underside_stud_count']
+                stud_ring_count += processed_files_dic[sub_file_path]['stud_ring_count']
 
     if file_path not in processed_files_dic:
         processed_files_dic[file_path] = {
             'top_stud_count': top_stud_count,
-            'underside_stud_count': underside_stud_count}
+            'underside_stud_count': underside_stud_count,
+            'stud_ring_count': stud_ring_count}
 
 
 def calc_stud_count_for_part_list(part_list, file_dic):
