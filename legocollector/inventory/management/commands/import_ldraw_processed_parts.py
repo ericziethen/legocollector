@@ -53,14 +53,14 @@ class Command(BaseCommand):
 
                 for part in part_list:
                     update = False
-                    if 'top_stud_count' in part_dic:
-                        part.stud_count = part_dic['top_stud_count']
+                    if 'top_top_studs' in part_dic:
+                        part.top_studs = part_dic['top_top_studs']
                         update = True
-                    if 'underside_stud_count' in part_dic:
-                        part.underside_stud_count = part_dic['underside_stud_count']
+                    if 'bottom_studs' in part_dic:
+                        part.bottom_studs = part_dic['bottom_studs']
                         update = True
-                    if 'underside_stud_ring_count' in part_dic:
-                        part.underside_stud_ring_count = part_dic['underside_stud_ring_count']
+                    if 'stud_rings' in part_dic:
+                        part.stud_rings = part_dic['stud_rings']
                         update = True
 
                     if update:

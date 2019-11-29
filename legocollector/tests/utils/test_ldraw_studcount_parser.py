@@ -107,17 +107,17 @@ def test_get_sub_files_from_file():
     assert sup_part_files.count(Path('box5.dat')) == 1
 
 
-def test_get_top_stud_count_for_unknown_file():
-    assert ldraw_parser.get_stud_count_for_file_type('UnknownFile.dat', ldraw_parser.FileType.TOP_STUD) == 0
+def test_get_top_top_studs_for_unknown_file():
+    assert ldraw_parser.get_top_studs_for_file_type('UnknownFile.dat', ldraw_parser.FileType.TOP_STUD) == 0
 
 
 @pytest.mark.parametrize('file_name', TOP_STAT_FILES)
-def test_get_top_stud_count_for_stud_files(file_name):
-    assert ldraw_parser.get_stud_count_for_file_type(file_name, ldraw_parser.FileType.TOP_STUD) == 1
+def test_get_top_top_studs_for_stud_files(file_name):
+    assert ldraw_parser.get_top_studs_for_file_type(file_name, ldraw_parser.FileType.TOP_STUD) == 1
 
 
 # The aim is to test at least all (top) studs at least in 1 part for good coverage
-STUD_COUNT_PARTS = [
+top_studs_PARTS = [
     (0, '3070b'),
     (1, '3024'),
     (1, '60477'),
@@ -136,8 +136,8 @@ STUD_COUNT_PARTS = [
     (4, '44511'),
     (16, '71427c01'),
 ]
-@pytest.mark.parametrize('stud_count, part_num', STUD_COUNT_PARTS)
-def test_get_stud_count(stud_count, part_num):
+@pytest.mark.parametrize('top_studs, part_num', top_studs_PARTS)
+def test_get_top_studs(top_studs, part_num):
     file_name = F'{part_num}.dat'
     key = Path(file_name)
 
@@ -146,8 +146,8 @@ def test_get_stud_count(stud_count, part_num):
     file_path = file_dic[key]
 
     processed_files_dic = {}
-    ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic)
-    assert stud_count == processed_files_dic[file_path]['top_stud_count']
+    ldraw_parser.calc_top_studs_for_part_file(file_path, file_dic, processed_files_dic)
+    assert top_studs == processed_files_dic[file_path]['top_top_studs']
 
 
 def test_processed_files_dic_specified():
@@ -157,12 +157,12 @@ def test_processed_files_dic_specified():
     file_path = file_dic[key]
     processed_files_dic = {}
 
-    ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic)
+    ldraw_parser.calc_top_studs_for_part_file(file_path, file_dic, processed_files_dic)
     assert len(processed_files_dic.values()) == 3
 
-    assert processed_files_dic[LDRAW_PARTS_DIR / '3024.dat']['top_stud_count'] == 1
-    assert processed_files_dic[LDRAW_PRIMITIVES_DIR / 'box5.dat']['top_stud_count'] == 0
-    assert processed_files_dic[LDRAW_PRIMITIVES_DIR / 'stud.dat']['top_stud_count'] == 1
+    assert processed_files_dic[LDRAW_PARTS_DIR / '3024.dat']['top_top_studs'] == 1
+    assert processed_files_dic[LDRAW_PRIMITIVES_DIR / 'box5.dat']['top_top_studs'] == 0
+    assert processed_files_dic[LDRAW_PRIMITIVES_DIR / 'stud.dat']['top_top_studs'] == 1
 
 
 def test_file_visited_count():
@@ -172,46 +172,46 @@ def test_file_visited_count():
     processed_files_dic = {}
 
     # Run 1st time
-    ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic, file_visited_count)
+    ldraw_parser.calc_top_studs_for_part_file(file_path, file_dic, processed_files_dic, file_visited_count)
     assert len(file_visited_count.values()) == 3
     assert file_visited_count[LDRAW_PARTS_DIR / '3024.dat'] == 1
     assert file_visited_count[LDRAW_PRIMITIVES_DIR / 'box5.dat'] == 1
     assert file_visited_count[LDRAW_PRIMITIVES_DIR / 'stud.dat'] == 1
 
     # Run 2nd time
-    ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic, file_visited_count)
+    ldraw_parser.calc_top_studs_for_part_file(file_path, file_dic, processed_files_dic, file_visited_count)
     assert len(file_visited_count.values()) == 3
     assert file_visited_count[LDRAW_PARTS_DIR / '3024.dat'] == 2
     assert file_visited_count[LDRAW_PRIMITIVES_DIR / 'box5.dat'] == 1
     assert file_visited_count[LDRAW_PRIMITIVES_DIR / 'stud.dat'] == 1
 
 
-def test_calc_stud_count_for_part_list():
+def test_calc_top_studs_for_part_list():
     part_list = ['3070b', '71427c01', '32531']
     part_list = [Path(LDRAW_PARTS_DIR) / F'{p}.dat' for p in part_list]
 
     file_dic = FileListDic(
         parts_dir=LDRAW_PARTS_DIR, primitives_dir=LDRAW_PRIMITIVES_DIR)
 
-    stud_count_dic = ldraw_parser.calc_stud_count_for_part_list(part_list, file_dic)
+    top_studs_dic = ldraw_parser.calc_top_studs_for_part_list(part_list, file_dic)
 
-    assert len(stud_count_dic) == 3
-    print(stud_count_dic)
+    assert len(top_studs_dic) == 3
+    print(top_studs_dic)
 
     # Part 3070b
-    assert stud_count_dic['3070b']['top_stud_count'] == 0
-    assert stud_count_dic['3070b']['underside_stud_count'] == 0
-    assert stud_count_dic['3070b']['stud_ring_count'] == 0
+    assert top_studs_dic['3070b']['top_top_studs'] == 0
+    assert top_studs_dic['3070b']['bottom_studs'] == 0
+    assert top_studs_dic['3070b']['stud_ring_count'] == 0
 
     # Part 71427c01
-    assert stud_count_dic['71427c01']['top_stud_count'] == 16
-    assert stud_count_dic['71427c01']['underside_stud_count'] == 0  # on graphic looks like 2 but no files defined
-    assert stud_count_dic['71427c01']['stud_ring_count'] == 3
+    assert top_studs_dic['71427c01']['top_top_studs'] == 16
+    assert top_studs_dic['71427c01']['bottom_studs'] == 0  # on graphic looks like 2 but no files defined
+    assert top_studs_dic['71427c01']['stud_ring_count'] == 3
 
     # Part 32531
-    assert stud_count_dic['32531']['top_stud_count'] == 16
-    assert stud_count_dic['32531']['underside_stud_count'] == 12
-    assert stud_count_dic['32531']['stud_ring_count'] == 0
+    assert top_studs_dic['32531']['top_top_studs'] == 16
+    assert top_studs_dic['32531']['bottom_studs'] == 12
+    assert top_studs_dic['32531']['stud_ring_count'] == 0
 
 
 UNOFFICIAL_FILES = [
@@ -253,12 +253,12 @@ def test_can_handle_duplicate_unofficial_files():
     assert key in file_dic
 
 
-STUD_COUNT_MISSING_UNOFFICIAL_PARTS = [
+top_studs_MISSING_UNOFFICIAL_PARTS = [
     (24, '2048'),
     (6, 's/3587s01'),
 ]
-@pytest.mark.parametrize('stud_count, part_num', STUD_COUNT_MISSING_UNOFFICIAL_PARTS)
-def test_unofficial_missing_part_stud_count(stud_count, part_num):
+@pytest.mark.parametrize('top_studs, part_num', top_studs_MISSING_UNOFFICIAL_PARTS)
+def test_unofficial_missing_part_top_studs(top_studs, part_num):
     file_name = F'{part_num}.dat'
     key = Path(file_name)
     file_dic = FileListDic(
@@ -270,8 +270,8 @@ def test_unofficial_missing_part_stud_count(stud_count, part_num):
     file_path = file_dic[key]
 
     processed_files_dic = {}
-    ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic)
-    assert stud_count == processed_files_dic[file_path]['top_stud_count']
+    ldraw_parser.calc_top_studs_for_part_file(file_path, file_dic, processed_files_dic)
+    assert top_studs == processed_files_dic[file_path]['top_top_studs']
 
 
 def test_unofficial_file_with_missing_subparts():
@@ -288,7 +288,7 @@ def test_unofficial_file_with_missing_subparts():
     file_path = file_dic[key]
 
     with pytest.raises(ldraw_parser.SubfileMissingError):
-        ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic)
+        ldraw_parser.calc_top_studs_for_part_file(file_path, file_dic)
 
 
 def test_generate_part_list_to_process():
@@ -318,14 +318,14 @@ def test_file_is_underside_stud_file(file_name):
     assert ldraw_parser.get_ldraw_file_type(file_name) == FileType.UNDERSIDE_STUD
 
 
-UNDERSIDE_STUD_COUNT_PARTS = [
+bottom_studs_PARTS = [
     (1, '11211'),                   # contains: stud3.dat
     (2, '30099'),                   # contains: stud3.dat, stud3a.dat
     (12, '32531'),                  # contains: studx.dat
     (1, 'u8101'),                   # contains stud12.dat
 ]
-@pytest.mark.parametrize('stud_count, part_num', UNDERSIDE_STUD_COUNT_PARTS)
-def test_get_underside_stud_count(stud_count, part_num):
+@pytest.mark.parametrize('top_studs, part_num', bottom_studs_PARTS)
+def test_get_bottom_studs(top_studs, part_num):
     file_name = F'{part_num}.dat'
     key = Path(file_name)
 
@@ -336,8 +336,8 @@ def test_get_underside_stud_count(stud_count, part_num):
     ldraw_parser.print_sub_files(file_dic[key], file_dic, prefix='stud')
 
     processed_files_dic = {}
-    ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic)
-    assert stud_count == processed_files_dic[file_path]['underside_stud_count']
+    ldraw_parser.calc_top_studs_for_part_file(file_path, file_dic, processed_files_dic)
+    assert top_studs == processed_files_dic[file_path]['bottom_studs']
 
 
 STUD_RING_FILES = [
@@ -371,8 +371,8 @@ STUD_RING_COUNT_PARTS = [
     (1, '24151'),                   # contains stud4h.dat
 
 ]
-@pytest.mark.parametrize('stud_count, part_num', STUD_RING_COUNT_PARTS)
-def test_get_stud_ring_count(stud_count, part_num):
+@pytest.mark.parametrize('top_studs, part_num', STUD_RING_COUNT_PARTS)
+def test_get_stud_ring_count(top_studs, part_num):
     file_name = F'{part_num}.dat'
     key = Path(file_name)
 
@@ -383,5 +383,5 @@ def test_get_stud_ring_count(stud_count, part_num):
     ldraw_parser.print_sub_files(file_dic[key], file_dic, prefix='stud')
 
     processed_files_dic = {}
-    ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic)
-    assert stud_count == processed_files_dic[file_path]['stud_ring_count']
+    ldraw_parser.calc_top_studs_for_part_file(file_path, file_dic, processed_files_dic)
+    assert top_studs == processed_files_dic[file_path]['stud_ring_count']

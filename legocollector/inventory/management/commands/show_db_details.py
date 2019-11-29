@@ -22,9 +22,9 @@ class Command(BaseCommand):
             'Has Width': 'width',
             'Has Height': 'height',
             'Has Length': 'length',
-            'Has Stud Count': 'stud_count',
-            'Has Underside Stud Count': 'underside_stud_count',
-            'Has Stud Ring Count': 'underside_stud_ring_count',
+            'Has Stud Count': 'top_studs',
+            'Has Underside Stud Count': 'bottom_studs',
+            'Has Stud Ring Count': 'stud_rings',
             'Has Image URL': 'image_url',
         }
         parts_detail = {val: 0 for val in check_not_none_fields}

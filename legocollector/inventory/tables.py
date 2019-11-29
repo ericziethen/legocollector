@@ -50,7 +50,7 @@ class PartTable(Table):
     class Meta:  # pylint: disable=too-few-public-methods
         model = Part
         fields = ('part_num', 'name', 'width', 'height', 'length',
-                  'stud_count', 'underside_stud_count', 'underside_stud_ring_count',
+                  'top_studs', 'bottom_studs', 'stud_rings',
                   'category', 'color_count', 'colors')
         attrs = {"class": "table-striped table-bordered"}
         empty_text = "No Parts Found"
@@ -72,7 +72,7 @@ class UserPartTable(Table):
     class Meta:  # pylint: disable=too-few-public-methods
         model = UserPart
         fields = ['part', 'image', 'part.part_num', 'part.category', 'width', 'height',
-                  'length', 'stud_count', 'underside_stud_count', 'underside_stud_ring_count',
+                  'length', 'top_studs', 'bottom_studs', 'stud_rings',
                   'qty', 'colors']
         attrs = {"class": "table-striped table-bordered"}
         empty_text = "No Parts Found"
