@@ -368,17 +368,6 @@ def test_file_is_stud_ring_file(file_name):
 
 
 
-''' MISSING
-    ('stud16.dat'),
-    ('stud21a.dat'),
-    ('stud22a.dat'),
-    
-    
-    ('stud4fns.dat'),
-    ('stud4h.dat'),
-'''
-
-
 
 
 STUD_RING_COUNT_PARTS = [
@@ -389,10 +378,10 @@ STUD_RING_COUNT_PARTS = [
     (1, '10172'),                   # contains stud4o.dat
     (13, '2681'),                   # contains stud4od.dat
     (1, '10048'),                   # contains stud16.dat
-
+    (4, '47715'),                   # contains stud21a.dat
 
     
-    #(, ''),                   # contains stud21a.dat
+    #
     #(, ''),                   # contains stud22a.dat
     #(, ''),                   # contains stud4fns.dat
     #(, ''),                   # contains stud4h.dat
