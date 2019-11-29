@@ -117,7 +117,7 @@ def test_get_top_top_studs_for_stud_files(file_name):
 
 
 # The aim is to test at least all (top) studs at least in 1 part for good coverage
-top_studs_PARTS = [
+TOP_STUD_PARTS = [
     (0, '3070b'),
     (1, '3024'),
     (1, '60477'),
@@ -136,7 +136,7 @@ top_studs_PARTS = [
     (4, '44511'),
     (16, '71427c01'),
 ]
-@pytest.mark.parametrize('top_studs, part_num', top_studs_PARTS)
+@pytest.mark.parametrize('top_studs, part_num', TOP_STUD_PARTS)
 def test_get_top_studs(top_studs, part_num):
     file_name = F'{part_num}.dat'
     key = Path(file_name)
@@ -253,11 +253,11 @@ def test_can_handle_duplicate_unofficial_files():
     assert key in file_dic
 
 
-top_studs_MISSING_UNOFFICIAL_PARTS = [
+TOP_STUD_MISSING_UNOFFICIAL_PARTS = [
     (24, '2048'),
     (6, 's/3587s01'),
 ]
-@pytest.mark.parametrize('top_studs, part_num', top_studs_MISSING_UNOFFICIAL_PARTS)
+@pytest.mark.parametrize('top_studs, part_num', TOP_STUD_MISSING_UNOFFICIAL_PARTS)
 def test_unofficial_missing_part_top_studs(top_studs, part_num):
     file_name = F'{part_num}.dat'
     key = Path(file_name)
@@ -318,13 +318,13 @@ def test_file_is_underside_stud_file(file_name):
     assert ldraw_parser.get_ldraw_file_type(file_name) == FileType.UNDERSIDE_STUD
 
 
-bottom_studs_PARTS = [
+BOTTOM_STUD_PARTS = [
     (1, '11211'),                   # contains: stud3.dat
     (2, '30099'),                   # contains: stud3.dat, stud3a.dat
     (12, '32531'),                  # contains: studx.dat
     (1, 'u8101'),                   # contains stud12.dat
 ]
-@pytest.mark.parametrize('top_studs, part_num', bottom_studs_PARTS)
+@pytest.mark.parametrize('top_studs, part_num', BOTTOM_STUD_PARTS)
 def test_get_bottom_studs(top_studs, part_num):
     file_name = F'{part_num}.dat'
     key = Path(file_name)
