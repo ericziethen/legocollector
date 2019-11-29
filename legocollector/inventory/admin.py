@@ -21,13 +21,17 @@ class ColorAdmin(admin.ModelAdmin):
 class PartAdmin(admin.ModelAdmin):
     fieldsets = [
         ('Identification', {'fields': ['part_num', 'name', 'category', 'image_url']}),
-        ('Dimensions', {'fields': ['width', 'height', 'length', 'stud_count']}),
+        ('Dimensions', {'fields': ['width', 'height', 'length']}),
+        ('Studs', {'fields': ['stud_count', 'underside_stud_count', 'underside_stud_ring_count']}),
         ('Available Colors', {'fields': ['available_colors']}),
         ('Related parts', {'fields': ['related_parts']}),
     ]
     list_display = ('part_num', 'name', 'category', 'width', 'height', 'length',
-                    'stud_count', 'id', 'related_part_count')
-    list_filter = ['width', 'height', 'length', 'stud_count']
+                    'stud_count', 'underside_stud_count', 'underside_stud_ring_count',
+                    'id', 'related_part_count')
+    list_filter = [
+        'width', 'height', 'length',
+        'stud_count', 'underside_stud_count', 'underside_stud_ring_count']
     search_fields = ['part_num', 'name', 'category__name']
     readonly_fields = ['related_parts', 'available_colors']
 
