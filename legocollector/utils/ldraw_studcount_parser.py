@@ -133,7 +133,9 @@ def get_ldraw_file_type(file_name):
         'stud15.dat', 'stud2.dat', 'stud2a.dat', 'stud17a.dat',
         'stud9.dat', 'stud6.dat', 'stud6a.dat']
 
-    underside_stud_file_names = ['stud3.dat', 'stud3a.dat', 'studx.dat', 'stud12.dat']
+    underside_stud_file_names = [
+        'stud3.dat', 'stud3a.dat', 'studx.dat', 'stud12.dat', 
+    ]
 
     stud_ring_file_names = [
         'stud16.dat', 'stud21a.dat', 'stud22a.dat', 'stud4.dat', 'stud4a.dat',
@@ -150,11 +152,8 @@ def get_ldraw_file_type(file_name):
     return file_type
 
 
-def get_stud_count_for_file(file_path):
-    single_stud_file_type = [
-        FileType.TOP_STUD, FileType.UNDERSIDE_STUD, FileType.STUD_RING
-    ]
-    if get_ldraw_file_type(os.path.basename(file_path)) in single_stud_file_type:
+def get_stud_count_for_file_type(file_path, file_type):
+    if get_ldraw_file_type(os.path.basename(file_path)) == file_type:
         return 1
     return 0
 
@@ -179,8 +178,8 @@ def calc_stud_count_for_part_file(
         else:
             file_visited_count[file_path] += 1
 
-    top_stud_count = get_stud_count_for_file(file_path)
-    underside_stud_count = get_stud_count_for_file(file_path)
+    top_stud_count = get_stud_count_for_file_type(file_path, FileType.TOP_STUD)
+    underside_stud_count = get_stud_count_for_file_type(file_path, FileType.UNDERSIDE_STUD)
 
     # Process sub files
     if not top_stud_count and not underside_stud_count:
