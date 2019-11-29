@@ -15,8 +15,8 @@ class Command(BaseCommand):
         processed_parts = {}
 
         related_attributes_set_count = 0
-        related_stud_counts_set = 0
-        conflicting_stud_counts = {}
+        related_top_studss_set = 0
+        conflicting_top_studss = {}
         related_image_urls_set = 0
 
         with transaction.atomic():
@@ -31,21 +31,21 @@ class Command(BaseCommand):
                     #       https://rebrickable.com/parts/10a/baseplate-24-x-32-with-squared-corners/
                     #       https://rebrickable.com/parts/10b/baseplate-24-x-32-with-rounded-corners/
 
-                    stud_count = None
+                    top_studs = None
                     image_url = None
                     for related_part in part_family:
                         # Figure out the Stud Count, only take the count if there are not more
                         # than 1 different stud counts
-                        if related_part.stud_count is not None:
-                            if stud_count and stud_count != related_part.stud_count:
+                        if related_part.top_studs is not None:
+                            if top_studs and top_studs != related_part.top_studs:
                                 # a different stud count found, igore whole family
-                                stud_count = None
-                                conflicting_stud_counts[part.part_num] =\
-                                    [(p.part_num, p.stud_count) for p in sorted(part_family, key=lambda p: p.part_num)]
+                                top_studs = None
+                                conflicting_top_studss[part.part_num] =\
+                                    [(p.part_num, p.top_studs) for p in sorted(part_family, key=lambda p: p.part_num)]
                                 break
 
-                            if stud_count is None:
-                                stud_count = related_part.stud_count
+                            if top_studs is None:
+                                top_studs = related_part.top_studs
 
                         # Check the image url, only copy if none other set
                         # It's quite likely that different part's have different urls, e.g. different prints
@@ -72,10 +72,10 @@ class Command(BaseCommand):
                             related_attributes_set_count += 1
 
                         # Set the Stud Count
-                        if stud_count and related_part.stud_count is None:
+                        if top_studs and related_part.top_studs is None:
                             update = True
-                            related_part.stud_count = stud_count
-                            related_stud_counts_set += 1
+                            related_part.top_studs = top_studs
+                            related_top_studss_set += 1
 
                         # Set Image URL
                         if image_url and related_part.image_url is None:
@@ -94,8 +94,8 @@ class Command(BaseCommand):
                 if (idx % 1000) == 0:
                     logger.info(F'  {idx} Parts Processed')
 
-        conflict_stud_str = '\n    '.join([F'%s:: %s' % (key, val) for (key, val) in conflicting_stud_counts.items()])
+        conflict_stud_str = '\n    '.join([F'%s:: %s' % (key, val) for (key, val) in conflicting_top_studss.items()])
         logger.info(F'  Conflicting StudCounts Families: \n    {conflict_stud_str}')
         logger.info(F'  Attributes Set on: {related_attributes_set_count} related parts')
-        logger.info(F'  Stud Count set on: {related_stud_counts_set} related parts.')
+        logger.info(F'  Stud Count set on: {related_top_studss_set} related parts.')
         logger.info(F'  Image Url set on:  {related_image_urls_set} related parts')

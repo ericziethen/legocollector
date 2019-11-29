@@ -60,7 +60,7 @@ class Command(BaseCommand):
     @staticmethod
     def _get_part_nums_from_rebrickable_csv(part_csv_path):
         part_num_list = []
-        with open(part_csv_path) as csvfile:
+        with open(part_csv_path, encoding='utf8') as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
                 part_num_list.append(row['part_num'])
@@ -125,7 +125,7 @@ class Command(BaseCommand):
         if result.status == ScrapeStatus.SUCCESS:
             json_result = json.loads(result.first_page.html)
         else:
-            logger.error.write(F'Scraping Issue: {result.error_msg}')
+            logger.error(F'Scraping Issue: {result.error_msg}')
 
         return json_result
 

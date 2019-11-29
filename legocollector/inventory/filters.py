@@ -26,7 +26,9 @@ class PartFilter(FilterSet):
             'name': ['contains'],
             'length': ['exact', 'lt', 'gt', 'range'],
             'height': ['exact', 'lt', 'gt', 'range'],
-            'stud_count': ['exact', 'lt', 'gt', 'range'],
+            'top_studs': ['exact', 'lt', 'gt', 'range'],
+            'bottom_studs': ['exact', 'lt', 'gt', 'range'],
+            'stud_rings': ['exact', 'lt', 'gt', 'range'],
             'category': ['exact'],
         }
 
@@ -41,7 +43,9 @@ class UserPartFilter(FilterSet):
             'part__name': ['contains'],
             'part__length': ['exact', 'lt', 'gt', 'range'],
             'part__height': ['exact', 'lt', 'gt', 'range'],
-            'part__stud_count': ['exact', 'lt', 'gt', 'range'],
+            'part__top_studs': ['exact', 'lt', 'gt', 'range'],
+            'part__bottom_studs': ['exact', 'lt', 'gt', 'range'],
+            'part__stud_rings': ['exact', 'lt', 'gt', 'range'],
         }
 
     def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
