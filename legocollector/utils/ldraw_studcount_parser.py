@@ -154,7 +154,7 @@ def get_ldraw_file_type(file_name):
     return file_type
 
 
-def get_top_studs_for_file_type(file_path, file_type):
+def get_stud_count_for_file_type(file_path, file_type):
     if get_ldraw_file_type(os.path.basename(file_path)) == file_type:
         return 1
     return 0
@@ -180,9 +180,9 @@ def calc_top_studs_for_part_file(
         else:
             file_visited_count[file_path] += 1
 
-    top_top_studs = get_top_studs_for_file_type(file_path, FileType.TOP_STUD)
-    bottom_studs = get_top_studs_for_file_type(file_path, FileType.UNDERSIDE_STUD)
-    stud_ring_count = get_top_studs_for_file_type(file_path, FileType.STUD_RING)
+    top_top_studs = get_stud_count_for_file_type(file_path, FileType.TOP_STUD)
+    bottom_studs = get_stud_count_for_file_type(file_path, FileType.UNDERSIDE_STUD)
+    stud_ring_count = get_stud_count_for_file_type(file_path, FileType.STUD_RING)
 
     # Process sub files
     if not any([top_top_studs, bottom_studs, stud_ring_count]):

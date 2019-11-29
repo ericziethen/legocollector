@@ -108,12 +108,12 @@ def test_get_sub_files_from_file():
 
 
 def test_get_top_top_studs_for_unknown_file():
-    assert ldraw_parser.get_top_studs_for_file_type('UnknownFile.dat', ldraw_parser.FileType.TOP_STUD) == 0
+    assert ldraw_parser.get_stud_count_for_file_type('UnknownFile.dat', ldraw_parser.FileType.TOP_STUD) == 0
 
 
 @pytest.mark.parametrize('file_name', TOP_STAT_FILES)
 def test_get_top_top_studs_for_stud_files(file_name):
-    assert ldraw_parser.get_top_studs_for_file_type(file_name, ldraw_parser.FileType.TOP_STUD) == 1
+    assert ldraw_parser.get_stud_count_for_file_type(file_name, ldraw_parser.FileType.TOP_STUD) == 1
 
 
 # The aim is to test at least all (top) studs at least in 1 part for good coverage
