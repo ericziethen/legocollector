@@ -81,6 +81,8 @@ class Part(models.Model):
     height = models.DecimalField(max_digits=8, decimal_places=4, blank=True, null=True)
     length = models.DecimalField(max_digits=8, decimal_places=4, blank=True, null=True)
     stud_count = models.PositiveIntegerField(blank=True, null=True)
+    underside_stud_count = models.PositiveIntegerField(blank=True, null=True)
+    underside_stud_ring_count = models.PositiveIntegerField(blank=True, null=True)
     image_url = models.CharField(max_length=250, blank=True, null=True)
 
     category = models.ForeignKey(PartCategory, on_delete=models.CASCADE, related_name='parts')
