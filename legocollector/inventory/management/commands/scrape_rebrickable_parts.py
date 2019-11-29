@@ -125,7 +125,7 @@ class Command(BaseCommand):
         if result.status == ScrapeStatus.SUCCESS:
             json_result = json.loads(result.first_page.html)
         else:
-            logger.error.write(F'Scraping Issue: {result.error_msg}')
+            logger.error(F'Scraping Issue: {result.error_msg}')
 
         return json_result
 
