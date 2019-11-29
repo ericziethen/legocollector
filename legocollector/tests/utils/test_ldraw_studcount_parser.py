@@ -341,7 +341,7 @@ STUD_RING_FILES = [
     ('stud22a.dat'),
     ('stud4.dat'),
     ('stud4a.dat'),
-    ('stud4fns.dat'),
+    ('stud4fns.dat'),   # Not found in ldraw db, but keep
     ('stud4h.dat'),
     ('stud4o.dat'),
     ('stud4od.dat'),
@@ -353,23 +353,6 @@ def test_file_is_stud_ring_file(file_name):
     assert ldraw_parser.get_ldraw_file_type(file_name) == FileType.STUD_RING
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 STUD_RING_COUNT_PARTS = [
     (3, '71427c01'),                # contains: stud4.dat
     (1, '15469'),                   # contains: stud4a.dat
@@ -378,15 +361,11 @@ STUD_RING_COUNT_PARTS = [
     (1, '10172'),                   # contains stud4o.dat
     (13, '2681'),                   # contains stud4od.dat
     (1, '10048'),                   # contains stud16.dat
-    (4, '47715'),                   # contains stud21a.dat
+    (4, '47715'),                   # contains stud21a.dat, stud22a.dat
+    (1, '18975'),                   # contains stud4h.dat, 1, Image looks like 5 but could be for a pole
+    (1, '24151'),                   # contains stud4h.dat
 
-    
-    #
-    #(, ''),                   # contains stud22a.dat
-    #(, ''),                   # contains stud4fns.dat
-    #(, ''),                   # contains stud4h.dat
 ]
-@pytest.mark.eric
 @pytest.mark.parametrize('stud_count, part_num', STUD_RING_COUNT_PARTS)
 def test_get_stud_ring_count(stud_count, part_num):
     file_name = F'{part_num}.dat'
