@@ -187,7 +187,7 @@ def test_file_visited_count():
 
 
 def test_calc_stud_count_for_part_list():
-    part_list = ['3070b', '3024', '30099', '912']
+    part_list = ['3070b', '71427c01', '32531']
     part_list = [Path(LDRAW_PARTS_DIR) / F'{p}.dat' for p in part_list]
 
     file_dic = FileListDic(
@@ -195,12 +195,24 @@ def test_calc_stud_count_for_part_list():
 
     stud_count_dic = ldraw_parser.calc_stud_count_for_part_list(part_list, file_dic)
 
-    assert len(stud_count_dic) == 4
+    assert len(stud_count_dic) == 3
     print(stud_count_dic)
+
+    # Part 3070b
     assert stud_count_dic['3070b']['top_stud_count'] == 0
-    assert stud_count_dic['3024']['top_stud_count'] == 1
-    assert stud_count_dic['30099']['top_stud_count'] == 2
-    assert stud_count_dic['912']['top_stud_count'] == 76
+    assert stud_count_dic['3070b']['underside_stud_count'] == 0
+    assert stud_count_dic['3070b']['stud_ring_count'] == 0
+
+
+    # Part 71427c01
+    assert stud_count_dic['71427c01']['top_stud_count'] == 16
+    assert stud_count_dic['71427c01']['underside_stud_count'] == 0  # on graphic looks like 2 but no files defined
+    assert stud_count_dic['71427c01']['stud_ring_count'] == 3
+
+    # Part 32531
+    assert stud_count_dic['32531']['top_stud_count'] == 16
+    assert stud_count_dic['32531']['underside_stud_count'] == 12
+    assert stud_count_dic['32531']['stud_ring_count'] == 0
 
 
 UNOFFICIAL_FILES = [
@@ -329,19 +341,6 @@ def test_get_underside_stud_count(stud_count, part_num):
     assert stud_count == processed_files_dic[file_path]['underside_stud_count']
 
 
-'''
-def test_calc_underside_stud_count_for_part_list():    # test_calc_stud_count_for_part_list
-    assert False
-
-
-    file_dic = FileListDic(
-        parts_dir=LDRAW_PARTS_DIR, primitives_dir=LDRAW_PRIMITIVES_DIR)
-
-    stud_count_dic = ldraw_parser.calc_stud_count_for_part_list(part_list, file_dic)
-'''
-
-
-
 STUD_RING_FILES = [
     ('stud16.dat'),
     ('stud21a.dat'),
@@ -387,15 +386,3 @@ def test_get_stud_ring_count(stud_count, part_num):
     processed_files_dic = {}
     ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic)
     assert stud_count == processed_files_dic[file_path]['stud_ring_count']
-
-
-
-'''
-# TODO
-
-def test_get_mixed_stud_counts():
-        assert False
-
-
-
-'''
