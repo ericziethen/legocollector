@@ -139,9 +139,9 @@ def get_ldraw_file_type(file_name):
 
     stud_ring_file_names = [
         'stud16.dat', 'stud21a.dat', 'stud22a.dat', 'stud4.dat', 'stud4a.dat',
-        'stud4fns.dat', 'stud4h.dat', 'stud4o.dat', 'stud4od.dat', 'stud4s2.dat']
+        'stud4fns.dat', 'stud4h.dat', 'stud4o.dat', 'stud4od.dat']
     # Invisible Stud rings to ignore,
-    #   Sloped: stud4s.dat
+    #   Sloped: stud4s.dat, stud4s2.dat
 
     check_name = file_name.lower()
     if check_name in top_stud_file_names:

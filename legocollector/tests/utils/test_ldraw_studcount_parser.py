@@ -346,7 +346,7 @@ STUD_RING_FILES = [
     ('stud4o.dat'),
     ('stud4od.dat'),
     #('stud4s.dat'),    # Ignore, Sloped, Invisible
-    ('stud4s2.dat'),
+    #('stud4s2.dat'),   # Ignore, Sloped, Invisible
 ]
 @pytest.mark.parametrize('file_name', STUD_RING_FILES)
 def test_file_is_stud_ring_file(file_name):
@@ -373,13 +373,10 @@ def test_file_is_stud_ring_file(file_name):
     ('stud21a.dat'),
     ('stud22a.dat'),
     
-    ('stud4a.dat'),
+    
     ('stud4fns.dat'),
     ('stud4h.dat'),
-    ('stud4o.dat'),
     ('stud4od.dat'),
-    ('stud4s.dat'),
-    ('stud4s2.dat'),
 '''
 
 
@@ -389,8 +386,8 @@ STUD_RING_COUNT_PARTS = [
     (3, '71427c01'),                # contains: stud4.dat
     (1, '15469'),                   # contains: stud4a.dat
     (5, '13269'),                   # contains stud4a.dat, stud4s.dat
-    #(9, '32084'),                   # contain stud4s.dat, stud4s2.dat
-    #(1, '10172'),                   # contains stud4o.dat
+    (9, '32084'),                   # contain stud4s.dat, stud4s2.dat
+    (1, '10172'),                   # contains stud4o.dat
     #(13+1, '2681'),                 # contains stud4od.dat
 ]
 @pytest.mark.eric
