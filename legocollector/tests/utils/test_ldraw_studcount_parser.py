@@ -197,10 +197,10 @@ def test_calc_stud_count_for_part_list():
 
     assert len(stud_count_dic) == 4
     print(stud_count_dic)
-    assert stud_count_dic['3070b']['stud_count'] == 0
-    assert stud_count_dic['3024']['stud_count'] == 1
-    assert stud_count_dic['30099']['stud_count'] == 2
-    assert stud_count_dic['912']['stud_count'] == 76
+    assert stud_count_dic['3070b']['top_stud_count'] == 0
+    assert stud_count_dic['3024']['top_stud_count'] == 1
+    assert stud_count_dic['30099']['top_stud_count'] == 2
+    assert stud_count_dic['912']['top_stud_count'] == 76
 
 
 UNOFFICIAL_FILES = [
@@ -330,10 +330,17 @@ def test_get_underside_stud_count(stud_count, part_num):
 
 
 '''
-# TODO
 def test_calc_underside_stud_count_for_part_list():    # test_calc_stud_count_for_part_list
     assert False
+
+
+    file_dic = FileListDic(
+        parts_dir=LDRAW_PARTS_DIR, primitives_dir=LDRAW_PRIMITIVES_DIR)
+
+    stud_count_dic = ldraw_parser.calc_stud_count_for_part_list(part_list, file_dic)
 '''
+
+
 
 STUD_RING_FILES = [
     ('stud16.dat'),

@@ -231,7 +231,7 @@ def calc_stud_count_for_part_list(part_list, file_dic):
         except SubfileMissingError as error:
             parts_dic[part_num]['processing_errors'] = [str(error)]
         else:
-            parts_dic[part_num]['stud_count'] = processed_files_dic[file_path]['top_stud_count']
+            parts_dic[part_num]['top_stud_count'] = processed_files_dic[file_path]['top_stud_count']
 
         if idx % 500 == 0:
             now = datetime.datetime.now()
