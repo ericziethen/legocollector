@@ -376,7 +376,6 @@ def test_file_is_stud_ring_file(file_name):
     
     ('stud4fns.dat'),
     ('stud4h.dat'),
-    ('stud4od.dat'),
 '''
 
 
@@ -388,7 +387,7 @@ STUD_RING_COUNT_PARTS = [
     (5, '13269'),                   # contains stud4a.dat, stud4s.dat
     (9, '32084'),                   # contain stud4s.dat, stud4s2.dat
     (1, '10172'),                   # contains stud4o.dat
-    #(13+1, '2681'),                 # contains stud4od.dat
+    (13, '2681'),                   # contains stud4od.dat
 ]
 @pytest.mark.eric
 @pytest.mark.parametrize('stud_count, part_num', STUD_RING_COUNT_PARTS)
