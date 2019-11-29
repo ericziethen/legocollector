@@ -388,6 +388,14 @@ STUD_RING_COUNT_PARTS = [
     (9, '32084'),                   # contain stud4s.dat, stud4s2.dat
     (1, '10172'),                   # contains stud4o.dat
     (13, '2681'),                   # contains stud4od.dat
+    (1, '10048'),                   # contains stud16.dat
+
+
+    
+    #(, ''),                   # contains stud21a.dat
+    #(, ''),                   # contains stud22a.dat
+    #(, ''),                   # contains stud4fns.dat
+    #(, ''),                   # contains stud4h.dat
 ]
 @pytest.mark.eric
 @pytest.mark.parametrize('stud_count, part_num', STUD_RING_COUNT_PARTS)
