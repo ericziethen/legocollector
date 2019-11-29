@@ -257,10 +257,10 @@ def generate_part_list_to_process(dir_list):
 
 
 def create_json_for_parts(json_out_file_path):
-    parts_dir = R'D:\Downloads\Finished\# Lego\ldraw\# Downloads\complete_2019.11.05\ldraw\parts'
-    prim_dir = R'D:\Downloads\Finished\# Lego\ldraw\# Downloads\complete_2019.11.05\ldraw\p'
-    unofficial_parts_dir = R'D:\Downloads\Finished\# Lego\ldraw\# Downloads\ldrawunf_2019.11.14\parts'
-    unofficial_primitives_dir = R'D:\Downloads\Finished\# Lego\ldraw\# Downloads\ldrawunf_2019.11.14\p'
+    parts_dir = R'D:\Downloads\Finished\# Lego\ldraw\# Downloads\2019.11.29\complete\ldraw\parts'
+    prim_dir = R'D:\Downloads\Finished\# Lego\ldraw\# Downloads\2019.11.29\complete\ldraw\p'
+    unofficial_parts_dir = R'D:\Downloads\Finished\# Lego\ldraw\# Downloads\2019.11.29\ldrawunf\parts'
+    unofficial_primitives_dir = R'D:\Downloads\Finished\# Lego\ldraw\# Downloads\2019.11.29\ldrawunf\p'
 
     file_dic = FileListDic(
         parts_dir=parts_dir, primitives_dir=prim_dir,
