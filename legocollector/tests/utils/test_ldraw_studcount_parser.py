@@ -108,12 +108,12 @@ def test_get_sub_files_from_file():
 
 
 def test_get_top_stud_count_for_unknown_file():
-    assert ldraw_parser.get_stud_count_for_file_type('UnknownFile.dat', ldraw_parser.FileType.TOP_STUD) == 0
+    assert ldraw_parser.get_stud_count_for_file('UnknownFile.dat') == 0
 
 
 @pytest.mark.parametrize('file_name', TOP_STAT_FILES)
 def test_get_top_stud_count_for_stud_files(file_name):
-    assert ldraw_parser.get_stud_count_for_file_type(file_name, ldraw_parser.FileType.TOP_STUD) == 1
+    assert ldraw_parser.get_stud_count_for_file(file_name) == 1
 
 
 # The aim is to test at least all (top) studs at least in 1 part for good coverage
@@ -312,12 +312,6 @@ UNDERSIDE_STUD_COUNT_PARTS = [
     (2, '30099'),                   # contains: stud3.dat, stud3a.dat
     (12, '32531'),                  # contains: studx.dat
     (1, 'u8101'),                   # contains stud12.dat
-    #(3, '71427c01'),                # contains: stud4.dat - Based on File 3, Image looks like 5
-    #(1, '15469'),                   # contains: stud4a.dat
-    #(9, '13269'),                   # contains stud4s.dat
-    #(21, '32084'),                  # contain stud4s.dat, stud4s2.dat, excluded from count, not visible in ldraw
-    #(0, '10172'),                   # contains stud4o.dat, exclude from count, more of a stud hole
-    #(13+1, '2681'),                 # contains stud4od.dat, exclude from count, more of a stud hole, seems like visible in here
 ]
 @pytest.mark.parametrize('stud_count, part_num', UNDERSIDE_STUD_COUNT_PARTS)
 def test_get_underside_stud_count(stud_count, part_num):
@@ -354,26 +348,71 @@ STUD_RING_FILES = [
     ('stud4s.dat'),
     ('stud4s2.dat'),
 ]
-@pytest.mark.eric
 @pytest.mark.parametrize('file_name', STUD_RING_FILES)
-def test_file_is_underside_stud_file(file_name):
+def test_file_is_stud_ring_file(file_name):
     assert ldraw_parser.get_ldraw_file_type(file_name) == FileType.STUD_RING
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+''' MISSING
+    ('stud16.dat'),
+    ('stud21a.dat'),
+    ('stud22a.dat'),
+    
+    ('stud4a.dat'),
+    ('stud4fns.dat'),
+    ('stud4h.dat'),
+    ('stud4o.dat'),
+    ('stud4od.dat'),
+    ('stud4s.dat'),
+    ('stud4s2.dat'),
 '''
-def test_file_is_stud_ring_file():
-        assert False
 
 
-def test_file_is_stud_ring_file():
-        assert False
 
 
-def test_get_stud_ring_count():
-        assert False
+STUD_RING_COUNT_PARTS = [
+    (3, '71427c01'),                # contains: stud4.dat
+    #(1, '15469'),                   # contains: stud4a.dat
+    #(9, '13269'),                   # contains stud4s.dat
+    #(21, '32084'),                  # contain stud4s.dat, stud4s2.dat, excluded from count, not visible in ldraw
+    #(0, '10172'),                   # contains stud4o.dat, exclude from count, more of a stud hole
+    #(13+1, '2681'),                 # contains stud4od.dat, exclude from count, more of a stud hole, seems like visible in here
+]
+@pytest.mark.eric
+@pytest.mark.parametrize('stud_count, part_num', STUD_RING_COUNT_PARTS)
+def test_get_stud_ring_count(stud_count, part_num):
+    file_name = F'{part_num}.dat'
+    key = Path(file_name)
+
+    file_dic = FileListDic(parts_dir=LDRAW_PARTS_DIR, primitives_dir=LDRAW_PRIMITIVES_DIR)
+    assert key in file_dic
+    file_path = file_dic[key]
+
+    ldraw_parser.print_sub_files(file_dic[key], file_dic, prefix='stud')
+
+    processed_files_dic = {}
+    ldraw_parser.calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic)
+    assert stud_count == processed_files_dic[file_path]['stud_ring_count']
 
 
+
+'''
+# TODO
 
 def test_get_mixed_stud_counts():
         assert False
