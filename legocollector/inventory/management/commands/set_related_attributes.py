@@ -47,8 +47,7 @@ class Command(BaseCommand):
             logger.info(F'    {group:<20}: Count: {count}')
 
     @staticmethod
-    def set_related_attribs_for_part(
-            part, *, attribute_updates, conflicting_attribs):
+    def set_related_attribs_for_part(part, *, attribute_updates, conflicting_attribs):
         # For Processing Stud Counts we need to be carefull as related parts may have a different stud count
         # e.g. the following 2 related parts have a different stud count
         #       https://rebrickable.com/parts/10a/baseplate-24-x-32-with-squared-corners/
@@ -58,6 +57,39 @@ class Command(BaseCommand):
         related_parts = part.get_related_parts(parents=True, children=True, transitive=True)
         part_family = sorted(related_parts + [part], key=lambda p: p.dimension_set_count, reverse=True)
 
+        rel_attrib_fields = ['width', 'height', 'length', 'top_studs', 'bottom_studs', 'stud_rings', 'image_url']
+
+        # Get master Dimension to set
+        master_part = part_family[0]
+        master_attribs = {name: getattr(master_part, name)
+                          for name in rel_attrib_fields if getattr(master_part, name) is not None}
+
+        # Fill the rest with non clashing attribs
+        for field in rel_attrib_fields:
+            if field not in master_attribs:
+                for rel_part in part_family:
+                    val = getattr(rel_part, field)
+                    if val is not None:
+                        master_attribs[field] = val
+                        break
+
+        # Set the default Attribs
+        for rel_part in part_family:
+            part_update = False
+            for field, value in master_attribs.items():
+                if getattr(rel_part, field) is None:
+                    setattr(rel_part, field, value)
+                    attribute_updates[field] += 1
+                    part_update = True
+
+            if part_update:
+                rel_part.save()
+                attribute_updates['total_parts'] += 1
+
+
+
+
+        """
         top_studs = None
         image_url = None
         for related_part in part_family:
@@ -116,5 +148,5 @@ class Command(BaseCommand):
 
             if 'total_parts' in attribute_updates and (attribute_updates['total_parts'] % 1000) == 0:
                 logger.info(F'''  Attributes Set: {attribute_updates['total_parts']}''')
-
+        """
         return part_family

@@ -19,18 +19,18 @@ class TestRelatedAttributes(TestCase):
 
         PartCategory.objects.create(name='category1')
 
-        Part.objects.create(part_num='part1', name='part1', category=PartCategory.objects.get(name='category1'))
-        Part.objects.create(part_num='part2', name='part2', category=PartCategory.objects.get(name='category1'))
-        Part.objects.create(part_num='part3', name='part3', category=PartCategory.objects.get(name='category1'))
+        self.part1 = Part.objects.create(part_num='part1', name='part1', category=PartCategory.objects.get(name='category1'))
+        self.part2 = Part.objects.create(part_num='part2', name='part2', category=PartCategory.objects.get(name='category1'))
+        self.part3 = Part.objects.create(part_num='part3', name='part3', category=PartCategory.objects.get(name='category1'))
 
         PartRelationship.objects.create(
-            parent_part=Part.objects.get(part_num='part1'),
-            child_part=Part.objects.get(part_num='part2'),
+            parent_part=self.part1,
+            child_part=self.part2,
             relationship_type=PartRelationship.ALTERNATE_PART)
 
         PartRelationship.objects.create(
-            parent_part=Part.objects.get(part_num='part2'),
-            child_part=Part.objects.get(part_num='part3'),
+            parent_part=self.part2,
+            child_part=self.part3,
             relationship_type=PartRelationship.ALTERNATE_PART)
 
     #@staticmethod
@@ -38,12 +38,12 @@ class TestRelatedAttributes(TestCase):
 
     @pytest.mark.eric
     def test_no_dims_no_studs_present(self):
-        self.part1 = Part.objects.get(part_num='part1')
-        self.part2 = Part.objects.get(part_num='part2')
-        self.part3 = Part.objects.get(part_num='part3')
-
         Command.set_related_attribs_for_part(
-            part1, attribute_updates=self.attribute_updates, conflicting_attribs=self.conflicting_attribs)
+            self.part1, attribute_updates=self.attribute_updates, conflicting_attribs=self.conflicting_attribs)
+
+        part1 = Part.objects.get(part_num='part1')
+        part2 = Part.objects.get(part_num='part2')
+        part3 = Part.objects.get(part_num='part3')
 
         self.assertEqual(part1.dimension_set_count, 0)
         self.assertEqual(part2.dimension_set_count, 0)
@@ -54,14 +54,25 @@ class TestRelatedAttributes(TestCase):
         self.assertEqual(part3.studs_set_count, 0)
 
     @pytest.mark.eric
-    def test_set_dimensions(self):
+    def test_copy_attributes(self):
         self.part1.width = 10
-        self.part1.height = 20
-        self.part1.length = 30
+        self.part1.top_studs = 100
+        self.part1.image_url = 'www.image_url.com'
         self.part1.save()
+
+        self.part2.height = 20
+        self.part2.bottom_studs = 200
+        self.part2.save()
+
+        self.part3.length = 30
+        self.part3.stud_rings = 300
+        self.part3.save()
 
         Command.set_related_attribs_for_part(
             self.part1, attribute_updates=self.attribute_updates, conflicting_attribs=self.conflicting_attribs)
+
+        for part in Part.objects.all():
+            print(part)
 
         part1 = Part.objects.get(part_num='part1')
         part2 = Part.objects.get(part_num='part2')
@@ -83,6 +94,25 @@ class TestRelatedAttributes(TestCase):
         self.assertEqual(part2.length, 30)
         self.assertEqual(part3.length, 30)
 
+        self.assertEqual(part1.top_studs, 100)
+        self.assertEqual(part2.top_studs, 100)
+        self.assertEqual(part3.top_studs, 100)
+
+        self.assertEqual(part1.bottom_studs, 200)
+        self.assertEqual(part2.bottom_studs, 200)
+        self.assertEqual(part3.bottom_studs, 200)
+
+        self.assertEqual(part1.stud_rings, 300)
+        self.assertEqual(part2.stud_rings, 300)
+        self.assertEqual(part3.stud_rings, 300)
+
+        self.assertEqual(part1.image_url, 'www.image_url.com')
+        self.assertEqual(part2.image_url, 'www.image_url.com')
+        self.assertEqual(part3.image_url, 'www.image_url.com')
+
+        self.assertEqual(self.attribute_updates['total_parts'], 3)
+
+    '''
     @pytest.mark.eric
     def test_clashing_dimension(self):
         # Part1 as most attribs, so it'll be taken as master
@@ -117,7 +147,7 @@ class TestRelatedAttributes(TestCase):
         self.assertEqual(part3.length, None)
     '''
 
-
+    '''
     def test_set_top_stud(self):
         self.assertFalse(True)
 
@@ -144,7 +174,6 @@ class TestRelatedAttributes(TestCase):
 
     def test_clashing_stud_ring_others_ok(self):
         self.assertFalse(True)
-
 
     def test_parts_processed_updated()
 
