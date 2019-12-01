@@ -32,8 +32,15 @@ class Command(BaseCommand):
                 if (idx % 1000) == 0:
                     logger.info(F'  {idx} Parts Processed')
 
+        self.print_update_details(attribute_updates)
+
+    @staticmethod
+    def print_update_details(attribute_updates):
         logger.info(F'  Attribute updates')
+        logger.info(F'    Total Parts Updated: {attribute_updates["total_parts"]}')
         for group, count in attribute_updates.items():
+            if group == 'total_parts':
+                continue
             logger.info(F'    {group:<20}: Count: {count}')
 
     @staticmethod

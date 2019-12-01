@@ -60,9 +60,6 @@ class TestRelatedAttributes(TestCase):
         Command.set_related_attribs_for_part(
             self.part1, attribute_updates=self.attribute_updates)
 
-        for part in Part.objects.all():
-            print(part)
-
         part1 = Part.objects.get(part_num='part1')
         part2 = Part.objects.get(part_num='part2')
         part3 = Part.objects.get(part_num='part3')
@@ -118,9 +115,6 @@ class TestRelatedAttributes(TestCase):
 
         Command.set_related_attribs_for_part(
             self.part1, attribute_updates=self.attribute_updates)
-
-        for part in Part.objects.all():
-            print(part)
 
         part1 = Part.objects.get(part_num='part1')
         part2 = Part.objects.get(part_num='part2')
