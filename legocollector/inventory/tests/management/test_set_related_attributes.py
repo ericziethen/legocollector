@@ -6,16 +6,10 @@ from inventory.models import Part, PartCategory, PartRelationship
 from inventory.management.commands.set_related_attributes import Command
 
 
-# TODO - REMOVE after test debugging
-import pytest
-
-
 class TestRelatedAttributes(TestCase):
-
 
     def setUp(self):
         self.attribute_updates = defaultdict(int)
-        self.conflicting_attribs = {'dimensions': {}, 'top_studs': {}, 'botom_studs': {}, 'stud_rings': {}}
 
         PartCategory.objects.create(name='category1')
 
@@ -33,13 +27,9 @@ class TestRelatedAttributes(TestCase):
             child_part=self.part3,
             relationship_type=PartRelationship.ALTERNATE_PART)
 
-    #@staticmethod
-    #def assert_part_changes()
-
-    @pytest.mark.eric
     def test_no_dims_no_studs_present(self):
         Command.set_related_attribs_for_part(
-            self.part1, attribute_updates=self.attribute_updates, conflicting_attribs=self.conflicting_attribs)
+            self.part1, attribute_updates=self.attribute_updates)
 
         part1 = Part.objects.get(part_num='part1')
         part2 = Part.objects.get(part_num='part2')
@@ -53,7 +43,6 @@ class TestRelatedAttributes(TestCase):
         self.assertEqual(part2.studs_set_count, 0)
         self.assertEqual(part3.studs_set_count, 0)
 
-    @pytest.mark.eric
     def test_copy_attributes(self):
         self.part1.width = 10
         self.part1.top_studs = 100
@@ -69,7 +58,7 @@ class TestRelatedAttributes(TestCase):
         self.part3.save()
 
         Command.set_related_attribs_for_part(
-            self.part1, attribute_updates=self.attribute_updates, conflicting_attribs=self.conflicting_attribs)
+            self.part1, attribute_updates=self.attribute_updates)
 
         for part in Part.objects.all():
             print(part)
@@ -112,71 +101,64 @@ class TestRelatedAttributes(TestCase):
 
         self.assertEqual(self.attribute_updates['total_parts'], 3)
 
-    '''
-    @pytest.mark.eric
-    def test_clashing_dimension(self):
-        # Part1 as most attribs, so it'll be taken as master
+    def test_clashing_values(self):
         self.part1.width = 10
         self.part1.height = 20
+        self.part1.top_studs = 100
+        self.part1.image_url = 'www.image_url.com'
         self.part1.save()
 
-        self.part2.width = 20
+        self.part2.width = 100
+        self.part2.bottom_studs = 200
         self.part2.save()
 
+        self.part3.length = 30
+        self.part3.bottom_studs = 300
+        self.part3.save()
+
         Command.set_related_attribs_for_part(
-            self.part1, attribute_updates=self.attribute_updates, conflicting_attribs=self.conflicting_attribs)
+            self.part1, attribute_updates=self.attribute_updates)
+
+        for part in Part.objects.all():
+            print(part)
 
         part1 = Part.objects.get(part_num='part1')
         part2 = Part.objects.get(part_num='part2')
         part3 = Part.objects.get(part_num='part3')
 
-        self.assertEqual(part1.dimension_set_count, 2)
-        self.assertEqual(part2.dimension_set_count, 1)
-        self.assertEqual(part3.dimension_set_count, 2)
+        self.assertEqual(part1.dimension_set_count, 3)
+        self.assertEqual(part2.dimension_set_count, 3)
+        self.assertEqual(part3.dimension_set_count, 3)
 
         self.assertEqual(part1.width, 10)
-        self.assertEqual(part2.width, 20)
+        self.assertEqual(part2.width, 100)
         self.assertEqual(part3.width, 10)
 
         self.assertEqual(part1.height, 20)
-        self.assertEqual(part2.height, None)
+        self.assertEqual(part2.height, 20)
         self.assertEqual(part3.height, 20)
 
-        self.assertEqual(part1.length, None)
-        self.assertEqual(part2.length, None)
-        self.assertEqual(part3.length, None)
-    '''
+        self.assertEqual(part1.length, 30)
+        self.assertEqual(part2.length, 30)
+        self.assertEqual(part3.length, 30)
+
+        self.assertEqual(part1.top_studs, 100)
+        self.assertEqual(part2.top_studs, 100)
+        self.assertEqual(part3.top_studs, 100)
+
+        self.assertEqual(part1.bottom_studs, 200)
+        self.assertEqual(part2.bottom_studs, 200)
+        self.assertEqual(part3.bottom_studs, 300)
+
+        self.assertEqual(part1.stud_rings, None)
+        self.assertEqual(part2.stud_rings, None)
+        self.assertEqual(part3.stud_rings, None)
+
+        self.assertEqual(part1.image_url, 'www.image_url.com')
+        self.assertEqual(part2.image_url, 'www.image_url.com')
+        self.assertEqual(part3.image_url, 'www.image_url.com')
 
     '''
-    def test_set_top_stud(self):
-        self.assertFalse(True)
-
-    def test_set_bottom_stud(self):
-        self.assertFalse(True)
-
-    def test_set_stud_ring(self):
-        self.assertFalse(True)
-
-    def test_clashing_top_stud(self):
-        self.assertFalse(True)
-
-    def test_clashing_bottom_stud(self):
-        self.assertFalse(True)
-
-    def test_clashing_stud_ring(self):
-        self.assertFalse(True)
-
-    def test_clashing_top_stud_others_ok(self):
-        self.assertFalse(True)
-
-    def test_clashing_bottom_stud_others_ok(self):
-        self.assertFalse(True)
-
-    def test_clashing_stud_ring_others_ok(self):
-        self.assertFalse(True)
-
-    def test_parts_processed_updated()
-
 class TestFullCommand(TestCase):
 
     def setup(self):
