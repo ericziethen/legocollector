@@ -22,7 +22,7 @@ class Command(BaseCommand):
             for idx, part in enumerate(Part.objects.all(), 1):
                 if part.part_num not in processed_parts:
                     # Update Related Parts
-                    part_list = self.set_related_attribs_for_part_list(
+                    part_list = self.set_related_attribs_for_part(
                         part, attribute_updates=attribute_updates)
 
                     # Remember Processed Parts
