@@ -7,11 +7,39 @@ from inventory.models import Color, Part, PartCategory, PartRelationship
 class TestRelatedAttributes(TestCase):
 
     def setup(self):
-        pass
+        PartCategory.objects.create(name='category1')
 
-    def test_no_dims_present(self):
+        Part.objects.create(part_num='part1', name='part1', category=PartCategory.objects.get(name='category1'))
+        Part.objects.create(part_num='part2', name='part2', category=PartCategory.objects.get(name='category1'))
+        Part.objects.create(part_num='part3', name='part3', category=PartCategory.objects.get(name='category1'))
+
+        PartRelationship.objects.create(
+            parent_part=Part.objects.get(part_num='part1'),
+            child_part=Part.objects.get(part_num='part2'),
+            relationship_type=PartRelationship.ALTERNATE_PART)
+
+        PartRelationship.objects.create(
+            parent_part=Part.objects.get(part_num='part2'),
+            child_part=Part.objects.get(part_num='part3'),
+            relationship_type=PartRelationship.ALTERNATE_PART)
+
+    '''
+    def test_no_dims_no_studs_present(self):
+        calc_related_attribs()
+
+        part1 = Part.objects.get(part_num='part1')
+        part2 = Part.objects.get(part_num='part2')
+        part3 = Part.objects.get(part_num='part3')
+
+        self.assertEqual(part1.dimension_set_count, 0)
+        self.assertEqual(part2.dimension_set_count, 0)
+        self.assertEqual(part3.dimension_set_count, 0)
+
+
+
         self.assertFalse(True)
-
+    '''
+    '''
     def test_set_width(self):
         self.assertFalse(True)
 
@@ -71,3 +99,4 @@ class TestFullCommand(TestCase):
         self.assertFalse(True)
         # TODO - Test the overall command
         # https://docs.djangoproject.com/en/2.2/topics/testing/tools/#topics-testing-management-commands
+    '''
