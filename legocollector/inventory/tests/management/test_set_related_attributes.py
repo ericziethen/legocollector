@@ -13,9 +13,12 @@ class TestRelatedAttributes(TestCase):
 
         PartCategory.objects.create(name='category1')
 
-        self.part1 = Part.objects.create(part_num='part1', name='part1', category=PartCategory.objects.get(name='category1'))
-        self.part2 = Part.objects.create(part_num='part2', name='part2', category=PartCategory.objects.get(name='category1'))
-        self.part3 = Part.objects.create(part_num='part3', name='part3', category=PartCategory.objects.get(name='category1'))
+        self.part1 = Part.objects.create(
+            part_num='part1', name='part1', category=PartCategory.objects.get(name='category1'))
+        self.part2 = Part.objects.create(
+            part_num='part2', name='part2', category=PartCategory.objects.get(name='category1'))
+        self.part3 = Part.objects.create(
+            part_num='part3', name='part3', category=PartCategory.objects.get(name='category1'))
 
         PartRelationship.objects.create(
             parent_part=self.part1,
@@ -151,15 +154,3 @@ class TestRelatedAttributes(TestCase):
         self.assertEqual(part1.image_url, 'www.image_url.com')
         self.assertEqual(part2.image_url, 'www.image_url.com')
         self.assertEqual(part3.image_url, 'www.image_url.com')
-
-    '''
-class TestFullCommand(TestCase):
-
-    def setup(self):
-        pass
-
-    def test_full_command(self):
-        self.assertFalse(True)
-        # TODO - Test the overall command
-        # https://docs.djangoproject.com/en/2.2/topics/testing/tools/#topics-testing-management-commands
-    '''
