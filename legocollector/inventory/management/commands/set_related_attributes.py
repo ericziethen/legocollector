@@ -54,7 +54,6 @@ class Command(BaseCommand):
         #       https://rebrickable.com/parts/10a/baseplate-24-x-32-with-squared-corners/
         #       https://rebrickable.com/parts/10b/baseplate-24-x-32-with-rounded-corners/
 
-
         # Get list of Related Parts
         related_parts = part.get_related_parts(parents=True, children=True, transitive=True)
         part_family = sorted(related_parts + [part], key=lambda p: p.dimension_set_count, reverse=True)

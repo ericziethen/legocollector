@@ -54,13 +54,15 @@ class TestRelatedAttributes(TestCase):
         self.assertEqual(part3.studs_set_count, 0)
 
     @pytest.mark.eric
-    def test_set_width(self):
+    def test_set_dimensions(self):
         part1 = Part.objects.get(part_num='part1')
         part2 = Part.objects.get(part_num='part2')
         part3 = Part.objects.get(part_num='part3')
 
-        part2.width = 10
-        part2.save()
+        part1.width = 10
+        part1.height = 20
+        part1.length = 30
+        part1.save()
 
         Command.set_related_attribs_for_part(
             part1, attribute_updates=self.attribute_updates, conflicting_attribs=self.conflicting_attribs)
@@ -69,23 +71,23 @@ class TestRelatedAttributes(TestCase):
         part2 = Part.objects.get(part_num='part2')
         part3 = Part.objects.get(part_num='part3')
 
-        self.assertEqual(part1.dimension_set_count, 1)
-        self.assertEqual(part2.dimension_set_count, 1)
-        self.assertEqual(part3.dimension_set_count, 1)
+        self.assertEqual(part1.dimension_set_count, 3)
+        self.assertEqual(part2.dimension_set_count, 3)
+        self.assertEqual(part3.dimension_set_count, 3)
+
         self.assertEqual(part1.width, 10)
         self.assertEqual(part2.width, 10)
         self.assertEqual(part3.width, 10)
 
+        self.assertEqual(part1.height, 20)
+        self.assertEqual(part2.height, 20)
+        self.assertEqual(part3.height, 20)
+
+        self.assertEqual(part1.length, 30)
+        self.assertEqual(part2.length, 30)
+        self.assertEqual(part3.length, 30)
 
     '''
-    def test_set_height(self):
-        self.assertFalse(True)
-
-    def test_set_length(self):
-        self.assertFalse(True)
-
-    def test_set_width_height_length(self):
-        self.assertFalse(True)
 
     def test_clashing_width(self):
         self.assertFalse(True)
