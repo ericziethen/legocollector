@@ -95,6 +95,11 @@ class Part(models.Model):
         return [self.width is not None, self.height is not None, self.length is not None].count(True)
 
     @property
+    def studs_set_count(self):
+        return [self.top_studs is not None, self.bottom_studs is not None,
+                self.stud_rings is not None].count(True)
+
+    @property
     def available_colors(self):
         return Color.objects.filter(setparts__part=self).distinct()
 
