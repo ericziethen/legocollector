@@ -38,9 +38,9 @@ class TestRelatedAttributes(TestCase):
 
     @pytest.mark.eric
     def test_no_dims_no_studs_present(self):
-        part1 = Part.objects.get(part_num='part1')
-        part2 = Part.objects.get(part_num='part2')
-        part3 = Part.objects.get(part_num='part3')
+        self.part1 = Part.objects.get(part_num='part1')
+        self.part2 = Part.objects.get(part_num='part2')
+        self.part3 = Part.objects.get(part_num='part3')
 
         Command.set_related_attribs_for_part(
             part1, attribute_updates=self.attribute_updates, conflicting_attribs=self.conflicting_attribs)
@@ -55,17 +55,13 @@ class TestRelatedAttributes(TestCase):
 
     @pytest.mark.eric
     def test_set_dimensions(self):
-        part1 = Part.objects.get(part_num='part1')
-        part2 = Part.objects.get(part_num='part2')
-        part3 = Part.objects.get(part_num='part3')
-
-        part1.width = 10
-        part1.height = 20
-        part1.length = 30
-        part1.save()
+        self.part1.width = 10
+        self.part1.height = 20
+        self.part1.length = 30
+        self.part1.save()
 
         Command.set_related_attribs_for_part(
-            part1, attribute_updates=self.attribute_updates, conflicting_attribs=self.conflicting_attribs)
+            self.part1, attribute_updates=self.attribute_updates, conflicting_attribs=self.conflicting_attribs)
 
         part1 = Part.objects.get(part_num='part1')
         part2 = Part.objects.get(part_num='part2')
@@ -87,16 +83,39 @@ class TestRelatedAttributes(TestCase):
         self.assertEqual(part2.length, 30)
         self.assertEqual(part3.length, 30)
 
+    @pytest.mark.eric
+    def test_clashing_dimension(self):
+        # Part1 as most attribs, so it'll be taken as master
+        self.part1.width = 10
+        self.part1.height = 20
+        self.part1.save()
+
+        self.part2.width = 20
+        self.part2.save()
+
+        Command.set_related_attribs_for_part(
+            self.part1, attribute_updates=self.attribute_updates, conflicting_attribs=self.conflicting_attribs)
+
+        part1 = Part.objects.get(part_num='part1')
+        part2 = Part.objects.get(part_num='part2')
+        part3 = Part.objects.get(part_num='part3')
+
+        self.assertEqual(part1.dimension_set_count, 2)
+        self.assertEqual(part2.dimension_set_count, 1)
+        self.assertEqual(part3.dimension_set_count, 2)
+
+        self.assertEqual(part1.width, 10)
+        self.assertEqual(part2.width, 20)
+        self.assertEqual(part3.width, 10)
+
+        self.assertEqual(part1.height, 20)
+        self.assertEqual(part2.height, None)
+        self.assertEqual(part3.height, 20)
+
+        self.assertEqual(part1.length, None)
+        self.assertEqual(part2.length, None)
+        self.assertEqual(part3.length, None)
     '''
-
-    def test_clashing_width(self):
-        self.assertFalse(True)
-
-    def test_clashing_height(self):
-        self.assertFalse(True)
-
-    def test_clashing_length(self):
-        self.assertFalse(True)
 
 
     def test_set_top_stud(self):

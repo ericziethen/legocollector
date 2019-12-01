@@ -58,8 +58,6 @@ class Command(BaseCommand):
         related_parts = part.get_related_parts(parents=True, children=True, transitive=True)
         part_family = sorted(related_parts + [part], key=lambda p: p.dimension_set_count, reverse=True)
 
-        print(F'RELATED_PART_LIST: {part_family}')
-
         top_studs = None
         image_url = None
         for related_part in part_family:
