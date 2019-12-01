@@ -28,11 +28,8 @@ class TestRelatedAttributes(TestCase):
             child_part=Part.objects.get(part_num='part3'),
             relationship_type=PartRelationship.ALTERNATE_PART)
 
-    #'''
     @pytest.mark.eric
     def test_no_dims_no_studs_present(self):
-        print('PartCategory DATABASE', PartCategory.objects.all())
-        print('PART DATABASE', Part.objects.all())
         part1 = Part.objects.get(part_num='part1')
         part2 = Part.objects.get(part_num='part2')
         part3 = Part.objects.get(part_num='part3')
@@ -46,11 +43,29 @@ class TestRelatedAttributes(TestCase):
         self.assertEqual(part1.studs_set_count, 0)
         self.assertEqual(part2.studs_set_count, 0)
         self.assertEqual(part3.studs_set_count, 0)
-    #'''
-    '''
-    def test_set_width(self):
-        self.assertFalse(True)
 
+    @pytest.mark.eric
+    def test_set_width(self):
+        part1 = Part.objects.get(part_num='part1')
+        part2 = Part.objects.get(part_num='part2')
+        part3 = Part.objects.get(part_num='part3')
+
+        part2.width = 10
+
+        Command.set_related_attribs_for_part_list([part1, part2, part3])
+        part1 = Part.objects.get(part_num='part1')
+        part2 = Part.objects.get(part_num='part2')
+        part3 = Part.objects.get(part_num='part3')
+
+        self.assertEqual(part1.dimension_set_count, 1)
+        self.assertEqual(part2.dimension_set_count, 1)
+        self.assertEqual(part3.dimension_set_count, 1)
+        self.assertEqual(part1.width, 10)
+        self.assertEqual(part2.width, 10)
+        self.assertEqual(part3.width, 10)
+
+
+    '''
     def test_set_height(self):
         self.assertFalse(True)
 
