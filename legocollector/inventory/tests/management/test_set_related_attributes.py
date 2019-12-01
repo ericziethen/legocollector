@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from django.test import TestCase
 
 from inventory.models import Part, PartCategory, PartRelationship
@@ -12,6 +14,9 @@ class TestRelatedAttributes(TestCase):
 
 
     def setUp(self):
+        self.attribute_updates = defaultdict(int)
+        self.conflicting_attribs = {'dimensions': {}, 'top_studs': {}, 'botom_studs': {}, 'stud_rings': {}}
+
         PartCategory.objects.create(name='category1')
 
         Part.objects.create(part_num='part1', name='part1', category=PartCategory.objects.get(name='category1'))
@@ -28,13 +33,17 @@ class TestRelatedAttributes(TestCase):
             child_part=Part.objects.get(part_num='part3'),
             relationship_type=PartRelationship.ALTERNATE_PART)
 
+    #@staticmethod
+    #def assert_part_changes()
+
     @pytest.mark.eric
     def test_no_dims_no_studs_present(self):
         part1 = Part.objects.get(part_num='part1')
         part2 = Part.objects.get(part_num='part2')
         part3 = Part.objects.get(part_num='part3')
 
-        Command.set_related_attribs_for_part_list([part1, part2, part3])
+        Command.set_related_attribs_for_part(
+            part1, attribute_updates=self.attribute_updates, conflicting_attribs=self.conflicting_attribs)
 
         self.assertEqual(part1.dimension_set_count, 0)
         self.assertEqual(part2.dimension_set_count, 0)
@@ -51,8 +60,11 @@ class TestRelatedAttributes(TestCase):
         part3 = Part.objects.get(part_num='part3')
 
         part2.width = 10
+        part2.save()
 
-        Command.set_related_attribs_for_part_list([part1, part2, part3])
+        Command.set_related_attribs_for_part(
+            part1, attribute_updates=self.attribute_updates, conflicting_attribs=self.conflicting_attribs)
+
         part1 = Part.objects.get(part_num='part1')
         part2 = Part.objects.get(part_num='part2')
         part3 = Part.objects.get(part_num='part3')

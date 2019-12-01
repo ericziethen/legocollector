@@ -16,34 +16,20 @@ class Command(BaseCommand):
 
         processed_parts = {}
 
-        related_attributes_set_count = 0
-        related_top_studss_set = 0
-
         attribute_updates = defaultdict(int)
 
-        conflicting_attribs = {}
-        conflicting_attribs['dimensions'] = {}
-        conflicting_attribs['top_studs'] = {}
-        conflicting_attribs['botom_studs'] = {}
-        conflicting_attribs['stud_rings'] = {}
-
-        related_image_urls_set = 0
+        conflicting_attribs = {'dimensions': {}, 'top_studs': {}, 'botom_studs': {}, 'stud_rings': {}}
 
         with transaction.atomic():
             for idx, part in enumerate(Part.objects.all(), 1):
                 if part.part_num not in processed_parts:
-
-                    # Get list of Related Parts
-                    related_parts = part.get_related_parts(parents=True, children=True, transitive=True)
-                    part_family = sorted(related_parts + [part], key=lambda p: p.dimension_set_count, reverse=True)
-
                     # Update Related Parts
-                    self.set_related_attribs_for_part_list(
-                        part_family, attribute_updates=attribute_updates,
+                    part_list = self.set_related_attribs_for_part_list(
+                        part, attribute_updates=attribute_updates,
                         conflicting_attribs=conflicting_attribs)
 
                     # Remember Processed Parts
-                    for rel_part in part_family:
+                    for rel_part in part_list:
                         processed_parts[rel_part.part_num] = True
 
                 if (idx % 1000) == 0:
@@ -61,25 +47,31 @@ class Command(BaseCommand):
             logger.info(F'    {group:<20}: Count: {count}')
 
     @staticmethod
-    def set_related_attribs_for_part_list(
-            db_part_list, *, attribute_updates=None, conflicting_attribs=None):
+    def set_related_attribs_for_part(
+            part, *, attribute_updates, conflicting_attribs):
         # For Processing Stud Counts we need to be carefull as related parts may have a different stud count
         # e.g. the following 2 related parts have a different stud count
         #       https://rebrickable.com/parts/10a/baseplate-24-x-32-with-squared-corners/
         #       https://rebrickable.com/parts/10b/baseplate-24-x-32-with-rounded-corners/
 
+
+        # Get list of Related Parts
+        related_parts = part.get_related_parts(parents=True, children=True, transitive=True)
+        part_family = sorted(related_parts + [part], key=lambda p: p.dimension_set_count, reverse=True)
+
+        print(F'RELATED_PART_LIST: {part_family}')
+
         top_studs = None
         image_url = None
-        for related_part in db_part_list:
+        for related_part in part_family:
             # Figure out the Stud Count, only take the count if there are not more
             # than 1 different stud counts
             if related_part.top_studs is not None:
                 if top_studs and top_studs != related_part.top_studs:
                     # a different stud count found, igore whole family
                     top_studs = None
-                    if conflicting_attribs:
-                        conflicting_attribs['top_studs'][related_part.part_num] =\
-                            [(p.part_num, p.top_studs) for p in sorted(db_part_list, key=lambda p: p.part_num)]
+                    conflicting_attribs['top_studs'][related_part.part_num] =\
+                        [(p.part_num, p.top_studs) for p in sorted(part_family, key=lambda p: p.part_num)]
                     break
 
                 if top_studs is None:
@@ -96,8 +88,8 @@ class Command(BaseCommand):
                 if image_url is None:
                     image_url = related_part.image_url
 
-        highest_count_part = db_part_list[0]  # Will always exist since we added ourselves
-        for related_part in db_part_list:
+        highest_count_part = part_family[0]  # Will always exist since we added ourselves
+        for related_part in part_family:
             update = False
 
             # Set the Attributes
@@ -107,28 +99,25 @@ class Command(BaseCommand):
                 related_part.width = highest_count_part.width
                 related_part.length = highest_count_part.length
                 related_part.height = highest_count_part.height
-                if attribute_updates:
-                    attribute_updates['dimensions'] += 1
+                attribute_updates['dimensions'] += 1
 
             # Set the Stud Count
             if top_studs and related_part.top_studs is None:
                 update = True
                 related_part.top_studs = top_studs
-                if attribute_updates:
-                    attribute_updates['top_studs'] += 1
+                attribute_updates['top_studs'] += 1
 
             # Set Image URL
             if image_url and related_part.image_url is None:
                 update = True
                 related_part.image_url = image_url
-                if attribute_updates:
-                    attribute_updates['image_url'] += 1
+                attribute_updates['image_url'] += 1
 
             if update:
-                if attribute_updates:
-                    attribute_updates['total_parts'] += 1
+                attribute_updates['total_parts'] += 1
                 related_part.save()
 
-            if attribute_updates:
-                if 'total_parts' in attribute_updates and (attribute_updates['total_parts'] % 1000) == 0:
-                    logger.info(F'''  Attributes Set: {attribute_updates['total_parts']}''')
+            if 'total_parts' in attribute_updates and (attribute_updates['total_parts'] % 1000) == 0:
+                logger.info(F'''  Attributes Set: {attribute_updates['total_parts']}''')
+
+        return part_family

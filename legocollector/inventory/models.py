@@ -88,7 +88,9 @@ class Part(models.Model):
     category = models.ForeignKey(PartCategory, on_delete=models.CASCADE, related_name='parts')
 
     def __str__(self):
-        return F'{self.name} ({self.part_num})'
+        #return F'{self.name} ({self.part_num})'
+        # TODO - REMOVE
+        return F'{self.name} ({self.part_num}) - w: {self.width}, l: {self.length}, h: {self.height}, ts: {self.top_studs}, bs: {self.bottom_studs}, sr: {self.stud_rings}'
 
     @property
     def dimension_set_count(self):
