@@ -99,3 +99,7 @@ class Command(BaseCommand):
         logger.info(F'  Attributes Set on: {related_attributes_set_count} related parts')
         logger.info(F'  Stud Count set on: {related_top_studss_set} related parts.')
         logger.info(F'  Image Url set on:  {related_image_urls_set} related parts')
+
+    @staticmethod
+    def set_related_attribs_for_part_list(db_part_list):
+        pass

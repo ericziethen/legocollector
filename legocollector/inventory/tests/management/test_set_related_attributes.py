@@ -1,12 +1,17 @@
 from django.test import TestCase
 
-from inventory.models import Color, Part, PartCategory, PartRelationship
-#from inventory.management.commands.set_related_attributes.Command import calc_related_attribs
+from inventory.models import Part, PartCategory, PartRelationship
+from inventory.management.commands.set_related_attributes import Command
+
+
+# TODO - REMOVE after test debugging
+import pytest
 
 
 class TestRelatedAttributes(TestCase):
 
-    def setup(self):
+
+    def setUp(self):
         PartCategory.objects.create(name='category1')
 
         Part.objects.create(part_num='part1', name='part1', category=PartCategory.objects.get(name='category1'))
@@ -23,22 +28,25 @@ class TestRelatedAttributes(TestCase):
             child_part=Part.objects.get(part_num='part3'),
             relationship_type=PartRelationship.ALTERNATE_PART)
 
-    '''
+    #'''
+    @pytest.mark.eric
     def test_no_dims_no_studs_present(self):
-        calc_related_attribs()
-
+        print('PartCategory DATABASE', PartCategory.objects.all())
+        print('PART DATABASE', Part.objects.all())
         part1 = Part.objects.get(part_num='part1')
         part2 = Part.objects.get(part_num='part2')
         part3 = Part.objects.get(part_num='part3')
+
+        Command.set_related_attribs_for_part_list([part1, part2, part3])
 
         self.assertEqual(part1.dimension_set_count, 0)
         self.assertEqual(part2.dimension_set_count, 0)
         self.assertEqual(part3.dimension_set_count, 0)
 
-
-
-        self.assertFalse(True)
-    '''
+        self.assertEqual(part1.studs_set_count, 0)
+        self.assertEqual(part2.studs_set_count, 0)
+        self.assertEqual(part3.studs_set_count, 0)
+    #'''
     '''
     def test_set_width(self):
         self.assertFalse(True)
@@ -89,6 +97,8 @@ class TestRelatedAttributes(TestCase):
     def test_clashing_stud_ring_others_ok(self):
         self.assertFalse(True)
 
+
+    def test_parts_processed_updated()
 
 class TestFullCommand(TestCase):
 
