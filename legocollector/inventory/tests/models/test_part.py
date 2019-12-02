@@ -288,3 +288,17 @@ class TestStuds(TestCase):
         part = Part.objects.create(
             part_num='PartA', name='A Part', category=self.part_category1, top_studs=1, bottom_studs=15, stud_rings=3)
         self.assertEqual(part.studs_set_count, 3)
+
+    def test_swap_width_and_length(self):
+        part = Part.objects.create(
+            part_num='PartA', name='A Part', category=self.part_category1, width=20, height=15, length=5)
+        self.assertEqual(part.width, 5)
+        self.assertEqual(part.length, 20)
+        self.assertEqual(part.height, 15)
+
+        part.width = 100
+        part.save()
+
+        self.assertEqual(part.width, 20)
+        self.assertEqual(part.length, 100)
+        self.assertEqual(part.height, 15)
