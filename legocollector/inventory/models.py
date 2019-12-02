@@ -85,6 +85,14 @@ class Part(models.Model):
 
     category = models.ForeignKey(PartCategory, on_delete=models.CASCADE, related_name='parts')
 
+    def save(self, *args, **kwargs):  # pylint: disable=arguments-differ
+        if self.length is not None and self.width is not None:
+            if self.width > self.length:
+                temp_width = self.width
+                self.width = self.length
+                self.length = temp_width
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return F'{self.name} ({self.part_num})'
 
