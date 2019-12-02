@@ -22,7 +22,9 @@ class Command(BaseCommand):
             'Has Width': 'width',
             'Has Height': 'height',
             'Has Length': 'length',
-            'Has Stud Count': 'stud_count',
+            'Has Top Studs': 'top_studs',
+            'Has Bottom Studs': 'bottom_studs',
+            'Has Stud Rings': 'stud_rings',
             'Has Image URL': 'image_url',
         }
         parts_detail = {val: 0 for val in check_not_none_fields}
@@ -44,7 +46,7 @@ class Command(BaseCommand):
 
         # Display Part Details
         for name, count in parts_detail.items():
-            logger.info(F'  {name:<15}: True: {count:>7}, False: {part_count - count:>7}')
+            logger.info(F'  {name:20}: True: {count:>7}, False: {part_count - count:>7}')
 
         # Display Attribute Set Counts
         logger.info(F'  Dimension Set Count')

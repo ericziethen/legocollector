@@ -29,6 +29,8 @@ class FileType(enum.Enum):
     # pylint: disable=invalid-name
     UNKNOWN = 'Unknown'
     TOP_STUD = 'Top Stud'
+    UNDERSIDE_STUD = 'Underside Stud'
+    STUD_RING = 'Stud Ring'
 
 
 class FileListDic():
@@ -131,35 +133,59 @@ def get_ldraw_file_type(file_name):
         'stud15.dat', 'stud2.dat', 'stud2a.dat', 'stud17a.dat',
         'stud9.dat', 'stud6.dat', 'stud6a.dat']
 
+    underside_stud_file_names = [
+        'stud3.dat', 'stud3a.dat', 'studx.dat', 'stud12.dat',
+    ]
+
+    stud_ring_file_names = [
+        'stud16.dat', 'stud21a.dat', 'stud22a.dat', 'stud4.dat', 'stud4a.dat',
+        'stud4fns.dat', 'stud4h.dat', 'stud4o.dat', 'stud4od.dat']
+    # Invisible Stud rings to ignore,
+    #   Sloped: stud4s.dat, stud4s2.dat
+
     check_name = file_name.lower()
     if check_name in top_stud_file_names:
         file_type = FileType.TOP_STUD
+    elif check_name in underside_stud_file_names:
+        file_type = FileType.UNDERSIDE_STUD
+    elif check_name in stud_ring_file_names:
+        file_type = FileType.STUD_RING
 
     return file_type
 
 
-def get_top_stud_count_for_file(file_path):
-    single_top_stud_file_types = [FileType.TOP_STUD]
-    if get_ldraw_file_type(os.path.basename(file_path)) in single_top_stud_file_types:
+def get_stud_count_for_file_type(file_path, file_type):
+    if get_ldraw_file_type(os.path.basename(file_path)) == file_type:
         return 1
     return 0
 
 
-def calc_stud_count_for_part_file(
+def print_sub_files(file_path, file_dic, *, prefix=None, level=0):
+    base_name = os.path.basename(file_path)
+    if not prefix or base_name.lower().startswith(prefix.lower()):
+        print(F'{level * 2 * " "}{os.path.basename(file_path)} - {get_ldraw_file_type(base_name)}')
+    ldraw_file = LdrawFile(file_path)
+    for sub_file in ldraw_file.sup_part_files:
+        sub_file_path = file_dic[sub_file]
+        print_sub_files(sub_file_path, file_dic, prefix=prefix, level=level + 1)
+
+
+def calc_top_studs_for_part_file(
         file_path, file_dic, processed_files_dic=None, file_visited_count=None, rec_level=0):
     if processed_files_dic is None:
         processed_files_dic = {}
-
-    count = get_top_stud_count_for_file(file_path)
     if file_visited_count is not None:
         if file_path not in file_visited_count:
             file_visited_count[file_path] = 1
-
         else:
             file_visited_count[file_path] += 1
 
+    top_top_studs = get_stud_count_for_file_type(file_path, FileType.TOP_STUD)
+    bottom_studs = get_stud_count_for_file_type(file_path, FileType.UNDERSIDE_STUD)
+    stud_ring_count = get_stud_count_for_file_type(file_path, FileType.STUD_RING)
+
     # Process sub files
-    if count == 0:
+    if not any([top_top_studs, bottom_studs, stud_ring_count]):
         ldraw_file = LdrawFile(file_path)
         for sub_file in ldraw_file.sup_part_files:
 
@@ -169,25 +195,29 @@ def calc_stud_count_for_part_file(
                 raise SubfileMissingError(F'"{file_path}" misses Subfile "{sub_file}"')
 
             if sub_file_path in processed_files_dic:
-                count += processed_files_dic[sub_file_path]['top_stud_count']
+                top_top_studs += processed_files_dic[sub_file_path]['top_top_studs']
+                bottom_studs += processed_files_dic[sub_file_path]['bottom_studs']
+                stud_ring_count += processed_files_dic[sub_file_path]['stud_ring_count']
             else:
                 try:
-                    sub_file_count = calc_stud_count_for_part_file(
+                    calc_top_studs_for_part_file(
                         sub_file_path, file_dic, processed_files_dic,
                         file_visited_count, rec_level + 1)
                 except SubfileMissingError as error:
                     raise SubfileMissingError(F'{file_path} -> {error}')
 
-                count += sub_file_count
-
-                processed_files_dic[sub_file_path] = {'top_stud_count': sub_file_count}
+                top_top_studs += processed_files_dic[sub_file_path]['top_top_studs']
+                bottom_studs += processed_files_dic[sub_file_path]['bottom_studs']
+                stud_ring_count += processed_files_dic[sub_file_path]['stud_ring_count']
 
     if file_path not in processed_files_dic:
-        processed_files_dic[file_path] = {'top_stud_count': count}
-    return count
+        processed_files_dic[file_path] = {
+            'top_top_studs': top_top_studs,
+            'bottom_studs': bottom_studs,
+            'stud_ring_count': stud_ring_count}
 
 
-def calc_stud_count_for_part_list(part_list, file_dic):
+def calc_top_studs_for_part_list(part_list, file_dic):
     parts_dic = {}
     processed_files_dic = {}
 
@@ -197,11 +227,13 @@ def calc_stud_count_for_part_list(part_list, file_dic):
         part_num = os.path.splitext(os.path.basename(file_path))[0]
         parts_dic[part_num] = {}
         try:
-            stud_count = calc_stud_count_for_part_file(file_path, file_dic, processed_files_dic)
+            calc_top_studs_for_part_file(file_path, file_dic, processed_files_dic)
         except SubfileMissingError as error:
             parts_dic[part_num]['processing_errors'] = [str(error)]
         else:
-            parts_dic[part_num]['stud_count'] = stud_count
+            parts_dic[part_num]['top_top_studs'] = processed_files_dic[file_path]['top_top_studs']
+            parts_dic[part_num]['bottom_studs'] = processed_files_dic[file_path]['bottom_studs']
+            parts_dic[part_num]['stud_ring_count'] = processed_files_dic[file_path]['stud_ring_count']
 
         if idx % 500 == 0:
             now = datetime.datetime.now()
@@ -225,10 +257,10 @@ def generate_part_list_to_process(dir_list):
 
 
 def create_json_for_parts(json_out_file_path):
-    parts_dir = R'D:\Downloads\Finished\# Lego\ldraw\complete_2019.11.05\ldraw\parts'
-    prim_dir = R'D:\Downloads\Finished\# Lego\ldraw\complete_2019.11.05\ldraw\p'
-    unofficial_parts_dir = R'D:\Downloads\Finished\# Lego\ldraw\ldrawunf_2019.11.14\parts'
-    unofficial_primitives_dir = R'D:\Downloads\Finished\# Lego\ldraw\ldrawunf_2019.11.14\p'
+    parts_dir = R'D:\Downloads\Finished\# Lego\ldraw\# Downloads\2019.11.29\complete\ldraw\parts'
+    prim_dir = R'D:\Downloads\Finished\# Lego\ldraw\# Downloads\2019.11.29\complete\ldraw\p'
+    unofficial_parts_dir = R'D:\Downloads\Finished\# Lego\ldraw\# Downloads\2019.11.29\ldrawunf\parts'
+    unofficial_primitives_dir = R'D:\Downloads\Finished\# Lego\ldraw\# Downloads\2019.11.29\ldrawunf\p'
 
     file_dic = FileListDic(
         parts_dir=parts_dir, primitives_dir=prim_dir,
@@ -237,7 +269,7 @@ def create_json_for_parts(json_out_file_path):
     part_list = generate_part_list_to_process([parts_dir, unofficial_parts_dir])
     print(F'Number of parts to process: {len(part_list)}')
 
-    parts_dic = calc_stud_count_for_part_list(part_list, file_dic)
+    parts_dic = calc_top_studs_for_part_list(part_list, file_dic)
 
     with open(json_out_file_path, 'w', encoding='utf-8') as file_ptr:
         json.dump(parts_dic, file_ptr)

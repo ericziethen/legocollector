@@ -230,7 +230,6 @@ class TestDimensions(TestCase):
 
     def setUp(self):
         self.part_category1 = PartCategory.objects.create(id=1, name='category1')
-        self.color1 = Color.objects.create(id='1', name='Red', rgb='AAAAAA')
 
     def test_dimension_no_attribs(self):
         part = Part.objects.create(
@@ -257,6 +256,37 @@ class TestDimensions(TestCase):
         part = Part.objects.create(
             part_num='PartA', name='A Part', category=self.part_category1, width=1, height=15, length=3)
         self.assertEqual(part.dimension_set_count, 3)
+
+class TestStuds(TestCase):
+
+    def setUp(self):
+        self.part_category1 = PartCategory.objects.create(id=1, name='category1')
+
+    def test_studs_no_attribs(self):
+        part = Part.objects.create(
+            part_num='PartA', name='A Part', category=self.part_category1)
+        self.assertEqual(part.studs_set_count, 0)
+
+    def test_studs_single_attribs(self):
+        part = Part.objects.create(
+            part_num='Part1', name='A Part', category=self.part_category1, top_studs=1)
+        self.assertEqual(part.studs_set_count, 1)
+        part = Part.objects.create(
+            part_num='Part2', name='A Part', category=self.part_category1, bottom_studs=1)
+        self.assertEqual(part.studs_set_count, 1)
+        part = Part.objects.create(
+            part_num='Part3', name='A Part', category=self.part_category1, stud_rings=1)
+        self.assertEqual(part.studs_set_count, 1)
+
+    def test_studs_2_attribs(self):
+        part = Part.objects.create(
+            part_num='PartA', name='A Part', category=self.part_category1, top_studs=1, stud_rings=3)
+        self.assertEqual(part.studs_set_count, 2)
+
+    def test_studs_all_attribs(self):
+        part = Part.objects.create(
+            part_num='PartA', name='A Part', category=self.part_category1, top_studs=1, bottom_studs=15, stud_rings=3)
+        self.assertEqual(part.studs_set_count, 3)
 
     def test_swap_width_and_length(self):
         part = Part.objects.create(

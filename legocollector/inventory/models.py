@@ -80,7 +80,9 @@ class Part(models.Model):
     width = models.DecimalField(max_digits=8, decimal_places=4, blank=True, null=True)
     height = models.DecimalField(max_digits=8, decimal_places=4, blank=True, null=True)
     length = models.DecimalField(max_digits=8, decimal_places=4, blank=True, null=True)
-    stud_count = models.PositiveIntegerField(blank=True, null=True)
+    top_studs = models.PositiveIntegerField(blank=True, null=True)
+    bottom_studs = models.PositiveIntegerField(blank=True, null=True)
+    stud_rings = models.PositiveIntegerField(blank=True, null=True)
     image_url = models.CharField(max_length=250, blank=True, null=True)
 
     category = models.ForeignKey(PartCategory, on_delete=models.CASCADE, related_name='parts')
@@ -99,6 +101,11 @@ class Part(models.Model):
     @property
     def dimension_set_count(self):
         return [self.width is not None, self.height is not None, self.length is not None].count(True)
+
+    @property
+    def studs_set_count(self):
+        return [self.top_studs is not None, self.bottom_studs is not None,
+                self.stud_rings is not None].count(True)
 
     @property
     def available_colors(self):

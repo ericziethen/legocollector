@@ -35,7 +35,7 @@ class Command(BaseCommand):
 
         # Process import files
         for file_path, import_func in import_files.items():
-            with open(file_path) as csvfile:
+            with open(file_path, encoding='utf8') as csvfile:
                 reader = csv.DictReader(csvfile)
                 import_func(reader)
 

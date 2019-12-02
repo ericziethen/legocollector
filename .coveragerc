@@ -2,12 +2,10 @@
 omit =
     */tests/*
     *__init__*
-    */management/commands/*
     */migrations/*
 
 [report]
 omit =
     */tests/*
     *__init__*
-    */management/commands/*
     */migrations/*

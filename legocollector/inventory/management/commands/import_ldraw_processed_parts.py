@@ -23,7 +23,7 @@ class Command(BaseCommand):
             with open(json_file_path, 'r', encoding='utf-8') as file_ptr:
                 json_dic = json.load(file_ptr)
         else:
-            logger.error.write(F'ERROR - Json file "{json_file_path}" does not exist')
+            logger.error(F'ERROR - Json file "{json_file_path}" does not exist')
 
         self.import_ldraw_data(json_dic)
 
@@ -52,8 +52,10 @@ class Command(BaseCommand):
                         parts_not_found_list.append(part_num)
 
                 for part in part_list:
-                    if 'stud_count' in part_dic:
-                        part.stud_count = part_dic['stud_count']
+                    if "processing_errors" not in part_dic:
+                        part.top_studs = part_dic['top_top_studs']
+                        part.bottom_studs = part_dic['bottom_studs']
+                        part.stud_rings = part_dic['stud_ring_count']
                         part.save()
 
                     parts_processed_counts += 1
