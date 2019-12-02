@@ -294,3 +294,10 @@ class TestStuds(TestCase):
         self.assertEqual(part.width, 5)
         self.assertEqual(part.length, 20)
         self.assertEqual(part.height, 15)
+
+        part.width = 100
+        part.save()
+
+        self.assertEqual(part.width, 20)
+        self.assertEqual(part.length, 100)
+        self.assertEqual(part.height, 15)
