@@ -257,7 +257,6 @@ class TestDimensions(TestCase):
             part_num='PartA', name='A Part', category=self.part_category1, width=1, height=15, length=3)
         self.assertEqual(part.dimension_set_count, 3)
 
-
 class TestStuds(TestCase):
 
     def setUp(self):
