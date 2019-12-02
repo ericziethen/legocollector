@@ -128,7 +128,7 @@ class TestRelatedAttributes(TestCase):
         self.assertEqual(part3.dimension_set_count, 3)
 
         self.assertEqual(part1.width, 10)
-        self.assertEqual(part2.width, 100)
+        self.assertEqual(part2.width, 30)
         self.assertEqual(part3.width, 10)
 
         self.assertEqual(part1.height, 20)
@@ -136,7 +136,7 @@ class TestRelatedAttributes(TestCase):
         self.assertEqual(part3.height, 20)
 
         self.assertEqual(part1.length, 30)
-        self.assertEqual(part2.length, 30)
+        self.assertEqual(part2.length, 100)
         self.assertEqual(part3.length, 30)
 
         self.assertEqual(part1.top_studs, 100)
