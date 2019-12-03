@@ -1,5 +1,4 @@
 from django.test import TestCase
-from parameterized import parameterized
 
 from inventory.models import Color, Part, PartCategory, PartRelationship, SetPart
 
