@@ -376,7 +376,8 @@ class TestSetInventories(TestCase):
         set_part3 = SetPart.objects.create(
             set_inventory=3, part=part, color=self.color1, qty=1, is_spare=False)
 
-        self.assertListEqual(part.set_inventories, [set_part1.set_inventory, set_part2.set_inventory, set_part3.set_inventory])
+        self.assertListEqual(
+            part.set_inventories, [set_part1.set_inventory, set_part2.set_inventory, set_part3.set_inventory])
         self.assertEqual(part.set_count, 3)
 
     def test_multiple_times_same_set_inventory(self):
