@@ -155,7 +155,7 @@ class Command(BaseCommand):
 
             if batch_list:
                 SetPart.objects.bulk_create(batch_list)
-        
+
         logger.info(F'  Importing Set Parts - End')
         logger.info(F'  Total SetParts Processed: {csv_row_count}')
 
