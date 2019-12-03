@@ -131,6 +131,14 @@ class Part(models.Model):
     def available_colors_str(self):
         return ', '.join(c.name for c in self.available_colors.order_by('name'))
 
+    @property
+    def sets(self):
+        return self.setparts.all()
+
+    @property
+    def set_count(self):
+        return len(self.sets)
+
     def get_related_parts(self, *, parents, children, transitive, parts_processed=None):
         related_parts = []
 

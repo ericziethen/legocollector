@@ -339,3 +339,33 @@ class TestAutomaticHeight(TestCase):
         part.category = PartCategory.objects.get(name='Plates')
         part.save()
         self.assertEqual(part.height, 0.33)
+
+
+
+import pytest
+
+
+class TestSetParts(TestCase):
+
+    def setUp(self):
+        PartCategory.objects.create(name='category1')
+
+        Part.objects.create(part_num='single_part', name='single_part',
+                            category=PartCategory.objects.get(name='category1'))
+
+    @pytest.mark.eric
+    def test_no_set(self):
+        part = Part.objects.get(part_num='single_part')
+
+        print(part.__dict__)
+
+        self.assertEqual(len(part.sets), 0)
+        self.assertEqual(part.set_count, 0)
+
+    '''
+    def test_single_set(self):
+        self.assertFalse(True)
+
+    def test_multiple_sets(self):
+        self.assertFalse(True)
+    '''
