@@ -119,10 +119,10 @@ class Command(BaseCommand):
     def _populate_set_parts(csv_data):
         logger.info(F'Populate Set Parts')
 
-        logger.info(F'Deleting all Set Parts - Start')
+        logger.info(F'  Deleting all Set Parts - Start')
         with transaction.atomic():
             SetPart.objects.all().delete()
-        logger.info(F'Deleting all Set Parts - End')
+        logger.info(F'  Deleting all Set Parts - End')
 
         batch_size = 999  # Max for Sqlite3
         batch_list = []
@@ -131,6 +131,7 @@ class Command(BaseCommand):
         # Load all Parts into memory otherwise bulk_crete gets slow
         cached_parts = {p.part_num: p for p in Part.objects.all()}
 
+        logger.info(F'  Importing Set Parts - Start')
         with transaction.atomic():
             for row in csv_data:
                 csv_row_count += 1
@@ -149,9 +150,13 @@ class Command(BaseCommand):
                     batch_list.clear()
                     logger.debug(F'  SetParts Created: {csv_row_count}')
 
+                if (csv_row_count % 50000) == 0:
+                    logger.info(F'  SetParts Processed: {csv_row_count}')
+
             if batch_list:
                 SetPart.objects.bulk_create(batch_list)
-
+        
+        logger.info(F'  Importing Set Parts - End')
         logger.info(F'  Total SetParts Processed: {csv_row_count}')
 
     @staticmethod
