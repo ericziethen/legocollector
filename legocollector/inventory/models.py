@@ -132,12 +132,12 @@ class Part(models.Model):
         return ', '.join(c.name for c in self.available_colors.order_by('name'))
 
     @property
-    def sets(self):
-        return self.setparts.all()
+    def set_inventories(self):
+        return list(set([sp.set_inventory for sp in self.setparts.all()]))
 
     @property
     def set_count(self):
-        return len(self.sets)
+        return len(self.set_inventories)
 
     def get_related_parts(self, *, parents, children, transitive, parts_processed=None):
         related_parts = []

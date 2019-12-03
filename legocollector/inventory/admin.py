@@ -24,16 +24,17 @@ class PartAdmin(admin.ModelAdmin):
         ('Dimensions', {'fields': ['width', 'height', 'length']}),
         ('Studs', {'fields': ['top_studs', 'bottom_studs', 'stud_rings']}),
         ('Available Colors', {'fields': ['available_colors']}),
+        ('Set Inventories', {'fields': ['set_inventories']}),
         ('Related parts', {'fields': ['related_parts']}),
     ]
     list_display = ('part_num', 'name', 'category', 'width', 'height', 'length',
                     'top_studs', 'bottom_studs', 'stud_rings',
-                    'id', 'related_part_count')
+                    'id', 'related_part_count', 'set_count')
     list_filter = [
         'width', 'height', 'length',
         'top_studs', 'bottom_studs', 'stud_rings']
     search_fields = ['part_num', 'name', 'category__name']
-    readonly_fields = ['related_parts', 'available_colors']
+    readonly_fields = ['related_parts', 'available_colors', 'set_inventories', 'set_count']
 
     def related_parts(self, obj):  # pylint:disable=no-self-use
         return ', '.join(p.part_num for p in obj.get_related_parts(

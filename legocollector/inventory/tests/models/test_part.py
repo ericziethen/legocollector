@@ -341,7 +341,7 @@ class TestAutomaticHeight(TestCase):
         self.assertEqual(part.height, 0.33)
 
 
-class TestSets(TestCase):
+class TestSetInventories(TestCase):
 
     def setUp(self):
         PartCategory.objects.create(name='category1')
@@ -356,18 +356,18 @@ class TestSets(TestCase):
 
         print(part.__dict__)
 
-        self.assertListEqual(list(part.sets), [])
+        self.assertListEqual(list(part.set_inventories), [])
         self.assertEqual(part.set_count, 0)
 
-    def test_single_set(self):
+    def test_single_set_inventory(self):
         part = Part.objects.get(part_num='single_part')
         set_part = SetPart.objects.create(
             set_inventory=1, part=part, color=self.color1, qty=1, is_spare=False)
 
-        self.assertListEqual(list(part.sets), [set_part])
+        self.assertListEqual(list(part.set_inventories), [set_part.set_inventory])
         self.assertEqual(part.set_count, 1)
 
-    def test_multiple_sets(self):
+    def test_multiple_set_inventories(self):
         part = Part.objects.get(part_num='single_part')
         set_part1 = SetPart.objects.create(
             set_inventory=1, part=part, color=self.color1, qty=1, is_spare=False)
@@ -376,5 +376,15 @@ class TestSets(TestCase):
         set_part3 = SetPart.objects.create(
             set_inventory=3, part=part, color=self.color1, qty=1, is_spare=False)
 
-        self.assertListEqual(list(part.sets), [set_part1, set_part2, set_part3])
+        self.assertListEqual(part.set_inventories, [set_part1.set_inventory, set_part2.set_inventory, set_part3.set_inventory])
         self.assertEqual(part.set_count, 3)
+
+    def test_multiple_times_same_set_inventory(self):
+        part = Part.objects.get(part_num='single_part')
+        SetPart.objects.create(
+            set_inventory=1, part=part, color=self.color1, qty=1, is_spare=False)
+        SetPart.objects.create(
+            set_inventory=1, part=part, color=self.color1, qty=1, is_spare=True)
+
+        self.assertListEqual(part.set_inventories, [1])
+        self.assertEqual(part.set_count, 1)
