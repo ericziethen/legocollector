@@ -339,3 +339,53 @@ class TestAutomaticHeight(TestCase):
         part.category = PartCategory.objects.get(name='Plates')
         part.save()
         self.assertEqual(part.height, 0.33)
+
+
+class TestSetInventories(TestCase):
+
+    def setUp(self):
+        PartCategory.objects.create(name='category1')
+
+        Part.objects.create(part_num='single_part', name='single_part',
+                            category=PartCategory.objects.get(name='category1'))
+
+        self.color1 = Color.objects.create(id='1', name='Red', rgb='AAAAAA')
+
+    def test_no_set(self):
+        part = Part.objects.get(part_num='single_part')
+
+        print(part.__dict__)
+
+        self.assertListEqual(list(part.set_inventories), [])
+        self.assertEqual(part.set_count, 0)
+
+    def test_single_set_inventory(self):
+        part = Part.objects.get(part_num='single_part')
+        set_part = SetPart.objects.create(
+            set_inventory=1, part=part, color=self.color1, qty=1, is_spare=False)
+
+        self.assertListEqual(list(part.set_inventories), [set_part.set_inventory])
+        self.assertEqual(part.set_count, 1)
+
+    def test_multiple_set_inventories(self):
+        part = Part.objects.get(part_num='single_part')
+        set_part1 = SetPart.objects.create(
+            set_inventory=1, part=part, color=self.color1, qty=1, is_spare=False)
+        set_part2 = SetPart.objects.create(
+            set_inventory=2, part=part, color=self.color1, qty=1, is_spare=False)
+        set_part3 = SetPart.objects.create(
+            set_inventory=3, part=part, color=self.color1, qty=1, is_spare=False)
+
+        self.assertListEqual(
+            part.set_inventories, [set_part1.set_inventory, set_part2.set_inventory, set_part3.set_inventory])
+        self.assertEqual(part.set_count, 3)
+
+    def test_multiple_times_same_set_inventory(self):
+        part = Part.objects.get(part_num='single_part')
+        SetPart.objects.create(
+            set_inventory=1, part=part, color=self.color1, qty=1, is_spare=False)
+        SetPart.objects.create(
+            set_inventory=1, part=part, color=self.color1, qty=1, is_spare=True)
+
+        self.assertListEqual(part.set_inventories, [1])
+        self.assertEqual(part.set_count, 1)
