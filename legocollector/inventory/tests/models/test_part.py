@@ -305,9 +305,6 @@ class TestStuds(TestCase):
         self.assertEqual(part.height, 15)
 
 
-import pytest
-
-
 class TestAutomaticHeight(TestCase):
 
     def setUp(self):
@@ -315,37 +312,31 @@ class TestAutomaticHeight(TestCase):
         self.category_plates = PartCategory.objects.create(name='Plates')
         self.category_tiles = PartCategory.objects.create(name='Tiles')
 
-        '''
-        self.part_no_height = Part.objects.create(
-            part_num='No Height', name='A Part', category=self.category_no_height)
-        self.part_plate = Part.objects.create(
-            part_num='Plate', name='A Part', category=self.category_plates)
-        self.part_tile = Part.objects.create(
-            part_num='Tile', name='A Part', category=self.category_tiles)
-        '''
-
-    @pytest.mark.eric
     def test_no_height(self):
         part = Part.objects.create(
             part_num='No Height', name='A Part', category=PartCategory.objects.get(name='no_height'))
         self.assertIsNone(part.height)
 
-    @pytest.mark.eric
     def test_has_height(self):
         part = Part.objects.create(
             part_num='No Height', name='A Part', category=PartCategory.objects.get(name='Plates'))
         self.assertEqual(part.height, 0.33)
 
     def test_create_height_overwritten(self):
-        self.assertFalse(True)
-        # set height, save
-        # assert normal height
-        # overwrite height
-        # assert normal height
+        part = Part.objects.create(
+            part_num='No Height', name='A Part', category=PartCategory.objects.get(name='Tiles'), height=15)
+        self.assertEqual(part.height, 0.33)
 
-    def test_update_height_overwritten(self):
-        self.assertFalse(True)
-        # set height, save
-        # assert normal height
-        # overwrite height
-        # assert normal height
+    def test_create_height_not_overwritten(self):
+        part = Part.objects.create(
+            part_num='No Height', name='A Part', category=PartCategory.objects.get(name='no_height'), height=15)
+        self.assertEqual(part.height, 15)
+
+    def test_update_category_height_overwritten(self):
+        part = Part.objects.create(
+            part_num='No Height', name='A Part', category=PartCategory.objects.get(name='no_height'), height=15)
+        self.assertEqual(part.height, 15)
+
+        part.category = PartCategory.objects.get(name='Plates')
+        part.save()
+        self.assertEqual(part.height, 0.33)
