@@ -1,4 +1,5 @@
 from django.test import TestCase
+from parameterized import parameterized
 
 from inventory.models import Color, Part, PartCategory, PartRelationship, SetPart
 
@@ -302,3 +303,41 @@ class TestStuds(TestCase):
         self.assertEqual(part.width, 20)
         self.assertEqual(part.length, 100)
         self.assertEqual(part.height, 15)
+
+class TestAutomaticHeight(TestCase):
+
+    def setUp(self):
+        self.category_no_height = PartCategory.objects.create(name='no_height')
+        self.category_plates = PartCategory.objects.create(name='Plates')
+        self.category_tiles = PartCategory.objects.create(name='Tiles')
+
+        '''
+        self.part_no_height = Part.objects.create(
+            part_num='No Height', name='A Part', category=self.category_no_height)
+        self.part_plate = Part.objects.create(
+            part_num='Plate', name='A Part', category=self.category_plates)
+        self.part_tile = Part.objects.create(
+            part_num='Tile', name='A Part', category=self.category_tiles)
+        '''
+
+    def test_no_height(self):
+        part = Part.objects.create(
+            part_num='No Height', name='A Part', category=PartCategory.objects.get(name='no_height'))
+        self.assertIsNone(part.height)
+
+    def test_has_height(self):
+        self.assertFalse(True)
+
+    def test_create_height_overwritten(self):
+        self.assertFalse(True)
+        # set height, save
+        # assert normal height
+        # overwrite height
+        # assert normal height
+
+    def test_update_height_overwritten(self):
+        self.assertFalse(True)
+        # set height, save
+        # assert normal height
+        # overwrite height
+        # assert normal height
