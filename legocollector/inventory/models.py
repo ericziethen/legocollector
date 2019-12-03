@@ -133,7 +133,7 @@ class Part(models.Model):
 
     @property
     def set_inventories(self):
-        return list(set([sp.set_inventory for sp in self.setparts.all()]))
+        return list({sp.set_inventory for sp in self.setparts.all()})
 
     @property
     def set_count(self):
