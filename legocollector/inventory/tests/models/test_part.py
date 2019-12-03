@@ -302,3 +302,40 @@ class TestStuds(TestCase):
         self.assertEqual(part.width, 20)
         self.assertEqual(part.length, 100)
         self.assertEqual(part.height, 15)
+
+
+class TestAutomaticHeight(TestCase):
+
+    def setUp(self):
+        self.category_no_height = PartCategory.objects.create(name='no_height')
+        self.category_plates = PartCategory.objects.create(name='Plates')
+        self.category_tiles = PartCategory.objects.create(name='Tiles')
+
+    def test_no_height(self):
+        part = Part.objects.create(
+            part_num='No Height', name='A Part', category=PartCategory.objects.get(name='no_height'))
+        self.assertIsNone(part.height)
+
+    def test_has_height(self):
+        part = Part.objects.create(
+            part_num='No Height', name='A Part', category=PartCategory.objects.get(name='Plates'))
+        self.assertEqual(part.height, 0.33)
+
+    def test_create_height_overwritten(self):
+        part = Part.objects.create(
+            part_num='No Height', name='A Part', category=PartCategory.objects.get(name='Tiles'), height=15)
+        self.assertEqual(part.height, 0.33)
+
+    def test_create_height_not_overwritten(self):
+        part = Part.objects.create(
+            part_num='No Height', name='A Part', category=PartCategory.objects.get(name='no_height'), height=15)
+        self.assertEqual(part.height, 15)
+
+    def test_update_category_height_overwritten(self):
+        part = Part.objects.create(
+            part_num='No Height', name='A Part', category=PartCategory.objects.get(name='no_height'), height=15)
+        self.assertEqual(part.height, 15)
+
+        part.category = PartCategory.objects.get(name='Plates')
+        part.save()
+        self.assertEqual(part.height, 0.33)
