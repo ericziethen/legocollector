@@ -341,11 +341,7 @@ class TestAutomaticHeight(TestCase):
         self.assertEqual(part.height, 0.33)
 
 
-
-import pytest
-
-
-class TestSetParts(TestCase):
+class TestSets(TestCase):
 
     def setUp(self):
         PartCategory.objects.create(name='category1')
@@ -353,19 +349,32 @@ class TestSetParts(TestCase):
         Part.objects.create(part_num='single_part', name='single_part',
                             category=PartCategory.objects.get(name='category1'))
 
-    @pytest.mark.eric
+        self.color1 = Color.objects.create(id='1', name='Red', rgb='AAAAAA')
+
     def test_no_set(self):
         part = Part.objects.get(part_num='single_part')
 
         print(part.__dict__)
 
-        self.assertEqual(len(part.sets), 0)
+        self.assertListEqual(list(part.sets), [])
         self.assertEqual(part.set_count, 0)
 
-    '''
     def test_single_set(self):
-        self.assertFalse(True)
+        part = Part.objects.get(part_num='single_part')
+        set_part = SetPart.objects.create(
+            set_inventory=1, part=part, color=self.color1, qty=1, is_spare=False)
+
+        self.assertListEqual(list(part.sets), [set_part])
+        self.assertEqual(part.set_count, 1)
 
     def test_multiple_sets(self):
-        self.assertFalse(True)
-    '''
+        part = Part.objects.get(part_num='single_part')
+        set_part1 = SetPart.objects.create(
+            set_inventory=1, part=part, color=self.color1, qty=1, is_spare=False)
+        set_part2 = SetPart.objects.create(
+            set_inventory=2, part=part, color=self.color1, qty=1, is_spare=False)
+        set_part3 = SetPart.objects.create(
+            set_inventory=3, part=part, color=self.color1, qty=1, is_spare=False)
+
+        self.assertListEqual(list(part.sets), [set_part1, set_part2, set_part3])
+        self.assertEqual(part.set_count, 3)
