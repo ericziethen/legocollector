@@ -304,6 +304,10 @@ class TestStuds(TestCase):
         self.assertEqual(part.length, 100)
         self.assertEqual(part.height, 15)
 
+
+import pytest
+
+
 class TestAutomaticHeight(TestCase):
 
     def setUp(self):
@@ -320,13 +324,17 @@ class TestAutomaticHeight(TestCase):
             part_num='Tile', name='A Part', category=self.category_tiles)
         '''
 
+    @pytest.mark.eric
     def test_no_height(self):
         part = Part.objects.create(
             part_num='No Height', name='A Part', category=PartCategory.objects.get(name='no_height'))
         self.assertIsNone(part.height)
 
+    @pytest.mark.eric
     def test_has_height(self):
-        self.assertFalse(True)
+        part = Part.objects.create(
+            part_num='No Height', name='A Part', category=PartCategory.objects.get(name='Plates'))
+        self.assertEqual(part.height, 0.33)
 
     def test_create_height_overwritten(self):
         self.assertFalse(True)

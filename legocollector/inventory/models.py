@@ -94,11 +94,17 @@ class Part(models.Model):
     category = models.ForeignKey(PartCategory, on_delete=models.CASCADE, related_name='parts')
 
     def save(self, *args, **kwargs):  # pylint: disable=arguments-differ
+        # Ensure length cannot be smaller than width
         if self.length is not None and self.width is not None:
             if self.width > self.length:
                 temp_width = self.width
                 self.width = self.length
                 self.length = temp_width
+
+        # Check if the height should come from the category
+        if self.category and self.category.height:
+            self.height = self.category.height
+
         super().save(*args, **kwargs)
 
     def __str__(self):
