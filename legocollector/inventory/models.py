@@ -14,6 +14,10 @@ class PartCategory(models.Model):
     def __str__(self):
         return self.name
 
+    @property
+    def height(self):
+        return None
+
 
 class Color(models.Model):
     id = models.IntegerField(primary_key=True, editable=False)
