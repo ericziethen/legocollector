@@ -19,11 +19,10 @@ class TestPartCategoryHeight(TestCase):
         category = PartCategory.objects.create(name=category)
         self.assertIsNone(category.height)
 
-    '''
-    def test_height_for_category(self):
-        category1 = PartCategory.objects.create(name='Plates')
-
-
-
-        category2 = PartCategory.objects.create(name='Tiles')
-    '''
+    @parameterized.expand([
+        ('Plates'),
+        ('Tiles'),
+    ])
+    def test_height_for_category(self, name):
+        category = PartCategory.objects.create(name=name)
+        self.assertEqual(category.height, 0.33)

@@ -16,6 +16,8 @@ class PartCategory(models.Model):
 
     @property
     def height(self):
+        if self.name in ['Plates', 'Tiles']:
+            return 0.33
         return None
 
 
