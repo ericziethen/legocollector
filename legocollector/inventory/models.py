@@ -11,6 +11,9 @@ class PartCategory(models.Model):
     id = models.IntegerField(primary_key=True, editable=False)
     name = models.CharField(max_length=200, unique=True)
 
+    class Meta:
+        ordering = ('name',)
+
     def __str__(self):
         return self.name
 
