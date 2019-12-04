@@ -52,4 +52,4 @@ class UserPartFilter(FilterSet):
         super().__init__(data, queryset, request=request, prefix=prefix)
         self.filters['category'] = ModelChoiceFilter(
             empty_label='### Category ###', field_name='part__category',
-            queryset=PartCategory.objects.filter(parts__user_parts__user=request.user).distinct().order_by('name'))
+            queryset=PartCategory.objects.filter(parts__user_parts__user=request.user).distinct())

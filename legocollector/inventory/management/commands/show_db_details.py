@@ -4,7 +4,7 @@ from collections import defaultdict
 
 from django.core.management.base import BaseCommand
 
-from inventory.models import Part
+from inventory.models import Part, PartCategory
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
@@ -14,10 +14,12 @@ class Command(BaseCommand):
     def handle(self, *args, **options):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
         logger.info(F'Show Database Details')
 
-        self.show_part_detaile()
+        self.show_category_details()
+        self.show_part_details()
 
     @staticmethod
-    def show_part_detaile():
+    def show_part_details():
+        logger.info('### PARTS ###')
         check_not_none_fields = {
             'Has Width': 'width',
             'Has Height': 'height',
@@ -52,3 +54,10 @@ class Command(BaseCommand):
         logger.info(F'  Dimension Set Count')
         for dimension_count, part_count in sorted(dimension_set_count.items()):
             logger.info(F'    {dimension_count:<2}: {part_count}')
+
+    @staticmethod
+    def show_category_details():
+        logger.info('### CATEGORIES ###')
+
+        for category in PartCategory.objects.all().iterator():
+            logger.info(F'Part Count: {category.parts.all().count():<5} x {category.name}')
