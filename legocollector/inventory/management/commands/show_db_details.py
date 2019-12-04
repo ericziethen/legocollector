@@ -58,6 +58,6 @@ class Command(BaseCommand):
     @staticmethod
     def show_category_details():
         logger.info('### CATEGORIES ###')
-        
+
         for category in PartCategory.objects.all().iterator():
             logger.info(F'Part Count: {category.parts.all().count():<5} x {category.name}')
