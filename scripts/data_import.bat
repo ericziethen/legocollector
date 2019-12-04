@@ -7,7 +7,7 @@ set PACKAGE_ROOT=legocollector
 
 pushd "%PROJ_MAIN_DIR%\%PACKAGE_ROOT%"
 
-set IMPORT_DATE=2019.11.29
+set IMPORT_DATE=2019.12.04
 
 set REBRICKABLE_CSV_FILES_DIR=D:\Downloads\Finished\# Lego\rebrickable.com\Downloads\%IMPORT_DATE%
 set REBRICKABLE_PART_SCRAPE_FILE_PATH=D:\Downloads\Finished\# Lego\rebrickable.com\Scraped\%IMPORT_DATE%\parts_scraped.json
