@@ -196,7 +196,6 @@ def test_calc_top_studs_for_part_list():
     top_studs_dic = ldraw_parser.calc_top_studs_for_part_list(part_list, file_dic)
 
     assert len(top_studs_dic) == 3
-    print(top_studs_dic)
 
     # Part 3070b
     assert top_studs_dic['3070b']['top_top_studs'] == 0
