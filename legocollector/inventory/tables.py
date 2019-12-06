@@ -1,6 +1,6 @@
 
 from django.contrib.staticfiles import finders
-from django.contrib.staticfiles.templatetags.staticfiles import static
+from django.templatetags.static import static
 from django.utils.html import format_html
 from django_tables2 import CheckBoxColumn, Column, LinkColumn, Table
 from django_tables2.utils import Accessor

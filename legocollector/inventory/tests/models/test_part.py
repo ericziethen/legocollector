@@ -354,8 +354,6 @@ class TestSetInventories(TestCase):
     def test_no_set(self):
         part = Part.objects.get(part_num='single_part')
 
-        print(part.__dict__)
-
         self.assertListEqual(list(part.set_inventories), [])
         self.assertEqual(part.set_count, 0)
 
