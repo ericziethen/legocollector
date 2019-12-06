@@ -5,14 +5,6 @@ from django_filters.views import FilterView  # (for import in views.py)  pylint:
 
 from .models import UserPart, Part, PartCategory
 
-register = template.Library()
-
-
-@register.filter
-def color_id_to_rgb(value):
-    print(F'Filter:color_id_to_rgb: {value}')
-    return value
-
 
 class PartFilter(FilterSet):
     category = ModelChoiceFilter(empty_label='### Category ###', field_name='category',
