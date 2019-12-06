@@ -1,5 +1,3 @@
-from django import template
-
 from django_filters import FilterSet, ModelChoiceFilter
 from django_filters.views import FilterView  # (for import in views.py)  pylint: disable=unused-import
 
