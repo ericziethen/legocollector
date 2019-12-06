@@ -174,7 +174,7 @@ class FilteredPartListUserPartCreateView(LoginRequiredMixin, SingleTableMixin, F
     table_class = PartTable
     filterset_class = PartFilter
 
-    def post(self, request, **kwargs):
+    def post(self, request, **kwargs):  # pylint: disable=unused-argument
         try:
             part_id_list = self.get_part_ids_from_post()
         except ValidationError as error:
