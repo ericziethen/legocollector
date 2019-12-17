@@ -2,19 +2,23 @@
 
 {% load bootstrap4 %}
 
+
+{% block sidebar_left %}
+    {% if filter %}
+        <form action="" method="get" class="form form-inline">
+            {% bootstrap_button 'filter' %}
+            {% bootstrap_form filter.form layout='inline' %}
+        </form>
+    {% endif %}
+{% endblock sidebar_left %}
+
 {% block content %}
     <h1>Parts</h1>
 
     {% load render_table from django_tables2 %}
 
-    {% if filter %}
-        <form action="" method="get" class="form form-inline">
-            {% bootstrap_form filter.form layout='inline' %}
-            {% bootstrap_button 'filter' %}
-        </form>
-    {% endif %}
+    {% render_table table 'django_tables2/bootstrap4.html' %}
 
-    {% render_table table 'django_tables2/bootstrap.html' %}
 
     <!-- Hover Zooming as per https://www.w3schools.com/howto/howto_css_zoom_hover.asp -->
     <meta name="viewport" content="width=device-width, initial-scale=1">

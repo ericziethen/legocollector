@@ -41,10 +41,41 @@
   </header>
 
 
-  <div class="container">
-    {% block content %}
-    {% endblock content %}
+
+  <div class="container-fluid">
+    <div class="row">
+      <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+        <div class="sidebar-sticky">
+
+          <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+            <span>Sidebar</span>
+            <a class="d-flex align-items-center text-muted" href="#">
+              <span data-feather="plus-circle"></span>
+            </a>
+          </h6>
+          {% block sidebar_left %}
+          {% endblock sidebar_left %}
+        </div>
+      </nav>
+
+      <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+       <div class="container">
+          {% block content %}
+          {% endblock content %}
+      </div>
+      </main>
+    </div>
   </div>
+
+
+
+
+
+
+
+  
+
+
   <!-- JavaScript -->
   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
   <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
