@@ -27,6 +27,9 @@ class PartFilter(FilterSet):
 
     def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
 
+        # Modifying extras, maybe the title ???
+        # https://django-filter.readthedocs.io/en/master/ref/filters.html#filters
+
         # DISPLAY Title over hovering
         # https://stackoverflow.com/questions/27248121/text-display-on-mouse-over-field
 
@@ -38,7 +41,7 @@ class PartFilter(FilterSet):
         
         print('\nself.filters', type(self.filters))
         for name, my_filter in self.filters.items():
-            print('my_filter', name, type(my_filter), my_filter)
+            print('my_filter', name, type(my_filter), my_filter, my_filter.extra)
             if type(my_filter) == dict:
                 field_name = F'{my_filter["field_name"]}_{my_filter["lookup_expr"]}'
             else:
