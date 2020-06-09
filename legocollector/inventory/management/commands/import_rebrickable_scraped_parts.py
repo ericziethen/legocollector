@@ -38,7 +38,7 @@ class Command(BaseCommand):
         self.import_scraped_data(json_dic['parts'])
 
     def import_scraped_data(self, data_dic):
-        logger.info(F'Importing Scraped Data')
+        logger.info('Importing Scraped Data')
         external_id_counts = 0
         parts_processed_counts = 0
         part_list = Part.objects.values_list('part_num', flat=True)

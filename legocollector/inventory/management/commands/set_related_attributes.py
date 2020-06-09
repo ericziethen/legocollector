@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 class Command(BaseCommand):
 
     def handle(self, *args, **options):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
-        logger.info(F'Calculating Related Part Attributes')
+        logger.info('Calculating Related Part Attributes')
 
         processed_parts = {}
 
@@ -36,7 +36,7 @@ class Command(BaseCommand):
 
     @staticmethod
     def print_update_details(attribute_updates):
-        logger.info(F'  Attribute updates')
+        logger.info('  Attribute updates')
         logger.info(F'    Total Parts Updated: {attribute_updates["total_parts"]}')
         for group, count in attribute_updates.items():
             if group == 'total_parts':

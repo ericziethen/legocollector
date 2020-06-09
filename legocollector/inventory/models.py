@@ -72,7 +72,7 @@ class Color(models.Model):
 
         return (hue2, lum, value2)
 
-    def save(self, *args, **kwargs):  # pylint: disable=arguments-differ
+    def save(self, *args, **kwargs):  # pylint: disable=signature-differs
         hlv = self.color_step(self.rgb_ints[0], self.rgb_ints[1], self.rgb_ints[2])
         self.color_step_hue = hlv[0]
         self.color_step_lumination = hlv[1]
@@ -96,7 +96,7 @@ class Part(models.Model):
 
     category = models.ForeignKey(PartCategory, on_delete=models.CASCADE, related_name='parts')
 
-    def save(self, *args, **kwargs):  # pylint: disable=arguments-differ
+    def save(self, *args, **kwargs):  # pylint: disable=signature-differs
         # Ensure length cannot be smaller than width
         if self.length is not None and self.width is not None:
             if self.width > self.length:

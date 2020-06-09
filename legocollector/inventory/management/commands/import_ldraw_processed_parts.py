@@ -29,7 +29,7 @@ class Command(BaseCommand):
 
     @staticmethod
     def import_ldraw_data(data_dic):
-        logger.info(F'Importing Ldraw Data')
+        logger.info('Importing Ldraw Data')
         parts_processed_counts = 0
         part_list = Part.objects.values_list('part_num', flat=True)
 

@@ -33,7 +33,7 @@ class Command(BaseCommand):
         self.scrape_rebrickable_parts(rebrickabe_api_key, json_file_path, parts_csv_path)
 
     def scrape_rebrickable_parts(self, api_key, json_file_path, part_csv_path):
-        logger.info(F'Scraping Rebrickable Parts')
+        logger.info('Scraping Rebrickable Parts')
 
         # Get the data to scrape
         part_nums, data_dic = self._load_scrape_data(json_file_path, part_csv_path)
@@ -55,7 +55,7 @@ class Command(BaseCommand):
             # delay between scrape attempts
             time.sleep(2)
 
-        logger.info(F'Scraping Complete')
+        logger.info('Scraping Complete')
 
     @staticmethod
     def _get_part_nums_from_rebrickable_csv(part_csv_path):
@@ -108,7 +108,7 @@ class Command(BaseCommand):
             if not part_nums:
                 part_nums = Command._get_part_nums_from_rebrickable_csv(part_csv_path)
             else:
-                logger.info(F'Parts CSV specified but need to complete unscraped parts first')
+                logger.info('Parts CSV specified but need to complete unscraped parts first')
 
         # Backup, start scraping from the DB
         if not part_nums:
