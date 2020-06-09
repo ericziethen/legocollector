@@ -17,7 +17,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):  # pylint: disable=too-many-locals,too-many-branches
         parts_xml_path = options['parts_xml_path']
 
-        logger.info(F'Importing Part Attributes')
+        logger.info('Importing Part Attributes')
         # parse the xml file
         tree = ET.parse(parts_xml_path)
         root = tree.getroot()

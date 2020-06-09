@@ -206,13 +206,13 @@ class FilteredPartListUserPartCreateView(LoginRequiredMixin, SingleTableMixin, F
 
         # Ensure at least 1 Checkbox has been selected
         if not ids:
-            raise ValidationError(F'Select at least 1 part to add, you selected none')
+            raise ValidationError('Select at least 1 part to add, you selected none')
 
         part_id_list = []
         for part_id in ids:
             # Ensure we don't already have this part
             if UserPart.objects.filter(user=self.request.user, part=part_id).exists():
-                raise ValidationError(F'You already have this part in your list')
+                raise ValidationError('You already have this part in your list')
             part_id_list.append(part_id)
 
         # Return the Primary Key

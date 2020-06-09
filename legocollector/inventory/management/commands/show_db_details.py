@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 class Command(BaseCommand):
 
     def handle(self, *args, **options):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
-        logger.info(F'Show Database Details')
+        logger.info('Show Database Details')
 
         self.show_category_details()
         self.show_part_details()
@@ -51,7 +51,7 @@ class Command(BaseCommand):
             logger.info(F'  {name:20}: True: {count:>7}, False: {part_count - count:>7}')
 
         # Display Attribute Set Counts
-        logger.info(F'  Dimension Set Count')
+        logger.info('  Dimension Set Count')
         for dimension_count, part_count in sorted(dimension_set_count.items()):
             logger.info(F'    {dimension_count:<2}: {part_count}')
 

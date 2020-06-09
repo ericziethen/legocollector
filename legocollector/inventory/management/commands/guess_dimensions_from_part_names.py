@@ -16,7 +16,7 @@ class Command(BaseCommand):
         self.guess_dimensions()
 
     def guess_dimensions(self):
-        logger.info(F'Guess Dimensions')
+        logger.info('Guess Dimensions')
         part_list = Part.objects.all()
         part_updates = 0
         with transaction.atomic():

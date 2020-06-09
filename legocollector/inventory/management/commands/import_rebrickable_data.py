@@ -41,7 +41,7 @@ class Command(BaseCommand):
 
     @staticmethod
     def _populate_colors(csv_data):
-        logger.info(F'Populate Colors')
+        logger.info('Populate Colors')
         with transaction.atomic():
             for row in csv_data:
                 rgb = row['rgb']
@@ -57,7 +57,7 @@ class Command(BaseCommand):
 
     @staticmethod
     def _populate_part_categories(csv_data):
-        logger.info(F'Populate Part Categories')
+        logger.info('Populate Part Categories')
         with transaction.atomic():
             for row in csv_data:
                 PartCategory.objects.update_or_create(
@@ -66,7 +66,7 @@ class Command(BaseCommand):
 
     @staticmethod
     def _populate_parts(csv_data):
-        logger.info(F'Populate Parts')
+        logger.info('Populate Parts')
         part_list = Part.objects.values_list('part_num', flat=True)
         create_count = 0
         with transaction.atomic():
@@ -85,7 +85,7 @@ class Command(BaseCommand):
 
     @staticmethod
     def _populate_relationships(csv_data):
-        logger.info(F'Populate Relationships')
+        logger.info('Populate Relationships')
         with transaction.atomic():
             relation_mapping = {
                 'A': PartRelationship.ALTERNATE_PART,
@@ -117,12 +117,12 @@ class Command(BaseCommand):
 
     @staticmethod
     def _populate_set_parts(csv_data):
-        logger.info(F'Populate Set Parts')
+        logger.info('Populate Set Parts')
 
-        logger.info(F'  Deleting all Set Parts - Start')
+        logger.info('  Deleting all Set Parts - Start')
         with transaction.atomic():
             SetPart.objects.all().delete()
-        logger.info(F'  Deleting all Set Parts - End')
+        logger.info('  Deleting all Set Parts - End')
 
         batch_size = 999  # Max for Sqlite3
         batch_list = []
@@ -131,7 +131,7 @@ class Command(BaseCommand):
         # Load all Parts into memory otherwise bulk_crete gets slow
         cached_parts = {p.part_num: p for p in Part.objects.all()}
 
-        logger.info(F'  Importing Set Parts - Start')
+        logger.info('  Importing Set Parts - Start')
         with transaction.atomic():
             for row in csv_data:
                 csv_row_count += 1
@@ -156,7 +156,7 @@ class Command(BaseCommand):
             if batch_list:
                 SetPart.objects.bulk_create(batch_list)
 
-        logger.info(F'  Importing Set Parts - End')
+        logger.info('  Importing Set Parts - End')
         logger.info(F'  Total SetParts Processed: {csv_row_count}')
 
     @staticmethod
